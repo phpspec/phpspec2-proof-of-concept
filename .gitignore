@@ -1,4 +1,6 @@
 *.tgz
 *.phar
 vendor
+bin/*
+!bin/pspec
 composer.lock
