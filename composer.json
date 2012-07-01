@@ -36,5 +36,5 @@
         }
     },
 
-    "bin": ["bin/pspec"]
+    "bin": ["bin/phpspec"]
 }
