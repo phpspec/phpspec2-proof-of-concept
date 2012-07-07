@@ -2,5 +2,5 @@
 *.phar
 vendor
 bin/*
-!bin/pspec
+!bin/phpspec
 composer.lock
