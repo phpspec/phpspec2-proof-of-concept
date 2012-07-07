@@ -106,7 +106,7 @@ class TestCommand extends Command
         $classname = str_replace(DIRECTORY_SEPARATOR, '\\',
             str_replace(
                 $specsPath.DIRECTORY_SEPARATOR, '',
-                str_replace('.'.$file->getExtension(), '', $filename)
+                str_replace('.php', '', $filename)
             )
         );
 
