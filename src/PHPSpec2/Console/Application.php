@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec\PHPSpec2\Console;
+namespace PHPSpec2\Console;
 
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputOption;

@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-define('PHPSPEC2_VERSION', '0.0.1-PREVIEW');
+define('PHPSPEC2_VERSION', '2.0.1-PREVIEW');
 
 if (is_dir($vendor = __DIR__ . '/../vendor')) {
     require($vendor . '/autoload.php');
@@ -15,5 +15,5 @@ if (is_dir($vendor = __DIR__ . '/../vendor')) {
     );
 }
 
-$app = new PHPSpec\PHPSpec2\Console\Application(PHPSPEC2_VERSION);
+$app = new PHPSpec2\Console\Application(PHPSPEC2_VERSION);
 $app->run();

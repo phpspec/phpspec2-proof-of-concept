@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec\PHPSpec2;
+namespace PHPSpec2;
 
 interface SpecificationInterface
 {

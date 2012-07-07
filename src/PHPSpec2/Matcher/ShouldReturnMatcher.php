@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec\PHPSpec2\Matcher;
+namespace PHPSpec2\Matcher;
 
-use PHPSpec\PHPSpec2\Stub;
+use PHPSpec2\Stub;
 
 class ShouldReturnMatcher implements MatcherInterface
 {

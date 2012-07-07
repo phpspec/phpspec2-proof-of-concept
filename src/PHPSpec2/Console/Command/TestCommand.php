@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec\PHPSpec2\Console\Command;
+namespace PHPSpec2\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,9 +12,9 @@ use Symfony\Component\Finder\SplFileInfo;
 use ReflectionClass;
 use ReflectionMethod;
 
-use PHPSpec\PHPSpec2\Stub;
-use PHPSpec\PHPSpec2\Matcher;
-use PHPSpec\PHPSpec2\SpecificationInterface;
+use PHPSpec2\Stub;
+use PHPSpec2\Matcher;
+use PHPSpec2\SpecificationInterface;
 
 class TestCommand extends Command
 {
@@ -115,7 +115,7 @@ class TestCommand extends Command
         }
 
         $reflection = new ReflectionClass($classname);
-        if (!$reflection->implementsInterface('PHPSpec\\PHPSpec2\\SpecificationInterface')) {
+        if (!$reflection->implementsInterface('PHPSpec2\\SpecificationInterface')) {
             return;
         }
 

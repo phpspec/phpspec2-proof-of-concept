@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPSpec\PHPSpec2\Matcher;
+namespace PHPSpec2\Matcher;
 
-use PHPSpec\PHPSpec2\Stub;
-use PHPSpec\PHPSpec2\Exception\Matcher\MatcherException;
+use PHPSpec2\Stub;
+use PHPSpec2\Exception\Matcher\MatcherException;
 
 class ShouldContainMatcher implements MatcherInterface
 {

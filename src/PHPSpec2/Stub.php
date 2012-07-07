@@ -1,16 +1,16 @@
 <?php
 
-namespace PHPSpec\PHPSpec2;
+namespace PHPSpec2;
 
 use ReflectionClass;
 
 use Mockery;
 use Mockery\MockInterface;
 
-use PHPSpec\PHPSpec2\Matcher\MatcherInterface;
-use PHPSpec\PHPSpec2\Exception\StubException;
-use PHPSpec\PHPSpec2\Exception\ClassDoesNotExistsException;
-use PHPSpec\PHPSpec2\Exception\MethodNotFoundException;
+use PHPSpec2\Matcher\MatcherInterface;
+use PHPSpec2\Exception\StubException;
+use PHPSpec2\Exception\ClassDoesNotExistsException;
+use PHPSpec2\Exception\MethodNotFoundException;
 
 class Stub
 {
