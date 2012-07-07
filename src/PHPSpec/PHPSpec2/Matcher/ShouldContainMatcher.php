@@ -9,7 +9,7 @@ class ShouldContainMatcher implements MatcherInterface
 {
     public function getAliases()
     {
-        return array('should_contain', 'shouldContain', 'contains');
+        return array('should_contain', 'shouldContain');
     }
 
     public function match(Stub $stub, array $arguments)

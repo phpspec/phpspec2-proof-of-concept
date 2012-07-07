@@ -8,7 +8,7 @@ class ShouldReturnMatcher implements MatcherInterface
 {
     public function getAliases()
     {
-        return array('should_return', 'shouldReturn', 'returns');
+        return array('should_return', 'shouldReturn');
     }
 
     public function match(Stub $stub, array $arguments)
