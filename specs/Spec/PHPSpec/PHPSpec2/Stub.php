@@ -8,12 +8,12 @@ class Stub implements SpecificationInterface
 {
     public function described_with($stub)
     {
-        $stub->isAnInstanceOf('PHPSpec\PHPSpec2\Stub');
+        $stub->is_an_instance_of('PHPSpec\PHPSpec2\Stub');
     }
 
     public function registers_matcher_if_it_has_aliases($stub, $matcher)
     {
-        $matcher->isAMockOf('PHPSpec\PHPSpec2\Matcher\MatcherInterface');
+        $matcher->is_a_mock_of('PHPSpec\PHPSpec2\Matcher\MatcherInterface');
         $matcher->getAliases()->should_return(array('should_be_equal'));
 
         $stub->__registerMatcher($matcher);
@@ -22,7 +22,7 @@ class Stub implements SpecificationInterface
 
     public function does_not_registers_matcher_if_it_has_no_aliases($stub, $matcher)
     {
-        $matcher->isAMockOf('PHPSpec\PHPSpec2\Matcher\MatcherInterface');
+        $matcher->is_a_mock_of('PHPSpec\PHPSpec2\Matcher\MatcherInterface');
         $matcher->getAliases()->should_return(array());
 
         $stub->__registerMatcher($matcher);

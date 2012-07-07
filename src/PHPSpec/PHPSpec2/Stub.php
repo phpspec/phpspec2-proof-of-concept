@@ -52,6 +52,11 @@ class Stub
         $this->subject = $reflection->newInstanceArgs($constructorArguments);
     }
 
+    public function is_an_instance_of($class, array $constructorArguments = array())
+    {
+        $this->isAnInstanceOf($class, $constructorArguments);
+    }
+
     public function isAMockOf($classOrInterface)
     {
         if (!is_string($classOrInterface)) {
@@ -66,6 +71,11 @@ class Stub
         }
 
         $this->subject = Mockery::mock($classOrInterface);
+    }
+
+    public function is_a_mock_of($classOrInterface)
+    {
+        $this->isAMockOf($classOrInterface);
     }
 
     public function __call($method, array $arguments = array())
