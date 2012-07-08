@@ -14,12 +14,12 @@ class ShouldContainMatcher implements MatcherInterface
 
     public function match(Stub $stub, array $arguments)
     {
-        if ($arguments[0] !== count($stub->getSubject())) {
+        if ($arguments[0] !== count($stub->getStubSubject())) {
             throw new MatcherException(sprintf(
                 'Expected to have %d items in %s, got %d',
                 $arguments[0],
-                gettype($stub->getSubject()),
-                count($stub->getSubject())
+                gettype($stub->getStubSubject()),
+                count($stub->getStubSubject())
             ));
         }
     }

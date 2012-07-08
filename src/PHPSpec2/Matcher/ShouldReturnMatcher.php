@@ -14,8 +14,8 @@ class ShouldReturnMatcher implements MatcherInterface
     public function match(Stub $stub, array $arguments)
     {
         return new Stub(
-            $stub->getSubject()->andReturn($arguments[0]),
-            $stub->getMatchers()
+            $stub->getStubSubject()->andReturn($arguments[0]),
+            $stub->getStubMatchers()
         );
     }
 }
