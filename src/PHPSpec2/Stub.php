@@ -11,6 +11,7 @@ use PHPSpec2\Matcher\MatcherInterface;
 use PHPSpec2\Exception\StubException;
 use PHPSpec2\Exception\ClassDoesNotExistsException;
 use PHPSpec2\Exception\MethodNotFoundException;
+use PHPSpec2\Exception\MatcherNotFoundException;
 
 class Stub
 {
@@ -30,6 +31,15 @@ class Stub
     {
         $arguments = $this->resolveArgumentsStubs($arguments);
 
+        // if user calls matcher - find & run it or throw exception
+        if (preg_match('/should[A-Z\_]/', $method)) {
+            if (isset($this->matchers[$method])) {
+                return $this->matchers[$method]->match($this, $arguments);
+            }
+
+            throw new MatcherNotFoundException($method);
+        }
+
         // if there is a subject
         if (null !== $this->subject) {
             // if subject is a mock - generate method call expectation
@@ -41,20 +51,15 @@ class Stub
                 return new static($expectation, $this->matchers);
             }
 
-            // if subject is an instance with provided method - call it and stub result
+            // if subject is an instance with provided method - call it and stub the result
             if (method_exists($this->subject, $method)) {
                 $returnValue = call_user_func_array(array($this->subject, $method), $arguments);
 
                 return new static($returnValue, $this->matchers);
             }
-
-            // if there is a registered matcher with specified alias - call test and return it
-            if (isset($this->matchers[$method])) {
-                return $this->matchers[$method]->match($this, $arguments);
-            }
         }
 
-        // if we're calling this object method - proxy it directly
+        // if stub object has required method - call it directly
         if (method_exists($this, $method)) {
             return call_user_func_array(array($this, $method), $arguments);
         }
