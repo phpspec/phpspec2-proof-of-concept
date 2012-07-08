@@ -27,14 +27,14 @@ class Stub
         }
     }
 
-    public function is_a_mock_of($classOrInterface)
-    {
-        $this->isAMockOf($classOrInterface);
-    }
-
     public function is_an_instance_of($class, array $constructorArguments = array())
     {
         $this->isAnInstanceOf($class, $constructorArguments);
+    }
+
+    public function is_a_mock_of($classOrInterface)
+    {
+        $this->isAMockOf($classOrInterface);
     }
 
     public function isAnInstanceOf($class, array $constructorArguments = array())
