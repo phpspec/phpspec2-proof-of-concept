@@ -40,7 +40,7 @@ class ExpectationStub
         $this->shouldBeNeverCalled();
     }
 
-    public function should_throw_an_exception($exception, $message = '')
+    public function should_throw($exception, $message = '')
     {
         $this->shouldThrowAnException($exception, $message);
     }
