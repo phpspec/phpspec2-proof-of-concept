@@ -8,10 +8,12 @@ use Mockery;
 use Mockery\MockInterface;
 
 use PHPSpec2\Matcher\MatcherInterface;
+
 use PHPSpec2\Exception\StubException;
 use PHPSpec2\Exception\ClassDoesNotExistsException;
-use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\MatcherNotFoundException;
+use PHPSpec2\Exception\MethodNotFoundException;
+use PHPSpec2\Exception\PropertyNotFoundException;
 
 class Stub
 {
