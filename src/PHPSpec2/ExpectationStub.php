@@ -11,28 +11,18 @@ class ExpectationStub
     public function __construct(Expectation $expectation, array $arguments = array())
     {
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
-        $this->expectation->atLeast(1);
-        $this->expectation->andReturn(null);
-    }
-
-    public function shouldReturn($value = null)
-    {
-        $this->expectation->andReturn($value);
-    }
-
-    public function shouldNotBeCalled()
-    {
-        $this->expectation->never();
-    }
-
-    public function shouldThrow($exception, $message = '')
-    {
-        $this->expectation->andThrow($exception, $message);
+        $this->shouldBeCalled();
+        $this->shouldReturn(null);
     }
 
     public function should_return($value = null)
     {
         $this->shouldReturn($value);
+    }
+
+    public function should_be_called()
+    {
+        $this->shouldBeCalled();
     }
 
     public function should_not_be_called()
@@ -43,5 +33,25 @@ class ExpectationStub
     public function should_throw($exception, $message = '')
     {
         $this->shouldThrow($exception, $message);
+    }
+
+    public function shouldReturn($value = null)
+    {
+        $this->expectation->andReturn($value);
+    }
+
+    public function shouldBeCalled()
+    {
+        $this->expectation->atLeast(1);
+    }
+
+    public function shouldNotBeCalled()
+    {
+        $this->expectation->never();
+    }
+
+    public function shouldThrow($exception, $message = '')
+    {
+        $this->expectation->andThrow($exception, $message);
     }
 }
