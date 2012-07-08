@@ -20,12 +20,12 @@ class ExpectationStub
         $this->expectation->andReturn($value);
     }
 
-    public function shouldBeNeverCalled()
+    public function shouldNotBeCalled()
     {
         $this->expectation->never();
     }
 
-    public function shouldThrowAnException($exception, $message = '')
+    public function shouldThrow($exception, $message = '')
     {
         $this->expectation->andThrow($exception, $message);
     }
@@ -35,13 +35,13 @@ class ExpectationStub
         $this->shouldReturn($value);
     }
 
-    public function should_be_never_called()
+    public function should_not_be_called()
     {
-        $this->shouldBeNeverCalled();
+        $this->shouldNotBeCalled();
     }
 
     public function should_throw($exception, $message = '')
     {
-        $this->shouldThrowAnException($exception, $message);
+        $this->shouldThrow($exception, $message);
     }
 }
