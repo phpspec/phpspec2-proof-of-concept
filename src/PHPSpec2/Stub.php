@@ -75,22 +75,13 @@ class Stub
     {
         $arguments = $this->resolveArgumentsStubs($arguments);
 
-        // if user calls matcher - find & run it or throw exception
-        if (preg_match('/should[A-Z\_]/', $method)) {
-            if (isset($this->matchers[$method])) {
-                return $this->matchers[$method]->match($this, $arguments);
-            }
-
-            throw new MatcherNotFoundException($method);
-        }
-
         // if there is a subject
         if (null !== $this->subject) {
             // if subject is a mock - generate method call expectation
             if ($this->subject instanceof MockInterface) {
                 $expectation = $this->subject->shouldReceive($method);
                 $expectation = call_user_func_array(array($expectation, 'with'), $arguments);
-                $expectation->zeroOrMoreTimes();
+                $expectation->atLeast(1);
 
                 return new static($expectation, $this->matchers);
             }
@@ -153,6 +144,15 @@ class Stub
 
     public function __call($method, array $arguments = array())
     {
+        // if user calls matcher - find & run it or throw exception
+        if (preg_match('/should[A-Z\_]/', $method)) {
+            if (isset($this->matchers[$method])) {
+                return $this->matchers[$method]->match($this, $arguments);
+            }
+
+            throw new MatcherNotFoundException($method);
+        }
+
         return $this->callOnStub($method, $arguments);
     }
 

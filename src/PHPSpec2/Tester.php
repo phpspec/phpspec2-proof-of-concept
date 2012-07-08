@@ -4,7 +4,9 @@ namespace PHPSpec2;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class Runner
+use ReflectionClass;
+
+class Tester
 {
     private $eventDispatcher;
 
@@ -21,5 +23,10 @@ class Runner
     public function getEventDispatcher()
     {
         return $this->eventDispatcher;
+    }
+
+    public function test(ReflectionClass $spec)
+    {
+        // TODO
     }
 }
