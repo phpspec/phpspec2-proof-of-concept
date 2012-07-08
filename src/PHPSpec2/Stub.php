@@ -21,10 +21,7 @@ class Stub
     public function __construct($subject = null, array $matchers = array())
     {
         $this->subject = $subject;
-
-        foreach ($matchers as $matcher) {
-            $this->registerStubMatcher($matcher);
-        }
+        $this->setStubMatchers($matchers);
     }
 
     public function is_an_instance_of($class, array $constructorArguments = array())
@@ -130,6 +127,14 @@ class Stub
     public function getStubSubject()
     {
         return $this->subject;
+    }
+
+    public function setStubMatchers(array $matchers = array())
+    {
+        $this->matchers = array();
+        foreach ($matchers as $matcher) {
+            $this->registerStubMatcher($matcher);
+        }
     }
 
     public function registerStubMatcher(MatcherInterface $matcher)
