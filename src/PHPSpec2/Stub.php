@@ -27,7 +27,52 @@ class Stub
         }
     }
 
-    public function __call($method, array $arguments = array())
+    public function is_a_mock_of($classOrInterface)
+    {
+        $this->isAMockOf($classOrInterface);
+    }
+
+    public function is_an_instance_of($class, array $constructorArguments = array())
+    {
+        $this->isAnInstanceOf($class, $constructorArguments);
+    }
+
+    public function isAnInstanceOf($class, array $constructorArguments = array())
+    {
+        $constructorArguments = $this->resolveArgumentsStubs($constructorArguments);
+
+        if (!is_string($class)) {
+            throw new StubException(sprintf(
+                'Instantiator expects class name, "%s" got', gettype($class)
+            ));
+        }
+
+        if (!class_exists($class)) {
+            throw new ClassDoesNotExistsException($class);
+        }
+
+        $reflection = new ReflectionClass($class);
+
+        $this->subject = $reflection->newInstanceArgs($constructorArguments);
+    }
+
+    public function isAMockOf($classOrInterface)
+    {
+        if (!is_string($classOrInterface)) {
+            throw new StubException(sprintf(
+                'Mock creator expects class or interface name, "%s" got',
+                gettype($classOrInterface)
+            ));
+        }
+
+        if (!class_exists($classOrInterface) && !interface_exists($classOrInterface)) {
+            throw new ClassDoesNotExistsException($classOrInterface);
+        }
+
+        $this->subject = Mockery::mock($classOrInterface);
+    }
+
+    public function callOnStub($method, array $arguments = array())
     {
         $arguments = $this->resolveArgumentsStubs($arguments);
 
@@ -59,15 +104,10 @@ class Stub
             }
         }
 
-        // if stub object has required method - call it directly
-        if (method_exists($this, $method)) {
-            return call_user_func_array(array($this, $method), $arguments);
-        }
-
         throw new MethodNotFoundException($method);
     }
 
-    public function __set($property, $value)
+    public function setToStub($property, $value = null)
     {
         $value = $this->resolveArgumentsStubs($value);
 
@@ -78,7 +118,7 @@ class Stub
         throw new PropertyNotFoundException($property);
     }
 
-    public function __get($property)
+    public function getFromStub($property)
     {
         if (property_exists($this->subject, $property)) {
             return new static($this->subject->$property, $this->matchers);
@@ -87,70 +127,44 @@ class Stub
         throw new PropertyNotFoundException($property);
     }
 
-    protected function is_a_mock_of($classOrInterface)
+    public function getStubSubject()
     {
-        $this->isAMockOf($classOrInterface);
+        return $this->subject;
     }
 
-    protected function is_an_instance_of($class, array $constructorArguments = array())
-    {
-        $this->isAnInstanceOf($class, $constructorArguments);
-    }
-
-    protected function registerStubMatcher(MatcherInterface $matcher)
+    public function registerStubMatcher(MatcherInterface $matcher)
     {
         foreach ($matcher->getAliases() as $alias) {
             $this->matchers[$alias] = $matcher;
         }
     }
 
-    protected function isAnInstanceOf($class, array $constructorArguments = array())
-    {
-        $constructorArguments = $this->resolveArgumentsStubs($constructorArguments);
-
-        if (!is_string($class)) {
-            throw new StubException(sprintf(
-                'Instantiator expects class name, "%s" got', gettype($class)
-            ));
-        }
-
-        if (!class_exists($class)) {
-            throw new ClassDoesNotExistsException($class);
-        }
-
-        $reflection = new ReflectionClass($class);
-
-        $this->subject = $reflection->newInstanceArgs($constructorArguments);
-    }
-
-    protected function isAMockOf($classOrInterface)
-    {
-        if (!is_string($classOrInterface)) {
-            throw new StubException(sprintf(
-                'Mock creator expects class or interface name, "%s" got',
-                gettype($classOrInterface)
-            ));
-        }
-
-        if (!class_exists($classOrInterface) && !interface_exists($classOrInterface)) {
-            throw new ClassDoesNotExistsException($classOrInterface);
-        }
-
-        $this->subject = Mockery::mock($classOrInterface);
-    }
-
-    protected function getStubSubject()
-    {
-        return $this->subject;
-    }
-
-    protected function getStubMatchers()
+    public function getStubMatchers()
     {
         return $this->matchers;
     }
 
+    public function __call($method, array $arguments = array())
+    {
+        return $this->callOnStub($method, $arguments);
+    }
+
+    public function __set($property, $value = null)
+    {
+        return $this->setToStub($property, $value);
+    }
+
+    public function __get($property)
+    {
+        return $this->getFromStub($property);
+    }
+
     protected function resolveArgumentsStubs($arguments)
     {
+        if (null === $arguments) {
+            return array();
+        }
+
         return array_map(
             function($argument) {
                 return $argument instanceof Stub ? $argument->getStubSubject() : $argument;

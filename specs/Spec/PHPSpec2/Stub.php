@@ -16,8 +16,8 @@ class Stub implements SpecificationInterface
         $matcher->is_a_mock_of('PHPSpec2\Matcher\MatcherInterface');
         $matcher->getAliases()->should_return(array('should_be_equal'));
 
-        $stub->registerStubMatcher($matcher);
-        $stub->getStubMatchers()->should_contain(1);
+        $stub->callOnStub('registerStubMatcher', array($matcher));
+        $stub->callOnStub('getStubMatchers')->should_contain(1);
     }
 
     public function does_not_registers_matcher_if_it_has_no_aliases($stub, $matcher)
@@ -25,7 +25,7 @@ class Stub implements SpecificationInterface
         $matcher->is_a_mock_of('PHPSpec2\Matcher\MatcherInterface');
         $matcher->getAliases()->should_return(array());
 
-        $stub->registerStubMatcher($matcher);
-        $stub->getStubMatchers()->should_contain(0);
+        $stub->callOnStub('registerStubMatcher', array($matcher));
+        $stub->callOnStub('getStubMatchers')->should_contain(0);
     }
 }
