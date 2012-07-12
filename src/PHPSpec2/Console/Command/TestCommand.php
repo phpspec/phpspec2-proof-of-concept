@@ -12,9 +12,8 @@ use Symfony\Component\Finder\SplFileInfo;
 use ReflectionClass;
 use ReflectionMethod;
 
-use PHPSpec2\Stub;
-use PHPSpec2\Matcher;
 use PHPSpec2\SpecificationInterface;
+use PHPSpec2\Tester;
 
 class TestCommand extends Command
 {
@@ -42,62 +41,14 @@ class TestCommand extends Command
             ->in($specsPath)
         ;
 
+        $tester = new Tester;
         foreach ($files as $file) {
             if (!$spec = $this->getSpecReflectionFromFile($file, $specsPath)) {
                 continue;
             }
 
-            foreach ($spec->getMethods(ReflectionMethod::IS_PUBLIC) as $specMethod) {
-                $specInstance = $spec->newInstance();
-                $stubs = array();
-                foreach (array('describedWith', 'described_with') as $describer) {
-                    // describing methods are not specs
-                    if ($describer === $specMethod->getName()) {
-                        continue 2;
-                    }
-
-                    // call describing method
-                    if ($spec->hasMethod($describer)) {
-                        $method = $spec->getMethod($describer);
-                        $stubs  = $this->getStubsForMethod($method, $stubs);
-                        $this->callMethodWithStubs($specInstance, $method, $stubs);
-                    }
-                }
-
-                $stubs = $this->getStubsForMethod($specMethod, $stubs);
-                $this->callMethodWithStubs($specInstance, $specMethod, $stubs);
-            }
+            $tester->testSpecification($spec);
         }
-    }
-
-    private function createNewStub($subject = null)
-    {
-        $stub = new Stub($subject);
-        $stub->registerStubMatcher(new Matcher\ShouldReturnMatcher);
-        $stub->registerStubMatcher(new Matcher\ShouldContainMatcher);
-
-        return $stub;
-    }
-
-    private function getStubsForMethod(ReflectionMethod $method, array $stubs)
-    {
-        foreach ($method->getParameters() as $parameter) {
-            if (!isset($stubs[$parameter->getName()])) {
-                $stubs[$parameter->getName()] = $this->createNewStub();
-            }
-        }
-
-        return $stubs;
-    }
-
-    private function callMethodWithStubs(SpecificationInterface $spec, ReflectionMethod $method, array $stubs)
-    {
-        $arguments = array();
-        foreach ($method->getParameters() as $parameter) {
-            $arguments[] = $stubs[$parameter->getName()];
-        }
-
-        $method->invokeArgs($spec, $arguments);
     }
 
     private function getSpecReflectionFromFile(SplFileInfo $file, $specsPath)

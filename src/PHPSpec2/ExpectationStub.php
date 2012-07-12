@@ -2,13 +2,13 @@
 
 namespace PHPSpec2;
 
-use Mockery\Expectation;
+use Mockery\CompositeExpectation;
 
 class ExpectationStub
 {
     private $expectation;
 
-    public function __construct(Expectation $expectation, array $arguments = array())
+    public function __construct(CompositeExpectation $expectation, array $arguments = array())
     {
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
         $this->shouldBeCalled();
