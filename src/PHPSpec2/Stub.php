@@ -77,13 +77,9 @@ class Stub
 
         // if there is a subject
         if (null !== $this->subject) {
-            // if subject is a mock - generate method call expectation
+            // if subject is a mock - return method expectation stub
             if ($this->subject instanceof MockInterface) {
-                $expectation = $this->subject->shouldReceive($method);
-                $expectation = call_user_func_array(array($expectation, 'with'), $arguments);
-                $expectation->atLeast(1);
-
-                return new static($expectation, $this->matchers);
+                return new ExpectationStub($this->subject->shouldReceive($method), $arguments);
             }
 
             // if subject is an instance with provided method - call it and stub the result
