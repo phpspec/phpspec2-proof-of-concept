@@ -8,7 +8,7 @@ class Stub implements SpecificationInterface
 {
     function described_with($stub)
     {
-        $stub->is_an_instance_of('PHPSpec2\Stub');
+        $stub->is_an_instance_of('PHPSpec2\Stub\ObjectStub');
     }
 
     function registers_matcher_if_it_has_aliases($stub, $matcher)

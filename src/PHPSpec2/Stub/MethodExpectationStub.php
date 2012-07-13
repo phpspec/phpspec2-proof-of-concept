@@ -1,10 +1,10 @@
 <?php
 
-namespace PHPSpec2;
+namespace PHPSpec2\Stub;
 
 use Mockery\CompositeExpectation;
 
-class ExpectationStub
+class MethodExpectationStub
 {
     private $expectation;
 

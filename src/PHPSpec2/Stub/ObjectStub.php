@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2;
+namespace PHPSpec2\Stub;
 
 use ReflectionClass;
 
@@ -15,7 +15,7 @@ use PHPSpec2\Exception\Stub\MatcherNotFoundException;
 use PHPSpec2\Exception\Stub\MethodNotFoundException;
 use PHPSpec2\Exception\Stub\PropertyNotFoundException;
 
-class Stub
+class ObjectStub
 {
     private $subject;
     private $matchers = array();
@@ -79,7 +79,10 @@ class Stub
         if (null !== $this->subject) {
             // if subject is a mock - return method expectation stub
             if ($this->subject instanceof MockInterface) {
-                return new ExpectationStub($this->subject->shouldReceive($method), $arguments);
+                return new MethodExpectationStub(
+                    $this->subject->shouldReceive($method),
+                    $arguments
+                );
             }
 
             // if subject is an instance with provided method - call it and stub the result
@@ -170,7 +173,7 @@ class Stub
 
         return array_map(
             function($argument) {
-                return $argument instanceof Stub ? $argument->getStubSubject() : $argument;
+                return $argument instanceof ObjectStub ? $argument->getStubSubject() : $argument;
             },
             (array) $arguments
         );

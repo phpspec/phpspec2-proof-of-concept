@@ -9,6 +9,8 @@ use ReflectionMethod;
 
 use Mockery;
 
+use PHPSpec2\Stub\ObjectStub;
+
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
 
@@ -147,7 +149,7 @@ class Tester
 
     private function createNewStub($subject = null)
     {
-        $stub = new Stub($subject);
+        $stub = new ObjectStub($subject);
         $stub->registerStubMatcher(new Matcher\ShouldReturnMatcher);
         $stub->registerStubMatcher(new Matcher\ShouldContainMatcher);
 
