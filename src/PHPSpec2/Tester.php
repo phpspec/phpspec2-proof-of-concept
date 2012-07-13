@@ -59,8 +59,8 @@ class Tester
         $instance = $example->getDeclaringClass()->newInstance();
         $stubs    = $this->getStubsForExample($instance, $example);
 
-        if (defined('BEHAT_ERROR_REPORTING')) {
-            $errorLevel = BEHAT_ERROR_REPORTING;
+        if (defined('PHPSPEC_ERROR_REPORTING')) {
+            $errorLevel = PHPSPEC_ERROR_REPORTING;
         } else {
             $errorLevel = E_ALL ^ E_WARNING;
         }
