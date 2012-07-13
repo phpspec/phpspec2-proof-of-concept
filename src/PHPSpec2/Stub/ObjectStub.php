@@ -146,7 +146,7 @@ class ObjectStub
         // if user calls matcher - find & run it or throw exception
         if (preg_match('/should[A-Z\_]/', $method)) {
             if (isset($this->matchers[$method])) {
-                return $this->matchers[$method]->match($this, $arguments);
+                return $this->matchers[$method]->match($this, $method, $arguments);
             }
 
             throw new MatcherNotFoundException($method);

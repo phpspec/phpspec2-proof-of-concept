@@ -33,8 +33,7 @@ class TestCommand extends Command
     {
         $locator = new Locator($input->getArgument('specs'));
         $tester  = new Tester(new EventDispatcher(), array(
-            new Matcher\ShouldReturnMatcher,
-            new Matcher\ShouldContainMatcher,
+            new Matcher\CountMatcher,
         ));
 
         foreach ($locator->getSpecifications() as $spec) {
