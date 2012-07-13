@@ -15,6 +15,7 @@ use PHPSpec2\Matcher;
 use PHPSpec2\StatisticsCollector;
 use PHPSpec2\Formatter;
 use PHPSpec2\Event\SuiteEvent;
+use PHPSpec2\Event\ExampleEvent;
 
 class TestCommand extends Command
 {
@@ -60,5 +61,7 @@ class TestCommand extends Command
         }
 
         $tester->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
+
+        return intval(ExampleEvent::PASSED !== $collector->getGlobalResult());
     }
 }
