@@ -26,6 +26,6 @@ class Stub implements SpecificationInterface
         $matcher->getAliases()->should_return(array());
 
         $stub->callOnStub('registerStubMatcher', array($matcher));
-        $stub->callOnStub('getStubMatchers')->should_contain(0);
+        $stub->callOnStub('getStubMatchers')->should_contain(4);
     }
 }
