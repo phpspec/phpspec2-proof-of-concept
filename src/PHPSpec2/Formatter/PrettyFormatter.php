@@ -4,9 +4,10 @@ namespace PHPSpec2\Formatter;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
+use PHPSpec2\Console\IO;
+use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Console\IO;
 
 use ReflectionClass;
 use ReflectionMethod;
@@ -18,7 +19,7 @@ class PrettyFormatter implements FormatterInterface
 
     public static function getSubscribedEvents()
     {
-        $events = array('beforeSpecification', 'afterExample');
+        $events = array('beforeSpecification', 'afterExample', 'afterSuite');
 
         return array_combine($events, $events);
     }
@@ -65,6 +66,32 @@ class PrettyFormatter implements FormatterInterface
                 ));
                 break;
         }
+    }
+
+    public function afterSuite(SuiteEvent $event)
+    {
+        $stats = $event->getStatisticsCollector();
+
+        $counts = array();
+        if ($count = count($stats->getPassedEvents())) {
+            $counts[] = sprintf('<passed>%d passed</passed>', $count);
+        }
+        if ($count = count($stats->getPendingEvents())) {
+            $counts[] = sprintf('<pending>%d pending</pending>', $count);
+        }
+        if ($count = count($stats->getFailedEvents())) {
+            $counts[] = sprintf('<failed>%d failed</failed>', $count);
+        }
+
+        $this->writeln(sprintf(
+            "\n%d examples (%s)", count($stats->getAllEvents()), implode(', ', $counts)
+        ));
+
+        $time    = $stats->getTotalTime();
+        $minutes = floor($time / 60);
+        $seconds = round($time - ($minutes * 60), 3);
+
+        $this->writeln($minutes . 'm' . $seconds . 's');
     }
 
     protected function formatSpecificationName(ReflectionClass $specification)

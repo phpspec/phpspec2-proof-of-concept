@@ -12,7 +12,9 @@ use PHPSpec2\Console\IO;
 use PHPSpec2\Locator;
 use PHPSpec2\Tester;
 use PHPSpec2\Matcher;
+use PHPSpec2\StatisticsCollector;
 use PHPSpec2\Formatter;
+use PHPSpec2\Event\SuiteEvent;
 
 class TestCommand extends Command
 {
@@ -44,12 +46,19 @@ class TestCommand extends Command
         ));
 
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter();
+        $formatter = new Formatter\PrettyFormatter;
         $formatter->setIO($io);
         $tester->getEventDispatcher()->addSubscriber($formatter);
+
+        // setup statistics collector
+        $collector = new StatisticsCollector;
+        $tester->getEventDispatcher()->addSubscriber($collector);
+        $tester->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
         foreach ($locator->getSpecifications() as $spec) {
             $tester->testSpecification($spec);
         }
+
+        $tester->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
     }
 }
