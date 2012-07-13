@@ -2,10 +2,13 @@
 
 namespace PHPSpec2\Formatter;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Console\IO;
 
+use ReflectionClass;
 use ReflectionMethod;
 use Exception;
 
@@ -28,7 +31,7 @@ class PrettyFormatter implements FormatterInterface
     public function beforeSpecification(SpecificationEvent $event)
     {
         $this->writeln(sprintf(
-            "\n%s", $event->getSpecification()->getName()
+            "\n%s", $this->formatSpecificationName($event->getSpecification())
         ));
     }
 
@@ -47,7 +50,7 @@ class PrettyFormatter implements FormatterInterface
                     $this->formatExampleName($event->getExample())
                 ));
                 $this->writeln(sprintf(
-                    "<pending>  %s</pending>",
+                    "<pending>%s</pending>",
                     $this->formatExampleException($event->getException(), false)
                 ));
                 break;
@@ -57,11 +60,16 @@ class PrettyFormatter implements FormatterInterface
                     $this->formatExampleName($event->getExample())
                 ));
                 $this->writeln(sprintf(
-                    "<failed>  %s</failed>",
-                    $this->formatExampleException($event->getException())
+                    "<failed>%s</failed>",
+                    $this->formatExampleException($event->getException(), $this->isVerbose())
                 ));
                 break;
         }
+    }
+
+    protected function formatSpecificationName(ReflectionClass $specification)
+    {
+        return str_replace('Spec\\', '', $specification->getName());
     }
 
     protected function formatExampleName(ReflectionMethod $example)
@@ -71,11 +79,27 @@ class PrettyFormatter implements FormatterInterface
 
     protected function formatExampleException(Exception $exception, $verbose = false)
     {
-        return get_class($exception).': '.$exception->getMessage();
+        if (!$verbose) {
+            return $this->padText(get_class($exception).': '.$exception->getMessage(), 2);
+        } else {
+            return $this->padText((string) $exception);
+        }
+    }
+
+    private function padText($text, $indent = 2)
+    {
+        return implode("\n", array_map(function($line) use($indent) {
+            return str_repeat(' ', $indent).$line;
+        }, explode("\n", $text)));
     }
 
     private function writeln($text)
     {
         $this->io->getOutput()->writeln($text);
+    }
+
+    private function isVerbose()
+    {
+        return $this->io->getOutput()->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE;
     }
 }
