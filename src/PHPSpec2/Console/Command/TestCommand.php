@@ -8,9 +8,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+use PHPSpec2\Console\IO;
 use PHPSpec2\Locator;
 use PHPSpec2\Tester;
 use PHPSpec2\Matcher;
+use PHPSpec2\Formatter;
 
 class TestCommand extends Command
 {
@@ -31,10 +33,20 @@ class TestCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // setup IO
+        $io = new IO($input, $output);
+
+        // setup specs locator and tester
         $locator = new Locator($input->getArgument('specs'));
         $tester  = new Tester(new EventDispatcher(), array(
+            new Matcher\EqualityMatcher,
             new Matcher\CountMatcher,
         ));
+
+        // setup formatter
+        $formatter = new Formatter\PrettyFormatter();
+        $formatter->setIO($io);
+        $tester->getEventDispatcher()->addSubscriber($formatter);
 
         foreach ($locator->getSpecifications() as $spec) {
             $tester->testSpecification($spec);
