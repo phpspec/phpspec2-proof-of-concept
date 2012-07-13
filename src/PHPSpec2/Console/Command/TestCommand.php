@@ -14,6 +14,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use ReflectionClass;
 
 use PHPSpec2\Tester;
+use PHPSpec2\Matcher;
 
 class TestCommand extends Command
 {
@@ -32,7 +33,10 @@ class TestCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $tester = new Tester(new EventDispatcher());
+        $tester = new Tester(new EventDispatcher(), array(
+            new Matcher\ShouldReturnMatcher,
+            new Matcher\ShouldContainMatcher,
+        ));
 
         $specsPath = realpath('specs');
 

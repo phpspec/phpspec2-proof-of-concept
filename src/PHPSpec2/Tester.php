@@ -21,10 +21,12 @@ class Tester
 {
     protected static $descriptionMethods = array('describedWith', 'described_with');
     private $eventDispatcher;
+    private $matchers = array();
 
-    public function __construct(EventDispatcherInterface $dispatcher)
+    public function __construct(EventDispatcherInterface $dispatcher, array $matchers = array())
     {
         $this->eventDispatcher = $dispatcher;
+        $this->matchers        = $matchers;
     }
 
     public function getEventDispatcher()
@@ -102,7 +104,7 @@ class Tester
      *
      * @throws ErrorException
      */
-    public function errorHandler($level, $message, $file, $line)
+    final public function errorHandler($level, $message, $file, $line)
     {
         if (0 !== error_reporting()) {
             throw new ErrorException($level, $message, $file, $line);
@@ -140,20 +142,11 @@ class Tester
     {
         foreach ($method->getParameters() as $parameter) {
             if (!isset($stubs[$parameter->getName()])) {
-                $stubs[$parameter->getName()] = $this->createNewStub();
+                $stubs[$parameter->getName()] = new ObjectStub(null, $this->matchers);
             }
         }
 
         return $stubs;
-    }
-
-    private function createNewStub($subject = null)
-    {
-        $stub = new ObjectStub($subject);
-        $stub->registerStubMatcher(new Matcher\ShouldReturnMatcher);
-        $stub->registerStubMatcher(new Matcher\ShouldContainMatcher);
-
-        return $stub;
     }
 
     private function isExampleTestable(ReflectionMethod $example)
