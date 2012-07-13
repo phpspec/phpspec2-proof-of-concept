@@ -6,13 +6,13 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 use ReflectionClass;
-use ReflectionMethod;
 
-use PHPSpec2\SpecificationInterface;
 use PHPSpec2\Tester;
 
 class TestCommand extends Command
@@ -32,6 +32,8 @@ class TestCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $tester = new Tester(new EventDispatcher());
+
         $specsPath = realpath('specs');
 
         $finder = Finder::create();
@@ -41,7 +43,6 @@ class TestCommand extends Command
             ->in($specsPath)
         ;
 
-        $tester = new Tester;
         foreach ($files as $file) {
             if (!$spec = $this->getSpecReflectionFromFile($file, $specsPath)) {
                 continue;

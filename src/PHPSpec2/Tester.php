@@ -9,17 +9,18 @@ use ReflectionMethod;
 
 use Mockery;
 
+use PHPSpec2\Event\SpecificationEvent;
+use PHPSpec2\Event\ExampleEvent;
+
+use PHPSpec2\Exception\Example\ErrorException;
+use PHPSpec2\Exception\Example\PendingException;
+
 class Tester
 {
-    private static $descriptionMethods = array('describedWith', 'described_with');
+    protected static $descriptionMethods = array('describedWith', 'described_with');
     private $eventDispatcher;
 
-    public function __construct(EventDispatcherInterface $dispatcher = null)
-    {
-        $this->eventDispatcher = $dispatcher;
-    }
-
-    public function setEventDispatcher(EventDispatcherInterface $dispatcher)
+    public function __construct(EventDispatcherInterface $dispatcher)
     {
         $this->eventDispatcher = $dispatcher;
     }
@@ -31,24 +32,82 @@ class Tester
 
     public function testSpecification(ReflectionClass $spec)
     {
+        $this->eventDispatcher->dispatch('beforeSpecification',
+            new SpecificationEvent($spec)
+        );
+
+        $result = 0;
         foreach ($spec->getMethods(ReflectionMethod::IS_PUBLIC) as $example) {
             if ($this->isExampleTestable($example)) {
-                $this->testExample($spec, $example);
+                $result = max($result, $this->testExample($example));
             }
         }
+
+        $this->eventDispatcher->dispatch('afterSpecification',
+            new SpecificationEvent($spec, $result)
+        );
+
+        return $result;
     }
 
-    public function testExample(ReflectionClass $spec, ReflectionMethod $example)
+    public function testExample(ReflectionMethod $example)
     {
-        $instance = $spec->newInstance();
+        $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
+
+        $instance = $example->getDeclaringClass()->newInstance();
         $stubs    = $this->getStubsForExample($instance, $example);
+
+        if (defined('BEHAT_ERROR_REPORTING')) {
+            $errorLevel = BEHAT_ERROR_REPORTING;
+        } else {
+            $errorLevel = E_ALL ^ E_WARNING;
+        }
+        $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
         try {
             $this->callMethodWithStubs($instance, $example, $stubs);
             Mockery::close();
+
+            $event = new ExampleEvent($example, ExampleEvent::PASSED);
+        } catch (PendingException $e) {
+            $event = new ExampleEvent($example, ExampleEvent::PENDING, $e);
         } catch (\Exception $e) {
-            throw $e;
+            $event = new ExampleEvent($example, ExampleEvent::FAILED, $e);
         }
+
+        if (null !== $oldHandler) {
+            set_error_handler($oldHandler);
+        }
+
+        $this->eventDispatcher->dispatch('afterExample', $event);
+
+        return $event->getResult();
+    }
+
+    /**
+     * Custom error handler.
+     *
+     * This method used as custom error handler when step is running.
+     *
+     * @see set_error_handler()
+     *
+     * @param integer $level
+     * @param string  $message
+     * @param string  $file
+     * @param integer $line
+     *
+     * @return Boolean
+     *
+     * @throws ErrorException
+     */
+    public function errorHandler($level, $message, $file, $line)
+    {
+        if (0 !== error_reporting()) {
+            throw new ErrorException($level, $message, $file, $line);
+        }
+
+        // error reporting turned off or more likely suppressed with @
+        return false;
     }
 
     protected function getStubsForExample(SpecificationInterface $instance, ReflectionMethod $example)
