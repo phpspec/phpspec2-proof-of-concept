@@ -107,7 +107,7 @@ class PrettyFormatter implements FormatterInterface
     protected function formatExampleException(Exception $exception, $verbose = false)
     {
         if (!$verbose) {
-            return $this->padText(get_class($exception).': '.$exception->getMessage(), 2);
+            return $this->padText($exception->getMessage(), 2);
         } else {
             return $this->padText((string) $exception);
         }
