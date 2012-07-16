@@ -69,6 +69,7 @@ class ObjectStub
         }
 
         $this->subject = Mockery::mock($classOrInterface);
+        $this->subject->shouldIgnoreMissing();
     }
 
     public function callOnStub($method, array $arguments = array())
