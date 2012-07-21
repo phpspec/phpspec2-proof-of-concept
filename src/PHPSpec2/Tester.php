@@ -59,7 +59,8 @@ class Tester
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
 
         $instance = $example->getDeclaringClass()->newInstance();
-        $stubs    = $this->getStubsForExample($instance, $example);
+        $instance->object = new ObjectStub(null, $this->matchers);
+        $stubs = $this->getStubsForExample($instance, $example);
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;

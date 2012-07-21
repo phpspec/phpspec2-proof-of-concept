@@ -42,6 +42,7 @@ class TestCommand extends Command
         $matchers = new Matcher\MatchersCollection();
         $matchers->add(new Matcher\EqualityMatcher);
         $matchers->add(new Matcher\CountMatcher);
+        $matchers->add(new Matcher\BooleanMatcher);
 
         // setup specs locator and tester
         $locator = new Locator($input->getArgument('specs'));
