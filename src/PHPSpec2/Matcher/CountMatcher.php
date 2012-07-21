@@ -8,10 +8,9 @@ use Countable;
 
 class CountMatcher extends BasicMatcher
 {
-    public function supports($subject, $keyword, array $parameters)
+    public function supports($subject, $keyword)
     {
-        return in_array($keyword, array('contain', 'have'))
-            && (count($parameters) > 0 && count($parameters) < 3);
+        return in_array($keyword, array('contain', 'have'));
     }
 
     protected function matches($subject, array $parameters)

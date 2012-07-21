@@ -5,15 +5,14 @@ namespace PHPSpec2\Matcher;
 interface MatcherInterface
 {
     /**
-     * Checks if matcher supports provided subject, name and parameters.
+     * Checks if matcher supports provided subject and matcher name.
      *
      * @param mixed  $subject
      * @param string $name
-     * @param array  $parameters
      *
      * @return Boolean
      */
-    public function supports($subject, $name, array $parameters);
+    public function supports($subject, $name);
 
     /**
      * Evaluates positive match.

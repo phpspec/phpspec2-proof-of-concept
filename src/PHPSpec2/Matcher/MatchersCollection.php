@@ -13,19 +13,19 @@ class MatchersCollection
         $this->matchers[] = $matcher;
     }
 
-    public function getAll()
-    {
-        return $this->matchers;
-    }
-
-    public function findFirst($subject, $keyword, array $arguments)
+    public function find($subject, $keyword)
     {
         foreach ($this->matchers as $matcher) {
-            if ($matcher->supports($subject, $keyword, $arguments)) {
+            if ($matcher->supports($subject, $keyword)) {
                 return $matcher;
             }
         }
 
         throw new MatcherNotFoundException($keyword);
+    }
+
+    public function getAll()
+    {
+        return $this->matchers;
     }
 }

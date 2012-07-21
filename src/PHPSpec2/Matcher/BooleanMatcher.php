@@ -6,11 +6,11 @@ use PHPSpec2\Exception\Example\ExampleException;
 
 class BooleanMatcher extends BasicMatcher
 {
-    public function supports($subject, $keyword, array $parameters)
+    public function supports($subject, $keyword)
     {
         return in_array($keyword, array('be'))
             && is_object($subject)
-            && 1 == count($parameters);
+        ;
     }
 
     protected function matches($subject, array $parameters)

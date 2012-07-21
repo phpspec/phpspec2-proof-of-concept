@@ -19,7 +19,7 @@ class Verification
 
     public function __call($name, array $arguments = array())
     {
-        $matcher = $this->matchers->findFirst($this->subject, $name, $arguments);
+        $matcher = $this->matchers->find($this->subject, $name);
 
         if ($this->positive) {
             return $matcher->positiveMatch($this->subject, $arguments);

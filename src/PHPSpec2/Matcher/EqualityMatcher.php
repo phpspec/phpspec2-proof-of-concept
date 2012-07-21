@@ -6,10 +6,9 @@ use PHPSpec2\Exception\Example\ExampleException;
 
 class EqualityMatcher extends BasicMatcher
 {
-    public function supports($subject, $keyword, array $parameters)
+    public function supports($subject, $keyword)
     {
-        return in_array($keyword, array('eql', 'equal', 'be_equal', 'equal_to', 'be_equal_to'))
-            && 1 == count($parameters);
+        return in_array($keyword, array('eql', 'equal', 'be_equal', 'equal_to', 'be_equal_to'));
     }
 
     protected function matches($subject, array $parameters)
