@@ -4,38 +4,35 @@ namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Example\ExampleException;
 
-class BooleanMatcher implements MatcherInterface
+class BooleanMatcher extends BasicMatcher
 {
-    public function supports($subject, $keyword, array $arguments)
+    public function supports($subject, $keyword, array $parameters)
     {
         return in_array($keyword, array('be'))
             && is_object($subject)
-            && 1 == count($arguments);
+            && 1 == count($parameters);
     }
 
-    public function positive($subject, array $arguments)
+    protected function matches($subject, array $parameters)
     {
-        $checker = 'is'.ucfirst($arguments[0]);
-
-        if ($subject->$checker()) {
-            throw new ExampleException(sprintf(
-                '%s expected to be %s, but it is not',
-                gettype($subject),
-                $arguments[0]
-            ));
-        }
+        return (bool) call_user_func(array($subject, 'is'.ucfirst($parameters[0])));
     }
 
-    public function negative($subject, array $arguments)
+    protected function getFailureException($subject, array $parameters)
     {
-        $checker = 'is'.ucfirst($arguments[0]);
+        return new ExampleException(sprintf(
+            '%s expected to be %s, but it is not',
+            gettype($subject),
+            $parameters[0]
+        ));
+    }
 
-        if ($subject->$checker()) {
-            throw new ExampleException(sprintf(
-                '%s not expected to be %s, but it is',
-                gettype($subject),
-                $arguments[0]
-            ));
-        }
+    protected function getNegativeFailureException($subject, array $parameters)
+    {
+        return new ExampleException(sprintf(
+            '%s not expected to be %s, but it is',
+            gettype($subject),
+            $parameters[0]
+        ));
     }
 }

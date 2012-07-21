@@ -6,44 +6,40 @@ use PHPSpec2\Exception\Example\ExampleException;
 
 use Countable;
 
-class CountMatcher implements MatcherInterface
+class CountMatcher extends BasicMatcher
 {
-    public function supports($subject, $keyword, array $arguments)
+    public function supports($subject, $keyword, array $parameters)
     {
         return in_array($keyword, array('contain', 'have'))
-            && (count($arguments) > 0 && count($arguments) < 3);
+            && (count($parameters) > 0 && count($parameters) < 3);
     }
 
-    public function positive($subject, array $arguments)
+    protected function matches($subject, array $parameters)
     {
-        if (isset($arguments[1])) {
-            $getter  = 'get'.ucfirst($arguments[1]);
+        if (isset($parameters[1])) {
+            $getter  = 'get'.ucfirst($parameters[1]);
             $subject = $subject->$getter();
         }
 
-        if ($arguments[0] !== count($subject)) {
-            throw new ExampleException(sprintf(
-                'Expected to have %d items in %s, got %d',
-                $arguments[0],
-                gettype($subject),
-                count($subject)
-            ));
-        }
+        return intval($parameters[0]) == count($subject);
     }
 
-    public function negative($subject, array $arguments)
+    protected function getFailureException($subject, array $parameters)
     {
-        if (isset($arguments[1])) {
-            $getter  = 'get'.ucfirst($arguments[1]);
-            $subject = $subject->$getter();
-        }
+        return new ExampleException(sprintf(
+            'Expected to have %d items in %s, got %d',
+            $parameters[0],
+            gettype($subject),
+            count($subject)
+        ));
+    }
 
-        if ($arguments[0] === count($subject->getsubjectSubject())) {
-            throw new ExampleException(sprintf(
-                'Expected to not have %d items in %s, got',
-                $arguments[0],
-                count($subject->getsubjectSubject())
-            ));
-        }
+    protected function getNegativeFailureException($subject, array $parameters)
+    {
+        return new ExampleException(sprintf(
+            'Expected to not have %d items in %s, got',
+            $parameters[0],
+            count($subject)
+        ));
     }
 }

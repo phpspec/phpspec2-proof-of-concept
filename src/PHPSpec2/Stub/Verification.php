@@ -22,9 +22,9 @@ class Verification
         $matcher = $this->matchers->findFirst($this->subject, $name, $arguments);
 
         if ($this->positive) {
-            return $matcher->positive($this->subject, $arguments);
+            return $matcher->positiveMatch($this->subject, $arguments);
         }
 
-        return $matcher->negative($this->subject, $arguments);
+        return $matcher->negativeMatch($this->subject, $arguments);
     }
 }
