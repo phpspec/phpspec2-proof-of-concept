@@ -10,6 +10,7 @@ use ReflectionMethod;
 use Mockery;
 
 use PHPSpec2\Stub\ObjectStub;
+use PHPSpec2\Matcher\MatchersCollection;
 
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
@@ -19,11 +20,10 @@ use PHPSpec2\Exception\Example\PendingException;
 
 class Tester
 {
-    protected static $descriptionMethods = array('describedWith', 'described_with');
     private $eventDispatcher;
     private $matchers = array();
 
-    public function __construct(EventDispatcherInterface $dispatcher, array $matchers = array())
+    public function __construct(EventDispatcherInterface $dispatcher, MatchersCollection $matchers)
     {
         $this->eventDispatcher = $dispatcher;
         $this->matchers        = $matchers;
@@ -117,12 +117,10 @@ class Tester
     protected function getStubsForExample(SpecificationInterface $instance, ReflectionMethod $example)
     {
         $stubs = array();
-        foreach (self::$descriptionMethods as $name) {
-            if (method_exists($instance, $name)) {
-                $descriptor = new ReflectionMethod($instance, $name);
-                $stubs = $this->mergeStubsFromMethod($stubs, $descriptor);
-                $this->callMethodWithStubs($instance, $descriptor, $stubs);
-            }
+        if (method_exists($instance, 'described_with')) {
+            $descriptor = new ReflectionMethod($instance, 'described_with');
+            $stubs = $this->mergeStubsFromMethod($stubs, $descriptor);
+            $this->callMethodWithStubs($instance, $descriptor, $stubs);
         }
 
         return $this->mergeStubsFromMethod($stubs, $example);
@@ -151,6 +149,6 @@ class Tester
 
     private function isExampleTestable(ReflectionMethod $example)
     {
-        return !in_array($example->getName(), self::$descriptionMethods);
+        return 'described_with' !== $example->getName();
     }
 }

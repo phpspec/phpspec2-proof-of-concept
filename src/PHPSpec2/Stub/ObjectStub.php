@@ -3,40 +3,31 @@
 namespace PHPSpec2\Stub;
 
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 use Mockery;
 use Mockery\MockInterface;
 
-use PHPSpec2\Matcher\MatcherInterface;
+use PHPSpec2\Matcher\MatchersCollection;
 
 use PHPSpec2\Exception\Stub\StubException;
 use PHPSpec2\Exception\Stub\ClassDoesNotExistsException;
-use PHPSpec2\Exception\Stub\MatcherNotFoundException;
 use PHPSpec2\Exception\Stub\MethodNotFoundException;
 use PHPSpec2\Exception\Stub\PropertyNotFoundException;
 
 class ObjectStub
 {
     private $subject;
-    private $matchers = array();
+    private $matchers;
 
-    public function __construct($subject = null, array $matchers = array())
+    public function __construct($subject = null, MatchersCollection $matchers)
     {
-        $this->subject = $subject;
-        $this->setStubMatchers($matchers);
+        $this->subject  = $subject;
+        $this->matchers = $matchers;
     }
 
     public function is_an_instance_of($class, array $constructorArguments = array())
-    {
-        $this->isAnInstanceOf($class, $constructorArguments);
-    }
-
-    public function is_a_mock_of($classOrInterface)
-    {
-        $this->isAMockOf($classOrInterface);
-    }
-
-    public function isAnInstanceOf($class, array $constructorArguments = array())
     {
         $constructorArguments = $this->resolveArgumentsStubs($constructorArguments);
 
@@ -55,7 +46,7 @@ class ObjectStub
         $this->subject = $reflection->newInstanceArgs($constructorArguments);
     }
 
-    public function isAMockOf($classOrInterface)
+    public function is_a_mock_of($classOrInterface)
     {
         if (!is_string($classOrInterface)) {
             throw new StubException(sprintf(
@@ -70,6 +61,16 @@ class ObjectStub
 
         $this->subject = Mockery::mock($classOrInterface);
         $this->subject->shouldIgnoreMissing();
+    }
+
+    public function should()
+    {
+        return new Verification($this->subject, $this->matchers, true);
+    }
+
+    public function should_not()
+    {
+        return new Verification($this->subject, $this->matchers, false);
     }
 
     public function callOnStub($method, array $arguments = array())
@@ -87,7 +88,7 @@ class ObjectStub
             }
 
             // if subject is an instance with provided method - call it and stub the result
-            if (method_exists($this->subject, $method)) {
+            if ($this->isSubjectMethodAccessible($method)) {
                 $returnValue = call_user_func_array(array($this->subject, $method), $arguments);
 
                 return new static($returnValue, $this->matchers);
@@ -101,7 +102,7 @@ class ObjectStub
     {
         $value = $this->resolveArgumentsStubs($value);
 
-        if (property_exists($this->subject, $property)) {
+        if ($this->isSubjectPropertyAccessible($property)) {
             return $this->subject->$property = $value;
         }
 
@@ -110,7 +111,7 @@ class ObjectStub
 
     public function getFromStub($property)
     {
-        if (property_exists($this->subject, $property)) {
+        if ($this->isSubjectPropertyAccessible($property)) {
             return new static($this->subject->$property, $this->matchers);
         }
 
@@ -122,50 +123,38 @@ class ObjectStub
         return $this->subject;
     }
 
-    public function setStubMatchers(array $matchers = array())
-    {
-        $this->matchers = array();
-        foreach ($matchers as $matcher) {
-            $this->registerStubMatcher($matcher);
-        }
-    }
-
-    public function registerStubMatcher(MatcherInterface $matcher)
-    {
-        foreach ($matcher->getAliases() as $alias) {
-            $this->matchers[$alias] = $matcher;
-        }
-    }
-
-    public function getStubMatchers()
-    {
-        return $this->matchers;
-    }
-
     public function __call($method, array $arguments = array())
     {
-        // if user calls matcher - find & run it or throw exception
-        if (preg_match('/should[A-Z\_]/', $method)) {
-            if (isset($this->matchers[$method])) {
-                $arguments = $this->resolveArgumentsStubs($arguments);
-
-                return $this->matchers[$method]->match($this, $method, $arguments);
+        // if user calls function with should_ prefix - call matcher
+        if (preg_match('/^(should(?:_not|)?)_(.+)$/', $method, $matches)) {
+            $matcherName = $matches[2];
+            if ('should' === $matches[1]) {
+                return call_user_func_array(array($this->should(), $matcherName), $arguments);
+            } else {
+                return call_user_func_array(array($this->should_not(), $matcherName), $arguments);
             }
-
-            throw new MatcherNotFoundException($method);
         }
 
         return $this->callOnStub($method, $arguments);
     }
 
+    public function __get($property)
+    {
+        if (!$this->isSubjectPropertyAccessible($property)) {
+            foreach (array('get', 'is') as $prefix) {
+                $getter = sprintf('%s%s', $prefix, ucfirst($property));
+                if ($this->isSubjectMethodAccessible($getter)) {
+                    return $this->callOnStub($getter);
+                }
+            }
+        }
+
+        return $this->getFromStub($property);
+    }
+
     public function __set($property, $value = null)
     {
         return $this->setToStub($property, $value);
-    }
-
-    public function __get($property)
-    {
-        return $this->getFromStub($property);
     }
 
     protected function resolveArgumentsStubs($arguments)
@@ -180,5 +169,27 @@ class ObjectStub
             },
             (array) $arguments
         );
+    }
+
+    private function isSubjectMethodAccessible($method)
+    {
+        if (!method_exists($this->subject, $method)) {
+            return false;
+        }
+
+        $methodReflection = new ReflectionMethod($this->subject, $method);
+
+        return $methodReflection->isPublic();
+    }
+
+    private function isSubjectPropertyAccessible($property)
+    {
+        if (!property_exists($this->subject, $property)) {
+            return false;
+        }
+
+        $propertyReflection = new ReflectionProperty($this->subject, $property);
+
+        return $propertyReflection->isPublic();
     }
 }

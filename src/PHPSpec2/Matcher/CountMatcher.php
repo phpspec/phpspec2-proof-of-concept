@@ -2,40 +2,47 @@
 
 namespace PHPSpec2\Matcher;
 
-use PHPSpec2\Stub\ObjectStub;
 use PHPSpec2\Exception\Example\ExampleException;
 
-class CountMatcher extends BipolarMatcher
+use Countable;
+
+class CountMatcher implements MatcherInterface
 {
-    public function getPositiveAliases()
+    public function supports($subject, $keyword, array $arguments)
     {
-        return array('should_contain', 'shouldContain');
+        return in_array($keyword, array('contain', 'have'))
+            && (count($arguments) > 0 && count($arguments) < 3);
     }
 
-    public function getNegativeAliases()
+    public function positive($subject, array $arguments)
     {
-        return array('snould_not_contain', 'shouldNotContain');
-    }
+        if (isset($arguments[1])) {
+            $getter  = 'get'.ucfirst($arguments[1]);
+            $subject = $subject->$getter();
+        }
 
-    public function positiveMatch(ObjectStub $stub, array $arguments)
-    {
-        if ($arguments[0] !== count($stub->getStubSubject())) {
+        if ($arguments[0] !== count($subject)) {
             throw new ExampleException(sprintf(
                 'Expected to have %d items in %s, got %d',
                 $arguments[0],
-                gettype($stub->getStubSubject()),
-                count($stub->getStubSubject())
+                gettype($subject),
+                count($subject)
             ));
         }
     }
 
-    public function negativeMatch(ObjectStub $stub, array $arguments)
+    public function negative($subject, array $arguments)
     {
-        if ($arguments[0] === count($stub->getStubSubject())) {
+        if (isset($arguments[1])) {
+            $getter  = 'get'.ucfirst($arguments[1]);
+            $subject = $subject->$getter();
+        }
+
+        if ($arguments[0] === count($subject->getsubjectSubject())) {
             throw new ExampleException(sprintf(
                 'Expected to not have %d items in %s, got',
                 $arguments[0],
-                count($stub->getStubSubject())
+                count($subject->getsubjectSubject())
             ));
         }
     }

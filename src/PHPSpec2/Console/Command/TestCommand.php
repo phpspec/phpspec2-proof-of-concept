@@ -39,12 +39,13 @@ class TestCommand extends Command
         // setup IO
         $io = new IO($input, $output);
 
+        $matchers = new Matcher\MatchersCollection();
+        $matchers->add(new Matcher\EqualityMatcher);
+        $matchers->add(new Matcher\CountMatcher);
+
         // setup specs locator and tester
         $locator = new Locator($input->getArgument('specs'));
-        $tester  = new Tester(new EventDispatcher(), array(
-            new Matcher\EqualityMatcher,
-            new Matcher\CountMatcher,
-        ));
+        $tester  = new Tester(new EventDispatcher(), $matchers);
 
         // setup formatter
         $formatter = new Formatter\PrettyFormatter;
