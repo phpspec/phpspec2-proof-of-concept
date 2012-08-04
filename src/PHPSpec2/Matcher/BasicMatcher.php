@@ -6,7 +6,7 @@ abstract class BasicMatcher implements MatcherInterface
 {
     final public function positiveMatch($name, $subject, array $arguments)
     {
-        if (!$this->matches($subject, $arguments)) {
+        if (false === $this->matches($subject, $arguments)) {
             throw $this->getFailureException($name, $subject, $arguments);
         }
 
@@ -15,7 +15,7 @@ abstract class BasicMatcher implements MatcherInterface
 
     final public function negativeMatch($name, $subject, array $arguments)
     {
-        if ($this->matches($subject, $arguments)) {
+        if (true === $this->matches($subject, $arguments)) {
             throw $this->getNegativeFailureException($name, $subject, $arguments);
         }
 
