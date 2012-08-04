@@ -27,7 +27,7 @@ class TestCommand extends Command
         parent::__construct('test');
 
         $this->setDefinition(array(
-            new InputArgument('specs', InputArgument::OPTIONAL, 'Specs to run')
+            new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run')
         ));
     }
 
@@ -45,7 +45,7 @@ class TestCommand extends Command
         $matchers->add(new Matcher\BooleanMatcher);
 
         // setup specs locator and tester
-        $locator = new Locator($input->getArgument('specs'));
+        $locator = new Locator($input->getArgument('spec'));
         $tester  = new Tester(new EventDispatcher(), $matchers);
 
         // setup formatter
