@@ -13,10 +13,10 @@ class MatchersCollection
         $this->matchers[] = $matcher;
     }
 
-    public function find($subject, $keyword)
+    public function find($keyword, $subject, array $arguments)
     {
         foreach ($this->matchers as $matcher) {
-            if ($matcher->supports($subject, $keyword)) {
+            if ($matcher->supports($keyword, $subject, $arguments)) {
                 return $matcher;
             }
         }

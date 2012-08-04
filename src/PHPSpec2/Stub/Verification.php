@@ -19,12 +19,12 @@ class Verification
 
     public function __call($name, array $arguments = array())
     {
-        $matcher = $this->matchers->find($this->subject, $name);
+        $matcher = $this->matchers->find($name, $this->subject, $arguments);
 
         if ($this->positive) {
-            return $matcher->positiveMatch($this->subject, $arguments);
+            return $matcher->positiveMatch($name, $this->subject, $arguments);
         }
 
-        return $matcher->negativeMatch($this->subject, $arguments);
+        return $matcher->negativeMatch($name, $this->subject, $arguments);
     }
 }
