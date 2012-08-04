@@ -12,7 +12,7 @@ class Locator
     private $path;
     private $root;
 
-    public function __construct($specsPath = null, $specsRoot = 'specs')
+    public function __construct($specsPath = null, $specsRoot = 'spec')
     {
         $specsPath = null !== $specsPath ? realpath($specsPath) : null;
         $specsRoot = realpath($specsRoot);

@@ -43,24 +43,28 @@ class ExampleSpec implements SpecificationInterface
     function returns_correct_string($example)
     {
         $this->object->getString()->should()->be_equal('hello, world');
-        $this->object->getString()->should_eql('hello, world');
+        $this->object->getString()->should_equal('hello, world');
 
         $this->object->string->should_be_equal('hello, world');
     }
 
     function has_correct_items_count($example)
     {
-        $this->object->getItems()->should()->have(3);
-        $this->object->getItems()->should_have(3);
+        $this->object->getItems()->should()->contain(3);
         $this->object->getItems()->should_contain(3);
 
-        $this->object->items->should_have(3);
+        $this->object->items->should_contain(3);
 
-        $this->object->should_have(3, 'items');
+        $this->object->should_contain(3, 'items');
     }
 
     function should_not_be_full_yet($example)
     {
         $this->object->should_not_be('full');
+    }
+
+    function should_have_item($example)
+    {
+        $this->object->should_have('hello, world');
     }
 }
