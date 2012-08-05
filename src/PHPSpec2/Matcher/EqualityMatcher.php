@@ -9,7 +9,7 @@ class EqualityMatcher extends BasicMatcher
 {
     public function supports($name, $subject, array $arguments)
     {
-        return in_array($name, array('equal', 'be_equal'));
+        return in_array($name, array('equal', 'be_equal', 'be_equal_to'));
     }
 
     protected function matches($subject, array $arguments)
