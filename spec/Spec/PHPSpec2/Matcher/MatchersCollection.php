@@ -2,10 +2,10 @@
 
 namespace Spec\PHPSpec2\Matcher;
 
-use PHPSpec2\SpecificationInterface;
+use PHPSpec2\Specification;
 use PHPSpec2\Exception\Example\MatcherNotFoundException;
 
-class MatchersCollection implements SpecificationInterface
+class MatchersCollection implements Specification
 {
     function described_with($matcher)
     {

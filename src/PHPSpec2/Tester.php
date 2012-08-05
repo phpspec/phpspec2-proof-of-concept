@@ -115,7 +115,7 @@ class Tester
         return false;
     }
 
-    protected function getStubsForExample(SpecificationInterface $instance, ReflectionMethod $example)
+    protected function getStubsForExample(Specification $instance, ReflectionMethod $example)
     {
         $stubs = array();
         if (method_exists($instance, 'described_with')) {
@@ -127,7 +127,7 @@ class Tester
         return $this->mergeStubsFromMethod($stubs, $example);
     }
 
-    protected function callMethodWithStubs(SpecificationInterface $instance, ReflectionMethod $method, array $stubs)
+    protected function callMethodWithStubs(Specification $instance, ReflectionMethod $method, array $stubs)
     {
         $arguments = array();
         foreach ($method->getParameters() as $parameter) {

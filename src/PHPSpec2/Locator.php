@@ -56,7 +56,7 @@ class Locator
         }
 
         $reflection = new ReflectionClass($classname);
-        if (!$reflection->implementsInterface('PHPSpec2\\SpecificationInterface')) {
+        if (!$reflection->implementsInterface('PHPSpec2\\Specification')) {
             return;
         }
 
