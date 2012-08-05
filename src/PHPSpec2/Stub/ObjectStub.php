@@ -85,6 +85,7 @@ class ObjectStub
             if ($this->subject instanceof MockInterface) {
                 return new MethodExpectationStub(
                     $this->subject->shouldReceive($method),
+                    $this->resolver,
                     $arguments
                 );
             }

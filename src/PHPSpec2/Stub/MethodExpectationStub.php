@@ -7,10 +7,12 @@ use Mockery\CompositeExpectation;
 class MethodExpectationStub
 {
     private $expectation;
+    private $resolver;
 
-    public function __construct(CompositeExpectation $expectation, array $arguments = array())
+    public function __construct(CompositeExpectation $expectation, ArgumentsResolver $resolver, array $arguments = array())
     {
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
+        $this->resolver = $resolver;
         $this->shouldBeCalled();
         $this->shouldReturn(null);
     }
@@ -37,7 +39,7 @@ class MethodExpectationStub
 
     public function shouldReturn($value = null)
     {
-        $this->expectation->andReturn($value);
+        return call_user_func_array(array($this->expectation, 'andReturn'), $this->resolver->resolve($value));
     }
 
     public function shouldBeCalled()
