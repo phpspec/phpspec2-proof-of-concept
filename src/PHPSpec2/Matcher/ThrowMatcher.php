@@ -11,7 +11,7 @@ class ThrowMatcher implements MatcherInterface
 
     public function positiveMatch($name, $subject, array $arguments)
     {
-        return new Verification\PositiveThrowVerification($subject, $arguments[0]);
+        return new Verification\PositiveThrowVerification($subject, $arguments);
     }
 
     public function negativeMatch($name, $subject, array $arguments)

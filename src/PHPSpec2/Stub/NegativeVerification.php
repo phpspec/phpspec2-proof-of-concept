@@ -4,26 +4,24 @@ namespace PHPSpec2\Stub;
 
 use PHPSpec2\Matcher\MatchersCollection;
 
-class Verification
+class NegativeVerification
 {
     private $subject;
     private $matchers;
-    private $positive;
+    private $resolver;
 
-    public function __construct($subject, MatchersCollection $matchers, $positive)
+    public function __construct($subject, MatchersCollection $matchers, ArgumentsResolver $resolver)
     {
         $this->subject  = $subject;
         $this->matchers = $matchers;
-        $this->positive = $positive;
+        $this->resolver = $resolver;
     }
 
     public function __call($name, array $arguments = array())
     {
-        $matcher = $this->matchers->find($name, $this->subject, $arguments);
+        $arguments = $this->resolver->resolve($arguments);
 
-        if ($this->positive) {
-            return $matcher->positiveMatch($name, $this->subject, $arguments);
-        }
+        $matcher = $this->matchers->find($name, $this->subject, $arguments);
 
         return $matcher->negativeMatch($name, $this->subject, $arguments);
     }

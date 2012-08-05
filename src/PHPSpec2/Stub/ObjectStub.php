@@ -20,16 +20,18 @@ class ObjectStub
 {
     private $subject;
     private $matchers;
+    private $resolver;
 
-    public function __construct($subject = null, MatchersCollection $matchers)
+    public function __construct($subject = null, MatchersCollection $matchers, ArgumentsResolver $resolver = null)
     {
         $this->subject  = $subject;
         $this->matchers = $matchers;
+        $this->resolver = $resolver ?: new ArgumentsResolver();
     }
 
     public function is_an_instance_of($class, array $constructorArguments = array())
     {
-        $constructorArguments = $this->resolveArgumentsStubs($constructorArguments);
+        $constructorArguments = $this->resolver->resolve($constructorArguments);
 
         if (!is_string($class)) {
             throw new StubException(sprintf(
@@ -65,17 +67,17 @@ class ObjectStub
 
     public function should()
     {
-        return new Verification($this->subject, $this->matchers, true);
+        return new PositiveVerification($this->subject, $this->matchers, $this->resolver);
     }
 
     public function should_not()
     {
-        return new Verification($this->subject, $this->matchers, false);
+        return new NegativeVerification($this->subject, $this->matchers, $this->resolver);
     }
 
     public function callOnStub($method, array $arguments = array())
     {
-        $arguments = $this->resolveArgumentsStubs($arguments);
+        $arguments = $this->resolver->resolve($arguments);
 
         // if there is a subject
         if (null !== $this->subject) {
@@ -100,7 +102,7 @@ class ObjectStub
 
     public function setToStub($property, $value = null)
     {
-        $value = $this->resolveArgumentsStubs($value);
+        $value = $this->resolver->resolve($value);
 
         if ($this->isSubjectPropertyAccessible($property)) {
             return $this->subject->$property = $value;
@@ -155,20 +157,6 @@ class ObjectStub
     public function __set($property, $value = null)
     {
         return $this->setToStub($property, $value);
-    }
-
-    protected function resolveArgumentsStubs($arguments)
-    {
-        if (null === $arguments) {
-            return array();
-        }
-
-        return array_map(
-            function($argument) {
-                return $argument instanceof ObjectStub ? $argument->getStubSubject() : $argument;
-            },
-            (array) $arguments
-        );
     }
 
     private function isSubjectMethodAccessible($method)
