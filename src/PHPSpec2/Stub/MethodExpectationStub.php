@@ -12,47 +12,35 @@ class MethodExpectationStub
     public function __construct(CompositeExpectation $expectation, ArgumentsResolver $resolver, array $arguments = array())
     {
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
-        $this->resolver = $resolver;
-        $this->shouldBeCalled();
-        $this->shouldReturn(null);
+        $this->resolver    = $resolver;
+
+        $this->should_be_called();
+        $this->should_not_return();
+    }
+
+    public function should_not_return()
+    {
+        return $this->should_return(null);
     }
 
     public function should_return($value = null)
     {
-        $this->shouldReturn($value);
+        return call_user_func_array(
+            array($this->expectation, 'andReturn'), $this->resolver->resolve($value)
+        );
     }
 
     public function should_be_called()
     {
-        $this->shouldBeCalled();
+        tthis->expectation->atLeast(1);
     }
 
     public function should_not_be_called()
     {
-        $this->shouldNotBeCalled();
-    }
-
-    public function should_throw($exception, $message = '')
-    {
-        $this->shouldThrow($exception, $message);
-    }
-
-    public function shouldReturn($value = null)
-    {
-        return call_user_func_array(array($this->expectation, 'andReturn'), $this->resolver->resolve($value));
-    }
-
-    public function shouldBeCalled()
-    {
-        $this->expectation->atLeast(1);
-    }
-
-    public function shouldNotBeCalled()
-    {
         $this->expectation->never();
     }
 
-    public function shouldThrow($exception, $message = '')
+    public function should_throw($exception, $message = '')
     {
         $this->expectation->andThrow($exception, $message);
     }
