@@ -12,7 +12,7 @@ class MockerFactory implements Specification
         $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
 
         $this->object->mock('PHPSpec2\Specification')
-            ->should_return_an_instance_of('PHPSpec2\Stub\Mocker\MockeryMock');
+            ->should_return_an_instance_of('PHPSpec2\Stub\Mocker\MockeryMockProxy');
     }
 
     function can_mock_method_on_created_mock($resolver)
@@ -25,25 +25,25 @@ class MockerFactory implements Specification
             ->should_return_an_instance_of('PHPSpec2\Stub\MethodExpectationStub');
     }
 
-    function can_be_created_with_an_alternative_mocker($mocker, $mock)
+    function can_be_created_with_an_alternative_mocker($mocker, $proxy)
     {
-        $mock         ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockInterface');
+        $proxy        ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
         $mocker       ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockerInterface');
         $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory', array($mocker));
 
-        $mocker->mock('PHPSpec2\Specification')       ->should_return($mock);
-        $this->object->mock('PHPSpec2\Specification') ->should_be_equal_to($mock);
+        $mocker->mock('PHPSpec2\Specification')       ->should_return($proxy);
+        $this->object->mock('PHPSpec2\Specification') ->should_be_equal_to($proxy);
     }
 
-    function can_be_created_with_later_configured_mocker($mocker, $mock)
+    function can_be_created_with_later_configured_mocker($mocker, $proxy)
     {
-        $mock         ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockInterface');
+        $proxy        ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
         $mocker       ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockerInterface');
         $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
 
         $this->object->setMocker($mocker);
 
-        $mocker->mock('PHPSpec2\Specification')       ->should_return($mock);
-        $this->object->mock('PHPSpec2\Specification') ->should_be_equal_to($mock);
+        $mocker->mock('PHPSpec2\Specification')       ->should_return($proxy);
+        $this->object->mock('PHPSpec2\Specification') ->should_be_equal_to($proxy);
     }
 }

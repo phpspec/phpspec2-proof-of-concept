@@ -6,6 +6,6 @@ class MockeryMocker implements MockerInterface
 {
     public function mock($classOrInterface)
     {
-        return new MockeryMock($classOrInterface);
+        return new MockeryMockProxy($classOrInterface);
     }
 }

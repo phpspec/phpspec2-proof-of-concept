@@ -7,20 +7,25 @@ use Mockery;
 use PHPSpec2\Stub\MethodExpectationStub;
 use PHPSpec2\Stub\ArgumentsResolver;
 
-class MockeryMock implements MockInterface
+class MockeryMockProxy implements MockProxyInterface
 {
-    private $subject;
+    private $originalMock;
 
     public function __construct($classOrInterface)
     {
-        $this->subject = Mockery::mock($classOrInterface);
-        $this->subject->shouldIgnoreMissing();
+        $this->originalMock = Mockery::mock($classOrInterface);
+        $this->originalMock->shouldIgnoreMissing();
+    }
+
+    public function getOriginalMock()
+    {
+        return $this->originalMock;
     }
 
     public function mockMethod($method, array $arguments, ArgumentsResolver $resolver)
     {
         return new MethodExpectationStub(
-            $this->subject->shouldReceive($method),
+            $this->originalMock->shouldReceive($method),
             $resolver,
             $arguments
         );
