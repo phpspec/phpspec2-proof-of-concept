@@ -23,4 +23,16 @@ class MockerFactory implements Specification
         $mocker->mock('PHPSpec2\Specification')       ->should_return($mock);
         $this->object->mock('PHPSpec2\Specification') ->should_be_equal_to($mock);
     }
+
+    function can_be_created_with_later_configured_mocker($mocker, $mock)
+    {
+        $mock         ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockInterface');
+        $mocker       ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockerInterface');
+        $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
+
+        $this->object->setMocker($mocker);
+
+        $mocker->mock('PHPSpec2\Specification')       ->should_return($mock);
+        $this->object->mock('PHPSpec2\Specification') ->should_be_equal_to($mock);
+    }
 }
