@@ -7,18 +7,19 @@ use PHPSpec2\Stub\ArgumentsResolver;
 
 class MockerFactory implements Specification
 {
-    function creates_a_Mockery_Mocker_by_default()
+    function described_with()
     {
         $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
+    }
 
+    function creates_a_Mockery_Mocker_by_default()
+    {
         $this->object->mock('PHPSpec2\Specification')
             ->should_return_an_instance_of('PHPSpec2\Stub\Mocker\MockeryMockProxy');
     }
 
     function created_mock_should_return_original_mock()
     {
-        $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
-
         $mock = $this->object->mock('PHPSpec2\Specification');
 
         $mock                    ->should_be_an_instance_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
@@ -27,8 +28,6 @@ class MockerFactory implements Specification
 
     function can_mock_method_on_created_mock($resolver)
     {
-        $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
-
         $mock = $this->object->mock('PHPSpec2\Specification');
 
         $mock->mockMethod('someMethid', array(), new ArgumentsResolver())
@@ -47,9 +46,8 @@ class MockerFactory implements Specification
 
     function can_be_created_with_later_configured_mocker($mocker, $proxy)
     {
-        $proxy        ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
-        $mocker       ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockerInterface');
-        $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
+        $proxy  ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
+        $mocker ->is_a_mock_of('PHPSpec2\Stub\Mocker\MockerInterface');
 
         $this->object->setMocker($mocker);
 
