@@ -4,16 +4,15 @@ namespace PHPSpec2\Stub;
 
 class MockerFactory
 {
-    private $creator;
+    private $mocker;
 
-    public function __construct(Mocker\MockerCreatorInterface $creator = null)
+    public function __construct(Mocker\MockerInterface $mocker = null)
     {
-        $this->creator = $creator ?: new Mocker\MockeryMockerCreator;
+        $this->mocker = $mocker ?: new Mocker\MockeryMocker;
     }
 
-    public function createFor($classOrInstance)
+    public function mock($classOrInterface)
     {
-        return $this->creator->createNew($classOrInstance);
+        return $this->mocker->mock($classOrInterface);
     }
 }
-
