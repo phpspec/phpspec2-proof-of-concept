@@ -32,7 +32,7 @@ class MethodExpectationStub
 
     public function should_be_called()
     {
-        tthis->expectation->atLeast(1);
+        $this->expectation->atLeast(1);
     }
 
     public function should_not_be_called()
