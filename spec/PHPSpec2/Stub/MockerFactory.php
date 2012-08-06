@@ -3,6 +3,7 @@
 namespace spec\PHPSpec2\Stub;
 
 use PHPSpec2\Specification;
+use PHPSpec2\Stub\ArgumentsResolver;
 
 class MockerFactory implements Specification
 {
@@ -12,6 +13,16 @@ class MockerFactory implements Specification
 
         $this->object->mock('PHPSpec2\Specification')
             ->should_return_an_instance_of('PHPSpec2\Stub\Mocker\MockeryMock');
+    }
+
+    function can_mock_method_on_created_mock($resolver)
+    {
+        $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
+
+        $mock = $this->object->mock('PHPSpec2\Specification');
+
+        $mock->mockMethod('someMethid', array(), new ArgumentsResolver())
+            ->should_return_an_instance_of('PHPSpec2\Stub\MethodExpectationStub');
     }
 
     function can_be_created_with_an_alternative_mocker($mocker, $mock)
