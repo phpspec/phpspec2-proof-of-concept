@@ -68,12 +68,12 @@ class ObjectStub
 
     public function should()
     {
-        return new PositiveVerification($this->resolveSubject(), $this->matchers, $this->resolver);
+        return new Verification\Positive($this->resolveSubject(), $this->matchers, $this->resolver);
     }
 
     public function should_not()
     {
-        return new NegativeVerification($this->resolveSubject(), $this->matchers, $this->resolver);
+        return new Verification\Negative($this->resolveSubject(), $this->matchers, $this->resolver);
     }
 
     public function callOnStub($method, array $arguments = array())

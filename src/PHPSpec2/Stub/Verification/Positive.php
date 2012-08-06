@@ -1,10 +1,11 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Stub\Verification;
 
 use PHPSpec2\Matcher\MatchersCollection;
+use PHPSpec2\Stub\ArgumentsResolver;
 
-class NegativeVerification
+class Positive
 {
     private $subject;
     private $matchers;
@@ -23,6 +24,6 @@ class NegativeVerification
 
         $matcher = $this->matchers->find($name, $this->subject, $arguments);
 
-        return $matcher->negativeMatch($name, $this->subject, $arguments);
+        return $matcher->positiveMatch($name, $this->subject, $arguments);
     }
 }
