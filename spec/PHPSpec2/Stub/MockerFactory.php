@@ -9,8 +9,7 @@ class MockerFactory implements Specification
 {
     function described_with()
     {
-        $this->object
-            ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
+        $this->object ->is_an_instance_of('PHPSpec2\Stub\MockerFactory');
     }
 
     function creates_a_Mockery_Mocker_by_default()
