@@ -1,6 +1,6 @@
 <?php
 
-namespace Spec\PHPSpec2\Matcher;
+namespace spec\PHPSpec2\Matcher;
 
 use PHPSpec2\Specification;
 use PHPSpec2\Exception\Example\MatcherNotFoundException;

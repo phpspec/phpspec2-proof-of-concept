@@ -1,6 +1,6 @@
 <?php
 
-namespace Spec\PHPSpec2\Stub;
+namespace spec\PHPSpec2\Stub;
 
 use PHPSpec2\Specification;
 

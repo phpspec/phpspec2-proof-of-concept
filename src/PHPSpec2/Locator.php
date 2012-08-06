@@ -12,10 +12,10 @@ class Locator
     private $path;
     private $root;
 
-    public function __construct($specsPath = null, $specsRoot = 'spec')
+    public function __construct($specsPath = null, $specsRoot = null)
     {
         $specsPath = null !== $specsPath ? realpath($specsPath) : null;
-        $specsRoot = realpath($specsRoot);
+        $specsRoot = null !== $specsRoot ? realpath($specsRoot) : getcwd();
 
         $this->path = rtrim($specsPath ?: $specsRoot, DIRECTORY_SEPARATOR);
         $this->root = rtrim($specsRoot, DIRECTORY_SEPARATOR);
