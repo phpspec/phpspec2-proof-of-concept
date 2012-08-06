@@ -4,7 +4,6 @@ namespace PHPSpec2\Stub\Mocker;
 
 use Mockery;
 
-use PHPSpec2\Stub\MethodExpectationStub;
 use PHPSpec2\Stub\ArgumentsResolver;
 
 class MockeryMockProxy implements MockProxyInterface
@@ -24,10 +23,10 @@ class MockeryMockProxy implements MockProxyInterface
 
     public function mockMethod($method, array $arguments, ArgumentsResolver $resolver)
     {
-        return new MethodExpectationStub(
+        return new MockeryExpectationProxy(
             $this->originalMock->shouldReceive($method),
-            $resolver,
-            $arguments
+            $arguments,
+            $resolver
         );
     }
 }

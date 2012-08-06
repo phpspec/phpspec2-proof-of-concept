@@ -23,7 +23,7 @@ class MockerFactory implements Specification
         $mock = $this->object->mock('PHPSpec2\Specification');
 
         $mock->mockMethod('someMethid', array(), new ArgumentsResolver())
-            ->should_return_an_instance_of('PHPSpec2\Stub\MethodExpectationStub');
+            ->should_return_an_instance_of('PHPSpec2\Stub\Mocker\MockeryExpectationProxy');
     }
 
     function can_be_created_with_an_alternative_mocker($mocker, $proxy)

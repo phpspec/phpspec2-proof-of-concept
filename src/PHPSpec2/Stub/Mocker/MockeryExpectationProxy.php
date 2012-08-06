@@ -1,15 +1,17 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Stub\Mocker;
 
 use Mockery\CompositeExpectation;
+use PHPSpec2\Stub\ArgumentsResolver;
 
-class MethodExpectationStub
+class MockeryExpectationProxy
 {
     private $expectation;
     private $resolver;
 
-    public function __construct(CompositeExpectation $expectation, ArgumentsResolver $resolver, array $arguments = array())
+    public function __construct(CompositeExpectation $expectation, array $arguments,
+                                ArgumentsResolver $resolver)
     {
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
         $this->resolver    = $resolver;
