@@ -12,10 +12,10 @@ class Locator
     private $path;
     private $root;
 
-    public function __construct($specsPath = null, $specsRoot = null)
+    public function __construct($specsPath = null, $specsRoot = 'spec')
     {
         $specsPath = null !== $specsPath ? realpath($specsPath) : null;
-        $specsRoot = null !== $specsRoot ? realpath($specsRoot) : getcwd();
+        $specsRoot = realpath($specsRoot);
 
         $this->path = rtrim($specsPath ?: $specsRoot, DIRECTORY_SEPARATOR);
         $this->root = rtrim($specsRoot, DIRECTORY_SEPARATOR);
@@ -46,7 +46,7 @@ class Locator
         $filename  = realpath($file->getPathname());
         $classname = str_replace(DIRECTORY_SEPARATOR, '\\',
             str_replace(
-                $this->root.DIRECTORY_SEPARATOR, '',
+                dirname($this->root).DIRECTORY_SEPARATOR, '',
                 str_replace('.php', '', $filename)
             )
         );
