@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Stub;
 
-use PHPSpec2\Stub\Mocker\MockProxyInterface;
+use PHPSpec2\Mocker\MockProxyInterface;
 
 class ArgumentsResolver
 {

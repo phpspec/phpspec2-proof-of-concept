@@ -7,7 +7,8 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 use PHPSpec2\Matcher\MatchersCollection;
-use PHPSpec2\Stub\Mocker\MockProxyInterface;
+use PHPSpec2\Mocker\MockerFactory;
+use PHPSpec2\Mocker\MockProxyInterface;
 
 use PHPSpec2\Exception\Stub\StubException;
 use PHPSpec2\Exception\Stub\ClassDoesNotExistsException;

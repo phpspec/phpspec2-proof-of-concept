@@ -1,17 +1,17 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Mocker;
 
 class MockerFactory
 {
     private $mocker;
 
-    public function __construct(Mocker\MockerInterface $mocker = null)
+    public function __construct(MockerInterface $mocker = null)
     {
-        $this->mocker = $mocker ?: new Mocker\MockeryMocker;
+        $this->mocker = $mocker ?: new Mockery\Mocker;
     }
 
-    public function setMocker(Mocker\MockerInterface $mocker)
+    public function setMocker(MockerInterface $mocker)
     {
         $this->mocker = $mocker;
     }

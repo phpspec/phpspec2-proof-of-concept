@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Stub\Mocker;
+namespace PHPSpec2\Mocker;
 
 use PHPSpec2\Stub\ArgumentsResolver;
 

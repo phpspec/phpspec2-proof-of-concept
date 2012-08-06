@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPSpec2\Stub\Mocker;
+namespace PHPSpec2\Mocker\Mockery;
 
 use Mockery\CompositeExpectation;
 use PHPSpec2\Stub\ArgumentsResolver;
 
-class MockeryExpectationProxy
+class ExpectationProxy
 {
     private $expectation;
     private $resolver;
