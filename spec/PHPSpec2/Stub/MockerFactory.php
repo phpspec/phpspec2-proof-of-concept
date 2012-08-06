@@ -21,11 +21,8 @@ class MockerFactory implements Specification
 
         $mock = $this->object->mock('PHPSpec2\Specification');
 
-        $mock
-            ->should_be_an_instance_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
-
-        $mock->getOriginalMock()
-            ->should_return_an_instance_of('PHPSpec2\Specification');
+        $mock                    ->should_be_an_instance_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
+        $mock->getOriginalMock() ->should_return_an_instance_of('PHPSpec2\Specification');
     }
 
     function can_mock_method_on_created_mock($resolver)
