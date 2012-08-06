@@ -6,10 +6,8 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
-use Mockery;
-use Mockery\MockInterface;
-
 use PHPSpec2\Matcher\MatchersCollection;
+use PHPSpec2\Stub\Mocker\MockProxyInterface;
 
 use PHPSpec2\Exception\Stub\StubException;
 use PHPSpec2\Exception\Stub\ClassDoesNotExistsException;
@@ -20,12 +18,15 @@ class ObjectStub
 {
     private $subject;
     private $matchers;
+    private $mockers;
     private $resolver;
 
-    public function __construct($subject = null, MatchersCollection $matchers, ArgumentsResolver $resolver = null)
+    public function __construct($subject = null, MatchersCollection $matchers,
+                                MockerFactory $mockers = null, ArgumentsResolver $resolver = null)
     {
         $this->subject  = $subject;
         $this->matchers = $matchers;
+        $this->mockers  = $mockers  ?: new MockerFactory();
         $this->resolver = $resolver ?: new ArgumentsResolver();
     }
 
@@ -61,18 +62,17 @@ class ObjectStub
             throw new ClassDoesNotExistsException($classOrInterface);
         }
 
-        $this->subject = Mockery::mock($classOrInterface);
-        $this->subject->shouldIgnoreMissing();
+        $this->subject = $this->mockers->mock($classOrInterface);
     }
 
     public function should()
     {
-        return new PositiveVerification($this->subject, $this->matchers, $this->resolver);
+        return new PositiveVerification($this->resolveSubject(), $this->matchers, $this->resolver);
     }
 
     public function should_not()
     {
-        return new NegativeVerification($this->subject, $this->matchers, $this->resolver);
+        return new NegativeVerification($this->resolveSubject(), $this->matchers, $this->resolver);
     }
 
     public function callOnStub($method, array $arguments = array())
@@ -81,20 +81,16 @@ class ObjectStub
 
         // if there is a subject
         if (null !== $this->subject) {
-            // if subject is a mock - return method expectation stub
-            if ($this->subject instanceof MockInterface) {
-                return new MethodExpectationStub(
-                    $this->subject->shouldReceive($method),
-                    $this->resolver,
-                    $arguments
-                );
-            }
-
             // if subject is an instance with provided method - call it and stub the result
             if ($this->isSubjectMethodAccessible($method)) {
                 $returnValue = call_user_func_array(array($this->subject, $method), $arguments);
 
                 return new static($returnValue, $this->matchers);
+            }
+
+            // if subject is a mock - return method expectation stub
+            if ($this->subject instanceof MockProxyInterface) {
+                return $this->subject->mockMethod($method, $arguments, $this->resolver);
             }
         }
 
@@ -106,7 +102,7 @@ class ObjectStub
         $value = $this->resolver->resolve($value);
 
         if ($this->isSubjectPropertyAccessible($property)) {
-            return $this->subject->$property = $value;
+            return $this->resolveSubject()->$property = $value;
         }
 
         throw new PropertyNotFoundException($property);
@@ -115,7 +111,7 @@ class ObjectStub
     public function getFromStub($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
-            return new static($this->subject->$property, $this->matchers);
+            return new static($this->resolveSubject()->$property, $this->matchers);
         }
 
         throw new PropertyNotFoundException($property);
@@ -123,7 +119,7 @@ class ObjectStub
 
     public function getStubSubject()
     {
-        return $this->subject;
+        return $this->resolveSubject();
     }
 
     public function __call($method, array $arguments = array())
@@ -158,6 +154,11 @@ class ObjectStub
     public function __set($property, $value = null)
     {
         return $this->setToStub($property, $value);
+    }
+
+    private function resolveSubject()
+    {
+        return $this->resolver->resolveSingle($this->subject);
     }
 
     private function isSubjectMethodAccessible($method)

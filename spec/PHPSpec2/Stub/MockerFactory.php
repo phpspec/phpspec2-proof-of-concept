@@ -15,17 +15,6 @@ class MockerFactory implements Specification
     function creates_a_Mockery_Mocker_by_default()
     {
         $this->object->mock('PHPSpec2\Specification')
-            ->should_return_an_instance_of('PHPSpec2\Stub\Mocker\MockeryMockProxy');
-    }
-
-    function created_mock_should_return_original_mock()
-    {
-        $mock = $this->object->mock('PHPSpec2\Specification');
-
-        $mock
-            ->should_be_an_instance_of('PHPSpec2\Stub\Mocker\MockProxyInterface');
-
-        $mock->getOriginalMock()
             ->should_return_an_instance_of('PHPSpec2\Specification');
     }
 

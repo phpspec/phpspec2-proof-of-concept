@@ -5,23 +5,22 @@ namespace PHPSpec2\Matcher\Verification;
 use PHPSpec2\Exception\Example\StringsNotEqualException;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\ObjectsNotEqualException;
+use PHPSpec2\Exception\Example\FailureException;
 
 class PositiveThrowVerification
 {
     private $subject;
-    private $arguments;
     private $exception;
     private $exceptionClass;
 
     public function __construct($subject, $arguments)
     {
-        $this->subject   = $subject;
-        $this->arguments = $arguments;
+        $this->subject = $subject;
 
-        if (is_string($this->arguments[0])) {
-            $this->exceptionClass = $this->arguments[0];
-        } elseif (is_object($this->arguments[0]) && $this->arguments[0] instanceof \Exception) {
-            $this->exception = $this->arguments[0];
+        if (is_string($arguments[0])) {
+            $this->exceptionClass = $arguments[0];
+        } elseif (is_object($arguments[0]) && $arguments[0] instanceof \Exception) {
+            $this->exception = $arguments[0];
         } else {
             throw new MatcherException(
                 'Wrong argument provided in throw matcher. Provide fully qualified classname or exception instance.'
@@ -34,12 +33,16 @@ class PositiveThrowVerification
         try {
             call_user_func_array(array($this->subject, $callable), $args);
         } catch (\Exception $e) {
-            if ($this->exceptionClass) {
+            if (null !== $this->exceptionClass) {
                 $this->checkIfExceptionClassCorrect($e);
             } else {
                 $this->checkIfExceptionSame($e);
             }
+
+            return;
         }
+
+        throw new FailureException('Expected to get exception, none got.');
     }
 
     private function checkIfExceptionClassCorrect(\Exception $e)
@@ -54,7 +57,8 @@ class PositiveThrowVerification
 
     private function checkIfExceptionSame(\Exception $e)
     {
-        if ($e == $this->exception) {
+        if (get_class($e) !== get_class($this->exception)
+         || $e->getMessage() !== $this->exception->getMessage()) {
             throw new ObjectsNotEqualException(
                 sprintf('Expected to throw [%s], but got [%s]', get_class($this->exception), get_class($e)),
                 $this->exception, $e

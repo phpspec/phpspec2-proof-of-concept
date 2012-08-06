@@ -16,7 +16,7 @@ class MatchersCollection
     public function find($keyword, $subject, array $arguments)
     {
         foreach ($this->matchers as $matcher) {
-            if ($matcher->supports($keyword, $subject, $arguments)) {
+            if (true === $matcher->supports($keyword, $subject, $arguments)) {
                 return $matcher;
             }
         }
