@@ -42,7 +42,7 @@ class TestCommand extends Command
         $matchers = new Matcher\MatchersCollection();
         $matchers->add(new Matcher\EqualityMatcher);
         $matchers->add(new Matcher\CountMatcher);
-        $matchers->add(new Matcher\BooleanMatcher);
+        $matchers->add(new Matcher\TrueMatcher);
         $matchers->add(new Matcher\ThrowMatcher);
         $matchers->add(new Matcher\TypeMatcher);
 
