@@ -2,7 +2,6 @@
 
 namespace PHPSpec2\Stub;
 
-use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
@@ -11,7 +10,6 @@ use PHPSpec2\Mocker\MockerFactory;
 use PHPSpec2\Mocker\MockProxyInterface;
 
 use PHPSpec2\Exception\Stub\StubException;
-use PHPSpec2\Exception\Stub\ClassDoesNotExistsException;
 use PHPSpec2\Exception\Stub\MethodNotFoundException;
 use PHPSpec2\Exception\Stub\PropertyNotFoundException;
 
@@ -33,52 +31,27 @@ class ObjectStub
 
     public function is_an_instance_of($class, array $constructorArguments = array())
     {
-        $constructorArguments = $this->resolver->resolve($constructorArguments);
-
-        if (!is_string($class)) {
-            throw new StubException(sprintf(
-                'Instantiator expects class name, "%s" got', gettype($class)
-            ));
-        }
-
-        if (!class_exists($class)) {
-            throw new ClassDoesNotExistsException($class);
-        }
-
-        $reflection = new ReflectionClass($class);
-
-        $this->subject = new LazySubject($reflection, $constructorArguments);
+        $this->subject = new LazyInstance($class, $this->resolver->resolve($constructorArguments));
     }
 
     public function is_a_mock_of($classOrInterface)
     {
-        if (!is_string($classOrInterface)) {
-            throw new StubException(sprintf(
-                'Mock creator expects class or interface name, "%s" got',
-                gettype($classOrInterface)
-            ));
-        }
-
-        if (!class_exists($classOrInterface) && !interface_exists($classOrInterface)) {
-            throw new ClassDoesNotExistsException($classOrInterface);
-        }
-
-        $this->subject = $this->mockers->mock($classOrInterface);
+        $this->subject = new LazyMock($classOrInterface, $this->mockers);
     }
 
     public function should()
     {
-        return new Verification\Positive($this->resolveSubject(), $this->matchers, $this->resolver);
+        return new Verification\Positive($this->getStubSubject(), $this->matchers, $this->resolver);
     }
 
     public function should_not()
     {
-        return new Verification\Negative($this->resolveSubject(), $this->matchers, $this->resolver);
+        return new Verification\Negative($this->getStubSubject(), $this->matchers, $this->resolver);
     }
 
     public function callOnStub($method, array $arguments = array())
     {
-        if (null === $this->getSubject()) {
+        if (null === $this->getStubSubject()) {
             throw new StubException('Attempt to call method on stub without a subject');
         }
 
@@ -87,14 +60,14 @@ class ObjectStub
 
         // if subject is an instance with provided method - call it and stub the result
         if ($this->isSubjectMethodAccessible($method)) {
-            $returnValue = call_user_func_array(array($this->getSubject(), $method), $arguments);
+            $returnValue = call_user_func_array(array($this->getStubSubject(), $method), $arguments);
 
-            return new static($returnValue, $this->matchers);
+            return new static($returnValue, $this->matchers, $this->mockers, $this->resolver);
         }
 
         // if subject is a mock - return method expectation stub
-        if ($this->getSubject() instanceof MockProxyInterface) {
-            return $this->getSubject()->mockMethod($method, $arguments, $this->resolver);
+        if ($this->getStubSubject() instanceof MockProxyInterface) {
+            return $this->getStubSubject()->mockMethod($method, $arguments, $this->resolver);
         }
 
         throw new MethodNotFoundException($method);
@@ -105,7 +78,7 @@ class ObjectStub
         $value = $this->resolver->resolve($value);
 
         if ($this->isSubjectPropertyAccessible($property)) {
-            return $this->resolveSubject()->$property = $value;
+            return $this->getStubSubject()->$property = $value;
         }
 
         throw new PropertyNotFoundException($property);
@@ -114,7 +87,7 @@ class ObjectStub
     public function getFromStub($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
-            return new static($this->resolveSubject()->$property, $this->matchers);
+            return new static($this->getStubSubject()->$property, $this->matchers);
         }
 
         throw new PropertyNotFoundException($property);
@@ -122,7 +95,11 @@ class ObjectStub
 
     public function getStubSubject()
     {
-        return $this->resolveSubject();
+        if (is_object($this->subject) && $this->subject instanceof LazySubjectInterface) {
+            $this->subject = $this->subject->getInstance();
+        }
+
+        return $this->subject;
     }
 
     public function __call($method, array $arguments = array())
@@ -159,36 +136,24 @@ class ObjectStub
         return $this->setToStub($property, $value);
     }
 
-    private function resolveSubject()
-    {
-        return $this->resolver->resolveSingle($this->getSubject());
-    }
-
-    private function getSubject()
-    {
-        return $this->subject = (
-            $this->subject instanceof LazySubject ? $this->subject->instantiate() : $this->subject
-        );
-    }
-
     private function isSubjectMethodAccessible($method)
     {
-        if (!method_exists($this->getSubject(), $method)) {
+        if (!method_exists($this->getStubSubject(), $method)) {
             return false;
         }
 
-        $methodReflection = new ReflectionMethod($this->getSubject(), $method);
+        $methodReflection = new ReflectionMethod($this->getStubSubject(), $method);
 
         return $methodReflection->isPublic();
     }
 
     private function isSubjectPropertyAccessible($property)
     {
-        if (!property_exists($this->getSubject(), $property)) {
+        if (!property_exists($this->getStubSubject(), $property)) {
             return false;
         }
 
-        $propertyReflection = new ReflectionProperty($this->getSubject(), $property);
+        $propertyReflection = new ReflectionProperty($this->getStubSubject(), $property);
 
         return $propertyReflection->isPublic();
     }

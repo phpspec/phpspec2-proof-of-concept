@@ -17,7 +17,7 @@ class ArgumentsResolver
 
     public function resolveSingle($argument)
     {
-        if (null === $argument) {
+        if (null === $argument || !is_object($argument)) {
             return $argument;
         }
 

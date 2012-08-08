@@ -20,10 +20,11 @@ class Positive
 
     public function __call($name, array $arguments = array())
     {
+        $subject   = $this->resolver->resolveSingle($this->subject);
         $arguments = $this->resolver->resolve($arguments);
 
-        $matcher = $this->matchers->find($name, $this->subject, $arguments);
+        $matcher = $this->matchers->find($name, $subject, $arguments);
 
-        return $matcher->positiveMatch($name, $this->subject, $arguments);
+        return $matcher->positiveMatch($name, $subject, $arguments);
     }
 }
