@@ -41,11 +41,11 @@ class Tester
     public function testSpecification(ReflectionClass $spec)
     {
         $examples = $spec->getMethods(ReflectionMethod::IS_PUBLIC);
-        
+
         if (!$this->specContainsFilteredExamples($examples)) {
             return 0;
         }
-        
+
         $this->eventDispatcher->dispatch('beforeSpecification',
             new SpecificationEvent($spec)
         );
@@ -156,9 +156,31 @@ class Tester
 
     private function mergeStubsFromMethod(array $stubs, ReflectionMethod $method)
     {
+        $stubs = $this->mergeStubsFromDocComment($stubs, $method->getDocComment());
+
         foreach ($method->getParameters() as $parameter) {
             if (!isset($stubs[$parameter->getName()])) {
                 $stubs[$parameter->getName()] = new ObjectStub(null, $this->matchers);
+            }
+        }
+
+        return $stubs;
+    }
+
+    private function mergeStubsFromDocComment(array $stubs, $comment)
+    {
+        if (false === $comment || '' == trim($comment)) {
+            return $stubs;
+        }
+
+        foreach (explode("\n", $comment) as $line) {
+            $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
+
+            if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *mock of (.*)$#', $line, $match)) {
+                if (!isset($stubs[$match[1]])) {
+                    $stubs[$match[1]] = new ObjectStub(null, $this->matchers);
+                    $stubs[$match[1]]->is_a_mock_of($match[2]);
+                }
             }
         }
 
@@ -179,7 +201,7 @@ class Tester
                 }
             }
         }
-        
+
         return false;
     }
 
