@@ -177,8 +177,10 @@ class Tester
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
             if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *mock of (.*)$#', $line, $match)) {
-                $stubs[$match[1]] = new ObjectStub(null, $this->matchers);
-                $stubs[$match[1]]->is_a_mock_of($match[2]);
+                if (!isset($stubs[$match[1]])) {
+                    $stubs[$match[1]] = new ObjectStub(null, $this->matchers);
+                    $stubs[$match[1]]->is_a_mock_of($match[2]);
+                }
             }
         }
 
