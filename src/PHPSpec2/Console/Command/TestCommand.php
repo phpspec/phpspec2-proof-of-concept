@@ -43,7 +43,8 @@ class TestCommand extends Command
         $io = new IO($input, $output);
 
         $matchers = new Matcher\MatchersCollection();
-        $matchers->add(new Matcher\EqualityMatcher);
+        $matchers->add(new Matcher\IdentityMatcher);
+        $matchers->add(new Matcher\ComparisonMatcher);
         $matchers->add(new Matcher\CountMatcher);
         $matchers->add(new Matcher\TrueMatcher);
         $matchers->add(new Matcher\ThrowMatcher);

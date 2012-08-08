@@ -10,7 +10,7 @@ use PHPSpec2\Exception\Example\BooleansNotEqualException;
 use PHPSpec2\Exception\Example\ResourcesNotEqualException;
 use PHPSpec2\Exception\Example\FailureException;
 
-class EqualityMatcher extends BasicMatcher
+class IdentityMatcher extends BasicMatcher
 {
     public function supports($name, $subject, array $arguments)
     {
@@ -19,7 +19,7 @@ class EqualityMatcher extends BasicMatcher
 
     protected function matches($subject, array $arguments)
     {
-        return $subject == $arguments[0];
+        return $subject === $arguments[0];
     }
 
     protected function getFailureException($name, $subject, array $arguments)
