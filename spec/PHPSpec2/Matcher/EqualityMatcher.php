@@ -34,10 +34,16 @@ class EqualityMatcher implements Specification
         $this->supports_alias_for_all_kinds('equal', $matcher);
     }
 
-    function matches_string_using_comparison_operator($matcher)
+    function matches_empty_string_using_comparison_operator($matcher)
     {
         $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
                 ->during('positiveMatch', array('equal', '', array('')));
+    }
+
+    function matches_not_empty_string_using_comparison_operator($matcher)
+    {
+        $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                ->during('positiveMatch', array('equal', 'chuck', array('chuck')));
     }
 
     private function supports_alias_for_all_kinds($alias, $matcher)
