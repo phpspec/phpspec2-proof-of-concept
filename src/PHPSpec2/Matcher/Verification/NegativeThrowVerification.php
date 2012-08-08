@@ -43,8 +43,7 @@ class NegativeThrowVerification
     {
         if ($e instanceof $this->exceptionClass) {
             throw new FailureException(
-                sprintf('Expected not to throw %s, but it did', $this->exceptionClass),
-                $this->exceptionClass, get_class($e)
+                sprintf('Expected not to throw %s, but it did', $this->exceptionClass)
             );
         }
     }

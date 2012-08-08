@@ -46,6 +46,50 @@ class EqualityMatcher implements Specification
                 ->during('positiveMatch', array('equal', 'chuck', array('chuck')));
     }
 
+    function matches_empty_string_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->php_emptish_values() as $empty) {
+            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array('equal', '', array($empty)));
+        }
+    }
+
+    function matches_zero_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->php_emptish_values() as $empty) {
+            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array('equal', 0, array($empty)));
+        }
+    }
+
+    function matches_null_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->php_emptish_values() as $empty) {
+            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array('equal', null, array($empty)));
+        }
+    }
+
+    function matches_false_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->php_emptish_values() as $empty) {
+            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array('equal', false, array($empty)));
+        }
+    }
+
+    function does_not_match_non_empty_different_value($matcher)
+    {
+        foreach ($this->all_kinds_of_subjects() as $value) {
+
+            // skip true
+            if ($value === true) continue;
+
+            $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array('equal', 'different_value',array($value)));
+        }
+    }
+
     private function supports_alias_for_all_kinds($alias, $matcher)
     {
         foreach ($this->all_kinds_of_subjects() as $kind => $subject) {
@@ -62,6 +106,16 @@ class EqualityMatcher implements Specification
             'array'  => array(),
             'boolean' => true,
             'resource' => STDIN
+        );
+    }
+
+    private function php_emptish_values()
+    {
+        return array(
+            "",
+            0,
+            false,
+            null
         );
     }
 }
