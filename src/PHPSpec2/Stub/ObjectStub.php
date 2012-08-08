@@ -47,7 +47,7 @@ class ObjectStub
 
         $reflection = new ReflectionClass($class);
 
-        $this->subject = $reflection->newInstanceArgs($constructorArguments);
+        $this->subject = new LazySubject($reflection, $constructorArguments);
     }
 
     public function is_a_mock_of($classOrInterface)
@@ -78,21 +78,23 @@ class ObjectStub
 
     public function callOnStub($method, array $arguments = array())
     {
+        if (null === $this->getSubject()) {
+            throw new StubException('Attempt to call method on stub without a subject');
+        }
+
+        // resolve arguments
         $arguments = $this->resolver->resolve($arguments);
 
-        // if there is a subject
-        if (null !== $this->subject) {
-            // if subject is an instance with provided method - call it and stub the result
-            if ($this->isSubjectMethodAccessible($method)) {
-                $returnValue = call_user_func_array(array($this->subject, $method), $arguments);
+        // if subject is an instance with provided method - call it and stub the result
+        if ($this->isSubjectMethodAccessible($method)) {
+            $returnValue = call_user_func_array(array($this->getSubject(), $method), $arguments);
 
-                return new static($returnValue, $this->matchers);
-            }
+            return new static($returnValue, $this->matchers);
+        }
 
-            // if subject is a mock - return method expectation stub
-            if ($this->subject instanceof MockProxyInterface) {
-                return $this->subject->mockMethod($method, $arguments, $this->resolver);
-            }
+        // if subject is a mock - return method expectation stub
+        if ($this->getSubject() instanceof MockProxyInterface) {
+            return $this->getSubject()->mockMethod($method, $arguments, $this->resolver);
         }
 
         throw new MethodNotFoundException($method);
@@ -159,27 +161,34 @@ class ObjectStub
 
     private function resolveSubject()
     {
-        return $this->resolver->resolveSingle($this->subject);
+        return $this->resolver->resolveSingle($this->getSubject());
+    }
+
+    private function getSubject()
+    {
+        return $this->subject = (
+            $this->subject instanceof LazySubject ? $this->subject->instantiate() : $this->subject
+        );
     }
 
     private function isSubjectMethodAccessible($method)
     {
-        if (!method_exists($this->subject, $method)) {
+        if (!method_exists($this->getSubject(), $method)) {
             return false;
         }
 
-        $methodReflection = new ReflectionMethod($this->subject, $method);
+        $methodReflection = new ReflectionMethod($this->getSubject(), $method);
 
         return $methodReflection->isPublic();
     }
 
     private function isSubjectPropertyAccessible($property)
     {
-        if (!property_exists($this->subject, $property)) {
+        if (!property_exists($this->getSubject(), $property)) {
             return false;
         }
 
-        $propertyReflection = new ReflectionProperty($this->subject, $property);
+        $propertyReflection = new ReflectionProperty($this->getSubject(), $property);
 
         return $propertyReflection->isPublic();
     }
