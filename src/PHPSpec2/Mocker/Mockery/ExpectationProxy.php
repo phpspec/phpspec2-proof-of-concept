@@ -37,7 +37,7 @@ class ExpectationProxy
         $this->expectation->never();
     }
 
-    public function should_throw($exception, $message = '')
+    public function will_throw($exception, $message = '')
     {
         $this->expectation->andThrow($exception, $message);
     }
