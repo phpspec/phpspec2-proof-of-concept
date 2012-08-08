@@ -17,15 +17,10 @@ class ExpectationProxy
         $this->resolver    = $resolver;
 
         $this->should_be_called();
-        $this->should_not_return();
+        $this->will_return(null);
     }
 
-    public function should_not_return()
-    {
-        return $this->should_return(null);
-    }
-
-    public function should_return($value = null)
+    public function will_return($value = null)
     {
         return call_user_func_array(
             array($this->expectation, 'andReturn'), $this->resolver->resolve($value)

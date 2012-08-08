@@ -33,7 +33,7 @@ class MockerFactory implements Specification
         $this->object ->is_an_instance_of('PHPSpec2\Mocker\MockerFactory', array($mocker));
 
         $mocker->mock('PHPSpec2\Specification')
-            ->should_return($proxy);
+            ->will_return($proxy);
 
         $this->object->mock('PHPSpec2\Specification')
             ->should_be_equal_to($proxy);
@@ -47,7 +47,7 @@ class MockerFactory implements Specification
         $this->object->setMocker($mocker);
 
         $mocker->mock('PHPSpec2\Specification')
-            ->should_return($proxy);
+            ->will_return($proxy);
 
         $this->object->mock('PHPSpec2\Specification')
             ->should_be_equal_to($proxy);

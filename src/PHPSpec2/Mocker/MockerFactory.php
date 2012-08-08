@@ -18,6 +18,8 @@ class MockerFactory
 
     public function mock($classOrInterface)
     {
-        return $this->mocker->mock($classOrInterface);
+        $mock = $this->mocker->mock($classOrInterface);
+
+        return $mock;
     }
 }
