@@ -14,79 +14,192 @@ class EqualityMatcher implements Specification
         $matcher->is_an_instance_of('PHPSpec2\Matcher\EqualityMatcher');
     }
 
-    function should_support_the_be_alias_matcher_for_all_kinds_of_subjects($matcher)
+    function should_support_all_aliases_for_all_kinds_of_subjects($matcher)
     {
-        $this->supports_alias_for_all_kinds('be', $matcher);
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            $this->supports_alias_for_all_kinds($alias, $matcher);
+        }
     }
 
-    function should_support_the_be_equal_to_alias_for_all_kinds_of_subjects($matcher)
-    {
-        $this->supports_alias_for_all_kinds('be_equal_to', $matcher);
-    }
-
-    function should_support_return_alias_for_all_kinds_of_subjects($matcher)
-    {
-        $this->supports_alias_for_all_kinds('return', $matcher);
-    }
-
-    function should_support_equal_alias_for_all_kinds_of_subjects($matcher)
-    {
-        $this->supports_alias_for_all_kinds('equal', $matcher);
-    }
-
+    /**
+     * @Context "Positive Matching"
+     */
     function matches_empty_string_using_comparison_operator($matcher)
     {
-        $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
-                ->during('positiveMatch', array('equal', '', array('')));
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array($alias, '', array('')));
+        }
     }
 
+    /**
+     * @Context "Positive Matching"
+     */
     function matches_not_empty_string_using_comparison_operator($matcher)
     {
-        $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
-                ->during('positiveMatch', array('equal', 'chuck', array('chuck')));
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('positiveMatch', array($alias, 'chuck', array('chuck')));
+        }
     }
 
+    /**
+     * @Context "Positive Matching"
+     */
     function matches_empty_string_with_emptish_values_using_comparison_operator($matcher)
     {
-        foreach ($this->php_emptish_values() as $empty) {
-            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
-                    ->during('positiveMatch', array('equal', '', array($empty)));
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('positiveMatch', array($alias, '', array($empty)));
+            }
         }
     }
 
+    /**
+     * @Context "Positive Matching"
+     */
     function matches_zero_with_emptish_values_using_comparison_operator($matcher)
     {
-        foreach ($this->php_emptish_values() as $empty) {
-            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
-                    ->during('positiveMatch', array('equal', 0, array($empty)));
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('positiveMatch', array($alias, 0, array($empty)));
+            }
         }
     }
 
+    /**
+     * @Context "Positive Matching"
+     */
     function matches_null_with_emptish_values_using_comparison_operator($matcher)
     {
-        foreach ($this->php_emptish_values() as $empty) {
-            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
-                    ->during('positiveMatch', array('equal', null, array($empty)));
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('positiveMatch', array($alias, null, array($empty)));
+            }
         }
     }
 
+    /**
+     * @Context "Positive Matching"
+     */
     function matches_false_with_emptish_values_using_comparison_operator($matcher)
     {
-        foreach ($this->php_emptish_values() as $empty) {
-            $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
-                    ->during('positiveMatch', array('equal', false, array($empty)));
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('positiveMatch', array($alias, false, array($empty)));
+            }
         }
     }
 
+    /**
+     * @Context "Positive Matching"
+     */
     function does_not_match_non_empty_different_value($matcher)
     {
-        foreach ($this->all_kinds_of_subjects() as $value) {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->all_kinds_of_subjects() as $value) {
 
-            // skip true
-            if ($value === true) continue;
+                // skip true
+                if ($value === true) continue;
 
+                $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('positiveMatch', array($alias, 'different_value',array($value)));
+            }
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_empty_string_using_comparison_operator($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
             $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
-                    ->during('positiveMatch', array('equal', 'different_value',array($value)));
+                    ->during('negativeMatch', array($alias, '', array('')));
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_not_empty_string_using_comparison_operator($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                    ->during('negativeMatch', array($alias, 'chuck', array('chuck')));
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_empty_string_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('negativeMatch', array($alias, '', array($empty)));
+            }
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_zero_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('negativeMatch', array($alias, 0, array($empty)));
+            }
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_null_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('negativeMatch', array($alias, null, array($empty)));
+            }
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_false_with_emptish_values_using_comparison_operator($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->php_emptish_values() as $empty) {
+                $matcher->should_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('negativeMatch', array($alias, false, array($empty)));
+            }
+        }
+    }
+
+    /**
+     * @Context "Negative Matching"
+     */
+    function mismatches_on_non_empty_different_value($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->all_kinds_of_subjects() as $value) {
+
+                // skip true
+                if ($value === true) continue;
+
+                $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                        ->during('negativeMatch', array($alias, 'different_value',array($value)));
+            }
         }
     }
 
@@ -116,6 +229,13 @@ class EqualityMatcher implements Specification
             0,
             false,
             null
+        );
+    }
+
+    private function all_equality_matcher_aliases()
+    {
+        return array(
+            'equal', 'return', 'be_equal_to', 'be'
         );
     }
 }

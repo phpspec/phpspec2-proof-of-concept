@@ -4,6 +4,7 @@ namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Example\StringsNotEqualException;
 use PHPSpec2\Exception\Example\ObjectsNotEqualException;
+use PHPSpec2\Exception\Example\FailureException;
 
 class EqualityMatcher extends BasicMatcher
 {
@@ -34,5 +35,14 @@ class EqualityMatcher extends BasicMatcher
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
+        if (is_object($subject)) {
+            return new FailureException(
+                'Objects are equal, but they shouldn\'t be'
+            );
+        } else {
+            return new FailureException(
+                'Strings are equal, but they shouldn\'t be'
+            );
+        }
     }
 }
