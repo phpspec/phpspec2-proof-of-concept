@@ -7,11 +7,6 @@ use PHPSpec2\Stub\ArgumentsResolver;
 
 class MockerFactory implements Specification
 {
-    function described_with()
-    {
-        $this->object ->is_an_instance_of('PHPSpec2\Mocker\MockerFactory');
-    }
-
     function creates_a_Mockery_Mocker_by_default()
     {
         $this->object->mock('PHPSpec2\Specification')

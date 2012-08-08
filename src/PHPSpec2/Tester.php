@@ -17,6 +17,7 @@ use PHPSpec2\Event\ExampleEvent;
 
 use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
+use PHPSpec2\Stub\LazyInstance;
 
 class Tester
 {
@@ -58,8 +59,14 @@ class Tester
     {
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
 
-        $instance = $example->getDeclaringClass()->newInstance();
-        $instance->object = new ObjectStub(null, $this->matchers);
+        $spec    = $example->getDeclaringClass();
+        $subject = null;
+        if (class_exists($class = preg_replace(array("|^spec\\\|", "|Spec$|"), '', $spec->getName()))) {
+            $subject = new LazyInstance($class);
+        }
+
+        $instance = $spec->newInstance();
+        $instance->object = new ObjectStub($subject, $this->matchers);
         $stubs = $this->getStubsForExample($instance, $example);
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
