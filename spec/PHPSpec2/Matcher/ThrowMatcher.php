@@ -16,7 +16,7 @@ class ThrowMatcher implements Specification
     function can_specify_a_method_during_which_an_exception_should_be_throw($subject)
     {
         $subject->is_a_mock_of('stdClass');
-        $subject->someMethod()->should_throw('\Exception');
+        $subject->someMethod()->will_throw('\Exception');
 
         $this->object->positiveMatch('throw', $subject, array('\Exception'))
                 ->during('someMethod', array());
