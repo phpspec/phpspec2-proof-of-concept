@@ -9,6 +9,10 @@ class PredicateMatcher extends BasicMatcher
         if (is_object($subject) && preg_match('/^be_(.*)/', $name, $matches)) {
             return method_exists($subject, 'is' . $matches[1]);
         }
+
+        if (is_object($subject) && preg_match('/^have_(.*)/', $name, $matches)) {
+            return method_exists($subject, 'has' . $matches[1]);
+        }
     }
 
     protected function matches($subject, array $arguments)
