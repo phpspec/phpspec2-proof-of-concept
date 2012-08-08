@@ -6,13 +6,9 @@ use PHPSpec2\Specification;
 
 class PredicateMatcher implements Specification
 {
-    /**
-     * @param ObjectStub $subject mock of stdClass
-     */
-    function infers_matcher_alias_name_from_methods_prefixed_with_is($subject)
+    function infers_matcher_alias_name_from_methods_prefixed_with_is()
     {
-        $subject->isValid()->will_return(true);
-        
-        $this->object->supports('be_valid', $subject, array())->should_return_true();
+        $subject = new \ReflectionClass($this);
+        $this->object->supports('be_abstract', $subject, array())->should_return_true();
     }
 }
