@@ -21,13 +21,16 @@ use PHPSpec2\Stub\LazyInstance;
 
 class Tester
 {
+    const RUN_ALL = '.*';
     private $eventDispatcher;
     private $matchers = array();
+    private $runOnly = Tester::RUN_ALL;
 
-    public function __construct(EventDispatcherInterface $dispatcher, MatchersCollection $matchers)
+    public function __construct(EventDispatcherInterface $dispatcher, MatchersCollection $matchers, $runOnly = Tester::RUN_ALL)
     {
         $this->eventDispatcher = $dispatcher;
         $this->matchers        = $matchers;
+        $this->runOnly         = $runOnly;
     }
 
     public function getEventDispatcher()
@@ -37,13 +40,20 @@ class Tester
 
     public function testSpecification(ReflectionClass $spec)
     {
+        $examples = $spec->getMethods(ReflectionMethod::IS_PUBLIC);
+        
+        if (!$this->specContainsFilteredExamples($examples)) {
+            return 0;
+        }
+        
         $this->eventDispatcher->dispatch('beforeSpecification',
             new SpecificationEvent($spec)
         );
 
         $result = 0;
-        foreach ($spec->getMethods(ReflectionMethod::IS_PUBLIC) as $example) {
-            if ($this->isExampleTestable($example)) {
+        foreach ($examples as $example) {
+            if ($this->isExampleTestable($example) &&
+                $this->exampleIsFiltered($example)) {
                 $result = max($result, $this->testExample($example));
             }
         }
@@ -158,5 +168,26 @@ class Tester
     private function isExampleTestable(ReflectionMethod $example)
     {
         return 'described_with' !== $example->getName();
+    }
+
+    private function specContainsFilteredExamples(array $examples)
+    {
+        if (self::RUN_ALL !== $this->runOnly) {
+            foreach ($examples as $example) {
+                if ($this->exampleIsFiltered($example)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
+    private function exampleIsFiltered(ReflectionMethod $example)
+    {
+        return preg_match(
+            "/" . preg_quote($this->runOnly) . "/",
+            $example->getName()
+        ) !== 0;
     }
 }

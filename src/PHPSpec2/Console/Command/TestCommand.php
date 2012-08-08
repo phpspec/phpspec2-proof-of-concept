@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use PHPSpec2\Console\IO;
@@ -29,6 +30,8 @@ class TestCommand extends Command
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run')
         ));
+        
+        $this->addOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching a given pattern');
     }
 
     /**
@@ -48,7 +51,7 @@ class TestCommand extends Command
 
         // setup specs locator and tester
         $locator = new Locator($input->getArgument('spec'));
-        $tester  = new Tester(new EventDispatcher(), $matchers);
+        $tester  = new Tester(new EventDispatcher(), $matchers, $input->getOption('example'));
 
         // setup formatter
         $formatter = new Formatter\PrettyFormatter;
