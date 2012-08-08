@@ -33,6 +33,6 @@ class MatchersCollection implements Specification
         $matcher->supports('work', 42, array())->should_return(true);
 
         $this->object->add($matcher);
-        $this->object->find('work', 42, array())->should_be_equal($matcher);
+        $this->object->find('work', 42, array())->should_equal($matcher);
     }
 }

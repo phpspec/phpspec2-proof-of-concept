@@ -34,6 +34,12 @@ class EqualityMatcher implements Specification
         $this->supports_alias_for_all_kinds('equal', $matcher);
     }
 
+    function matches_string_using_comparison_operator($matcher)
+    {
+        $matcher->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                ->during('positiveMatch', array('equal', '', array('')));
+    }
+
     private function supports_alias_for_all_kinds($alias, $matcher)
     {
         foreach ($this->all_kinds_of_subjects() as $kind => $subject) {
