@@ -202,6 +202,33 @@ class EqualityMatcher implements Specification
             }
         }
     }
+    
+    function match_throws_type_specific_failure_exception($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->all_kinds_of_subjects() as $type => $value) {
+                
+                // we need a booleans not equal exception
+                if ($value === true) $value = false;
+                
+                $matcher->should_throw(
+                    $this->failure_exception_for($type)
+                )->during('positiveMatch', array($alias, $value, array('different_value')));
+            }
+        }
+    }
+    
+    function mismatch_throws_with_type_specific_message($matcher)
+    {
+        foreach ($this->all_equality_matcher_aliases() as $alias) {
+            foreach ($this->all_kinds_of_subjects() as $type => $value) {                
+                $matcher->should_throw(
+                    'PHPSpec2\Exception\Example\FailureException',
+                    $this->mismatch_message_for($type)
+                )->during('negativeMatch', array($alias, $value, array($value)));
+            }
+        }
+    }
 
     private function supports_alias_for_all_kinds($alias, $matcher)
     {
@@ -237,5 +264,32 @@ class EqualityMatcher implements Specification
         return array(
             'equal', 'return', 'be_equal_to', 'be'
         );
+    }
+    
+    private function failure_exception_for($type)
+    {
+        $namespace = "PHPSpec2\\Exception\\Example\\";
+        $exceptions = array(
+            'string'   => 'StringsNotEqualException',
+            'integer'  => 'IntegersNotEqualException',
+            'object'   => 'ObjectsNotEqualException',
+            'array'    => 'ArraysNotEqualException',
+            'boolean'  => 'BooleansNotEqualException',
+            'resource' => 'ResourcesNotEqualException'
+        );
+        return $namespace . $exceptions[$type];
+    }
+    
+    private function mismatch_message_for($type)
+    {
+        $messages = array(
+            'string' => 'Strings are equal, but they shouldn\'t be',
+            'integer' => 'Integers are equal, but they shouldn\'t be',
+            'object' => 'Objects are equal, but they shouldn\'t be',
+            'array'  => 'Arrays are equal, but they shouldn\'t be',
+            'boolean' => 'Booleans are equal, but they shouldn\'t be',
+            'resource' => 'Resources are equal, but they shouldn\'t be'
+        );
+        return $messages[$type];
     }
 }

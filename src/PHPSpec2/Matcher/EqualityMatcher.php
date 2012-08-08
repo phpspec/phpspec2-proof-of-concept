@@ -4,6 +4,10 @@ namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Example\StringsNotEqualException;
 use PHPSpec2\Exception\Example\ObjectsNotEqualException;
+use PHPSpec2\Exception\Example\IntegersNotEqualException;
+use PHPSpec2\Exception\Example\ArraysNotEqualException;
+use PHPSpec2\Exception\Example\BooleansNotEqualException;
+use PHPSpec2\Exception\Example\ResourcesNotEqualException;
 use PHPSpec2\Exception\Example\FailureException;
 
 class EqualityMatcher extends BasicMatcher
@@ -23,6 +27,26 @@ class EqualityMatcher extends BasicMatcher
         if (is_object($subject)) {
             return new ObjectsNotEqualException(
                 'Objects are not equal, but should be',
+                $subject, $arguments[0]
+            );
+        } elseif (is_integer($subject)) {
+            return new IntegersNotEqualException(
+                'Integers are not equal, but should be',
+                $subject, $arguments[0]
+            );
+        } elseif (is_array($subject)) {
+            return new ArraysNotEqualException(
+                'Arrays are not equal, but should be',
+                $subject, $arguments[0]
+            );
+        } elseif (is_bool($subject)) {
+            return new BooleansNotEqualException(
+                'Booleans are not equal, but should be',
+                $subject, $arguments[0]
+            );
+        } elseif (is_resource($subject)) {
+            return new ResourcesNotEqualException(
+                'Resources are not equal, but should be',
                 $subject, $arguments[0]
             );
         } else {
