@@ -27,7 +27,7 @@ interface MatcherInterface
     /**
      * Evaluates negative match.
      *
-     * @parma string $name
+     * @param string $name
      * @param mixed  $subject
      * @param array  $arguments
      */
