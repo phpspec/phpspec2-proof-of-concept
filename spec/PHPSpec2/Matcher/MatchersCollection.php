@@ -7,11 +7,6 @@ use PHPSpec2\Exception\Example\MatcherNotFoundException;
 
 class MatchersCollection implements Specification
 {
-    function described_with($matcher)
-    {
-        $this->object->is_an_instance_of('PHPSpec2\Matcher\MatchersCollection');
-        $matcher->is_a_mock_of('PHPSpec2\Matcher\MatcherInterface');
-    }
 
     function will_complain_if_no_matchers_registered()
     {
@@ -20,6 +15,9 @@ class MatchersCollection implements Specification
             ->during('find', array('crazy_alias', 42, array()));
     }
 
+    /**
+     * @param ObjectStub $matcher mock of PHPSpec2\Matcher\MatcherInterface
+     */
     function will_complain_if_matcher_is_not_found($matcher)
     {
         $this->object->add($matcher);
@@ -28,6 +26,9 @@ class MatchersCollection implements Specification
             ->during('find', array('crazy_alias', 42, array()));
     }
 
+    /**
+     * @param ObjectStub $matcher mock of PHPSpec2\Matcher\MatcherInterface
+     */
     function will_return_matcher_if_found($matcher)
     {
         $matcher->supports('work', 42, array())->will_return(true);
