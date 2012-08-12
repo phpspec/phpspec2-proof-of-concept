@@ -205,26 +205,26 @@ class IdentityMatcher implements Specification
             }
         }
     }
-    
+
     function match_throws_type_specific_failure_exception()
     {
         foreach ($this->all_identity_matcher_aliases() as $alias) {
             foreach ($this->all_kinds_of_subjects() as $type => $value) {
-                
+
                 // we need a booleans not equal exception
                 if ($value === true) $value = false;
-                
+
                 $this->object->should_throw(
                     $this->failure_exception_for($type)
                 )->during('positiveMatch', array($alias, $value, array('different_value')));
             }
         }
     }
-    
+
     function mismatch_throws_with_type_specific_message()
     {
         foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->all_kinds_of_subjects() as $type => $value) {                
+            foreach ($this->all_kinds_of_subjects() as $type => $value) {
                 $this->object->should_throw(
                     'PHPSpec2\Exception\Example\FailureException',
                     $this->mismatch_message_for($type)
@@ -265,10 +265,10 @@ class IdentityMatcher implements Specification
     private function all_identity_matcher_aliases()
     {
         return array(
-            'equal', 'return', 'be_equal_to', 'be'
+            'equal', 'return', 'be_equal_to', 'be_equal'
         );
     }
-    
+
     private function failure_exception_for($type)
     {
         $namespace = "PHPSpec2\\Exception\\Example\\";
@@ -282,7 +282,7 @@ class IdentityMatcher implements Specification
         );
         return $namespace . $exceptions[$type];
     }
-    
+
     private function mismatch_message_for($type)
     {
         $messages = array(
