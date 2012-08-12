@@ -70,7 +70,7 @@ class ObjectStub
             return $this->getStubSubject()->mockMethod($method, $arguments, $this->resolver);
         }
 
-        throw new MethodNotFoundException($method);
+        throw new MethodNotFoundException($this->subject, $method);
     }
 
     public function setToStub($property, $value = null)
