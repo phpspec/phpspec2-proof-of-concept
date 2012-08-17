@@ -31,7 +31,8 @@ class TestCommand extends Command
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run')
         ));
         
-        $this->addOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching a given pattern');
+        $this->addOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching a given pattern')
+             ->addOption('fail-fast', null, InputOption::VALUE_NONE, 'Abort the run on first failure');
     }
 
     /**
@@ -52,7 +53,7 @@ class TestCommand extends Command
 
         // setup specs locator and tester
         $locator = new Locator($input->getArgument('spec'));
-        $tester  = new Tester(new EventDispatcher(), $matchers, $input->getOption('example'));
+        $tester  = new Tester(new EventDispatcher(), $matchers, $input->getOptions());
 
         // setup formatter
         $formatter = new Formatter\PrettyFormatter;
@@ -65,6 +66,9 @@ class TestCommand extends Command
         $tester->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
         foreach ($locator->getSpecifications() as $spec) {
+            if ($tester->wasAborted()) {
+                break;
+            }
             $tester->testSpecification($spec);
         }
 

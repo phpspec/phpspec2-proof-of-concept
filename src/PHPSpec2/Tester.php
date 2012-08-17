@@ -25,12 +25,15 @@ class Tester
     private $eventDispatcher;
     private $matchers = array();
     private $runOnly = Tester::RUN_ALL;
+    private $failFast;
+    private $wasAborted = false;
 
-    public function __construct(EventDispatcherInterface $dispatcher, MatchersCollection $matchers, $runOnly = Tester::RUN_ALL)
+    public function __construct(EventDispatcherInterface $dispatcher, MatchersCollection $matchers, array $options = array())
     {
         $this->eventDispatcher = $dispatcher;
         $this->matchers        = $matchers;
-        $this->runOnly         = $runOnly;
+        $this->runOnly         = isset($options['example']) ? $options['example'] : Tester::RUN_ALL;
+        $this->failFast        = isset($options['fail-fast']) ? $options['fail-fast'] : false;
     }
 
     public function getEventDispatcher()
@@ -55,6 +58,11 @@ class Tester
             if ($this->isExampleTestable($example) &&
                 $this->exampleIsFiltered($example)) {
                 $result = max($result, $this->testExample($example));
+
+                if ($this->failFast && $result) {
+                    $this->wasAborted = true;
+                    return $result;
+                }
             }
         }
 
@@ -130,6 +138,11 @@ class Tester
 
         // error reporting turned off or more likely suppressed with @
         return false;
+    }
+
+    public function wasAborted()
+    {
+        return $this->wasAborted;
     }
 
     protected function getStubsForExample(Specification $instance, ReflectionMethod $example)
@@ -208,7 +221,7 @@ class Tester
     private function exampleIsFiltered(ReflectionMethod $example)
     {
         return preg_match(
-            "/" . preg_quote($this->runOnly) . "/",
+            "/" . $this->runOnly . "/",
             $example->getName()
         ) !== 0;
     }
