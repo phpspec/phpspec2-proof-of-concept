@@ -8,61 +8,47 @@ use PHPSpec2\Exception\Example\FailureException;
 class PredicateMatcher extends BasicMatcher
 {
     private $name;
+    private $method;
 
     public function supports($name, $subject, array $arguments)
     {
         $this->name = $name;
-        return is_object($subject) && $this->isPredicate($subject);
+        return is_object($subject) &&
+               $this->method = $this->detectMethod($subject);
     }
 
     protected function matches($subject, array $arguments)
     {
-        if (!$this->name) {
+        if (!$this->method) {
             throw new ExampleException(
                 "Before using PredicateMatcher, check if it supports the alias"
             );
         }
 
-        if ($method = $this->detectPredicateMethod('be', 'is', $subject)) {
-            return call_user_func(array($subject, $method)) === true;
-        } elseif ($method = $this->detectPredicateMethod('have', 'has', $subject)) {
-            return call_user_func_array(array($subject, $method), $arguments);
-        }
+        return call_user_func_array(array($subject, $this->method), $arguments);
     }
 
     protected function getFailureException($name, $subject, array $arguments)
     {
-        if ($method = $this->detectPredicateMethod('be', 'is', $subject)) {
-            $method = strtoupper($method[0]) . substr($method, 1);
-            return new FailureException(
-                "Expected $method to return true, got false. Using ($name)"
-            );
-        } elseif ($method = $this->detectPredicateMethod('have', 'has', $subject)) {
-            return new FailureException(
-                "Expected $method to return true, got false. Using ($name)"
-            );
-        }
+        return new FailureException(
+            "Expected {$this->method} to return true, got false. Using ($name)"
+        );
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
-        if ($method = $this->detectPredicateMethod('be', 'is', $subject)) {
-            $method = strtoupper($method[0]) . substr($method, 1);
-            return new FailureException(
-                "Expected $method not to return true, got true. Using ($name)"
-            );
-        } elseif ($method = $this->detectPredicateMethod('have', 'has', $subject)) {
-            return new FailureException(
-                "Expected $method not to return true, got true. Using ($name)"
-            );
-        }
+        return new FailureException(
+            "Expected $this->method not to return true, got true. Using ($name)"
+        );
+        
     }
-
-    private function isPredicate($subject)
+    
+    private function detectMethod($subject)
     {
-        if ($this->detectPredicateMethod('be', 'is', $subject) ||
-            $this->detectPredicateMethod('have', 'has', $subject)) {
-            return true;
+        if ($method = $this->detectPredicateMethod('be', 'is', $subject)) {
+            return $method;
+        } elseif ($method = $this->detectPredicateMethod('have', 'has', $subject)) {
+            return $method;
         }
         return false;
     }
@@ -75,6 +61,5 @@ class PredicateMatcher extends BasicMatcher
         }
         return false;
     }
-
 
 }
