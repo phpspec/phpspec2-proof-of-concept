@@ -25,7 +25,7 @@ class TrueMatcher implements Specification
 
     function does_not_complains_when_matching_true()
     {
-        $this->object->should_not_throw('PHPSpec2\Exception\Example\BooleanNotEqualException')
+        $this->trueMatcher->should_not_throw('PHPSpec2\Exception\Example\BooleanNotEqualException')
              ->during('positiveMatch', array('be_true', true, array()));
         
     }
