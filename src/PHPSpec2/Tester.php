@@ -208,10 +208,12 @@ class Tester
     private function specContainsFilteredExamples(array $examples)
     {
         if (self::RUN_ALL !== $this->runOnly) {
-            foreach ($examples as $example) {
-                if ($this->exampleIsFiltered($example)) {
-                    return true;
-                }
+            return true;
+        }
+
+        foreach ($examples as $example) {
+            if ($this->exampleIsFiltered($example)) {
+                return true;
             }
         }
 

@@ -138,7 +138,7 @@ class ObjectStub
 
     private function isSubjectMethodAccessible($method)
     {
-        if (!method_exists($this->getStubSubject(), $method)) {
+        if (!is_object($this->getStubSubject()) || !method_exists($this->getStubSubject(), $method)) {
             return false;
         }
 
@@ -149,7 +149,7 @@ class ObjectStub
 
     private function isSubjectPropertyAccessible($property)
     {
-        if (!property_exists($this->getStubSubject(), $property)) {
+        if (!is_object($this->getStubSubject()) || !property_exists($this->getStubSubject(), $property)) {
             return false;
         }
 
