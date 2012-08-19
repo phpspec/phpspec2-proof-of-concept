@@ -9,8 +9,7 @@ class ContainerPredicateMatcher extends BasicMatcher
     public function supports($name, $subject, array $arguments)
     {
         return 0 === strpos($name, 'have_')
-            && is_object($subject)
-            && strlen($name) > 5;
+            && is_object($subject);
     }
 
     public function matches($name, $subject, array $arguments)

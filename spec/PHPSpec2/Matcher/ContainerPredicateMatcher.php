@@ -21,7 +21,6 @@ class ContainerPredicateMatcher implements Specification
     function have_by_itself_is_not_enough()
     {
         $this->object->supports('have', new \stdClass, array())->should_not_return_true();
-        $this->object->supports('have_',  new \stdClass, array())->should_not_return_true();
     }
 
     function aliases_not_starting_with_have_are_not_supported()

@@ -21,7 +21,6 @@ class ObjectStatePredicateMatcher implements Specification
     function be_by_itself_is_not_enough()
     {
         $this->object->supports('be', new \stdClass, array())->should_not_return_true();
-        $this->object->supports('be_',  new \stdClass, array())->should_not_return_true();
     }
 
     function aliases_not_starting_with_be_are_not_supported()
