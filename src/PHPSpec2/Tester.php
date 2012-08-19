@@ -84,7 +84,12 @@ class Tester
         }
 
         $instance = $spec->newInstance();
-        $instance->object = new ObjectStub($subject, $this->matchers);
+
+        $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
+        $className = strtolower($className[0]) . substr($className, 1);
+        $instance->$className = new ObjectStub($subject, $this->matchers);
+        $instance->object = $instance->$className;
+
         $stubs = $this->getStubsForExample($instance, $example);
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
