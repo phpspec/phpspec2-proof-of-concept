@@ -24,6 +24,18 @@ class ObjectStatePredicateMatcher implements Specification
         $this->object->supports('be_',  new \stdClass, array())->should_not_return_true();
     }
 
+    function aliases_not_starting_with_be_are_not_supported()
+    {
+        $this->object->supports('not_to_be', new \stdClass, array())->should_not_return_true();
+    }
+
+    function matches_is_method_against_true()
+    {
+        $subject = new \ReflectionClass($this);
+        $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+            ->during('positiveMatch', array('be_abstract', $subject, array()));
+    }
+
     private function a_bunch_of_aliases_starting_with_be()
     {
         return array(

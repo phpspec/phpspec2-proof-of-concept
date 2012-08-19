@@ -15,7 +15,7 @@ class TrueMatcher extends BasicMatcher
         return in_array($name, array('be_true', 'return_true'));
     }
 
-    protected function matches($subject, array $arguments)
+    protected function matches($name, $subject, array $arguments)
     {
         $this->actual = $subject === false ? 'false' : gettype($subject);
         return $subject === true;

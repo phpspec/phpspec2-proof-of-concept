@@ -17,7 +17,7 @@ class PredicateMatcher extends BasicMatcher
                $this->method = $this->detectMethod($subject);
     }
 
-    protected function matches($subject, array $arguments)
+    protected function matches($name, $subject, array $arguments)
     {
         if (!$this->method) {
             throw new ExampleException(
