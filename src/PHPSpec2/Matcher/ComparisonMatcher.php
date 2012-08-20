@@ -17,7 +17,7 @@ class ComparisonMatcher extends BasicMatcher
         return in_array($name, array('be_like'));
     }
 
-    protected function matches($name, $subject, array $arguments)
+    protected function matches($subject, array $arguments)
     {
         return $subject == $arguments[0];
     }

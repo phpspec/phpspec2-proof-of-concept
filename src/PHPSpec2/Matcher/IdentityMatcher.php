@@ -17,7 +17,7 @@ class IdentityMatcher extends BasicMatcher
         return in_array($name, array('return', 'be', 'equal', 'be_equal_to'));
     }
 
-    protected function matches($name, $subject, array $arguments)
+    protected function matches($subject, array $arguments)
     {
         return $subject === $arguments[0];
     }

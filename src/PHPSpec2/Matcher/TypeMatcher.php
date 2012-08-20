@@ -11,7 +11,7 @@ class TypeMatcher extends BasicMatcher
         return in_array($name, array('be_an_instance_of', 'return_an_instance_of'));
     }
 
-    protected function matches($name, $subject, array $arguments)
+    protected function matches($subject, array $arguments)
     {
         return null !== $subject && $subject instanceof $arguments[0];
     }

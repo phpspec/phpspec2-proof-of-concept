@@ -4,7 +4,7 @@ namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Example\FailureException;
 
-class ContainerPredicateMatcher extends BasicMatcher
+class ContainerPredicateMatcher implements MatcherInterface
 {
     public function supports($name, $subject, array $arguments)
     {
@@ -12,10 +12,24 @@ class ContainerPredicateMatcher extends BasicMatcher
             && is_object($subject);
     }
 
-    public function matches($name, $subject, array $arguments)
+    public function positiveMatch($name, $subject, array $arguments)
     {
         $method = 'has' . substr(str_replace('_', '', $name), 4);
-        return call_user_func_array(array($subject, $method), $arguments) === true;
+        if (call_user_func_array(array($subject, $method), $arguments) !== true) {
+            throw $this->getFailureException($name, $subject, $arguments);            
+        }
+
+        return $subject;
+    }
+
+    public function negativeMatch($name, $subject, array $arguments)
+    {
+        $method = 'has' . substr(str_replace('_', '', $name), 4);
+        if (call_user_func_array(array($subject, $method), $arguments) === true) {
+            throw $this->getNegativeFailureException($name, $subject, $arguments);
+        }
+
+        return $subject;
     }
 
     public function getFailureException($name, $subject, array $arguments)
