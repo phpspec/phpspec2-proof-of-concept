@@ -87,8 +87,9 @@ class Tester
 
         $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
         $className = strtolower($className[0]) . substr($className, 1);
-        $instance->$className = new ObjectStub($subject, $this->matchers);
-        $instance->object = $instance->$className;
+
+        $stub = new ObjectStub($subject, $this->matchers);
+        $instance->$className = $instance->object = $stub;
 
         $stubs = $this->getStubsForExample($instance, $example);
 
@@ -197,7 +198,7 @@ class Tester
             if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *mock of (.*)$#', $line, $match)) {
                 if (!isset($stubs[$match[1]])) {
                     $stubs[$match[1]] = new ObjectStub(null, $this->matchers);
-                    $stubs[$match[1]]->is_a_mock_of($match[2]);
+                    $stubs[$match[1]]->isAMockOf($match[2]);
                 }
             }
         }

@@ -11,7 +11,7 @@ class ThrowMatcher implements Specification
     {
         $this->object
             ->supports('throw', new stdClass, array('\Exception'))
-            ->should_return_true();
+            ->shouldReturnTrue();
     }
 
     /**
@@ -20,7 +20,7 @@ class ThrowMatcher implements Specification
     function can_specify_a_method_during_which_an_exception_should_be_throw($subject)
     {
         $subject->someMethod()
-            ->will_throw('\Exception');
+            ->willThrow('\Exception');
 
         $this->object
             ->positiveMatch('throw', $subject, array('\Exception'))

@@ -16,28 +16,28 @@ class ExpectationProxy
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
         $this->resolver    = $resolver;
 
-        $this->should_be_called();
-        $this->will_return(null);
+        $this->shouldBeCalled();
+        $this->willReturn(null);
     }
 
-    public function will_return($value = null)
+    public function willReturn($value = null)
     {
         return call_user_func_array(
             array($this->expectation, 'andReturn'), $this->resolver->resolve($value)
         );
     }
 
-    public function should_be_called()
+    public function shouldBeCalled()
     {
         $this->expectation->atLeast(1);
     }
 
-    public function should_not_be_called()
+    public function shouldNotBeCalled()
     {
         $this->expectation->never();
     }
 
-    public function will_throw($exception, $message = '')
+    public function willThrow($exception, $message = '')
     {
         $this->expectation->andThrow($exception, $message);
     }

@@ -29,12 +29,12 @@ class ObjectStub
         $this->resolver = $resolver ?: new ArgumentsResolver();
     }
 
-    public function is_an_instance_of($class, array $constructorArguments = array())
+    public function isAnInstanceOf($class, array $constructorArguments = array())
     {
         $this->subject = new LazyInstance($class, $this->resolver->resolve($constructorArguments));
     }
 
-    public function is_a_mock_of($classOrInterface)
+    public function isAMockOf($classOrInterface)
     {
         $this->subject = new LazyMock($classOrInterface, $this->mockers);
     }
@@ -44,7 +44,7 @@ class ObjectStub
         return new Verification\Positive($this->getStubSubject(), $this->matchers, $this->resolver);
     }
 
-    public function should_not()
+    public function shouldNot()
     {
         return new Verification\Negative($this->getStubSubject(), $this->matchers, $this->resolver);
     }
@@ -104,13 +104,13 @@ class ObjectStub
 
     public function __call($method, array $arguments = array())
     {
-        // if user calls function with should_ prefix - call matcher
-        if (preg_match('/^(should(?:_not|)?)_(.+)$/', $method, $matches)) {
-            $matcherName = $matches[2];
+        // if user calls function with should prefix - call matcher
+        if (preg_match('/^(should(?:Not|))(.+)$/', $method, $matches)) {
+            $matcherName = lcfirst($matches[2]);
             if ('should' === $matches[1]) {
                 return call_user_func_array(array($this->should(), $matcherName), $arguments);
             } else {
-                return call_user_func_array(array($this->should_not(), $matcherName), $arguments);
+                return call_user_func_array(array($this->shouldNot(), $matcherName), $arguments);
             }
         }
 
