@@ -6,46 +6,46 @@ use PHPSpec2\Specification;
 
 class TrueMatcher implements Specification
 {
-    function supports_useful_aliases()
+    function it_supports_useful_aliases()
     {
-        $this->object->supports('be_true', null, array())
-                     ->should_be_true();
-                     
-        $this->object->supports('return_true', null, array())
-                     ->should_be_true();
+        $this->object->supports('beTrue', null, array())
+                     ->shouldBeTrue();
+
+        $this->object->supports('returnTrue', null, array())
+                     ->shouldBeTrue();
     }
 
-    function complains_when_matching_anything_different_from_true()
+    function it_complains_when_matching_anything_different_from_true()
     {
-        foreach ($this->list_of_values_with_no_true() as $value) {
-            $this->object->should_throw('PHPSpec2\Exception\Example\BooleanNotEqualException')
+        foreach ($this->listOfNotTrueValues() as $value) {
+            $this->object->shouldThrow('PHPSpec2\Exception\Example\BooleanNotEqualException')
                  ->during('positiveMatch', array('be_true', $value, array()));
         }
     }
 
-    function does_not_complains_when_matching_true()
+    function it_does_not_complains_when_matching_true()
     {
-        $this->trueMatcher->should_not_throw('PHPSpec2\Exception\Example\BooleanNotEqualException')
+        $this->trueMatcher->shouldNotThrow('PHPSpec2\Exception\Example\BooleanNotEqualException')
              ->during('positiveMatch', array('be_true', true, array()));
-        
+
     }
 
-    function complains_when_reverse_matching_true()
+    function it_complains_when_reverse_matching_true()
     {
-        $this->object->should_throw('PHPSpec2\Exception\Example\BooleanNotEqualException')
+        $this->object->shouldThrow('PHPSpec2\Exception\Example\BooleanNotEqualException')
              ->during('negativeMatch', array('be_true', true, array()));
     }
 
-    function does_not_complains_when_reverse_matching_not_true()
+    function it_does_not_complains_when_reverse_matching_not_true()
     {
-        foreach ($this->list_of_values_with_no_true() as $value) {
-            $this->object->should_not_throw('PHPSpec2\Exception\Example\BooleanNotEqualException')
+        foreach ($this->listOfNotTrueValues() as $value) {
+            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\BooleanNotEqualException')
                  ->during('negativeMatch', array('be_true', $value, array()));
         }
-        
+
     }
 
-    private function list_of_values_with_no_true()
+    private function listOfNotTrueValues()
     {
         return array(
             1,

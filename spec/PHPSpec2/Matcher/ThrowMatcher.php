@@ -7,20 +7,20 @@ use stdClass;
 
 class ThrowMatcher implements Specification
 {
-    function supports_the_throw_alias_for_object_and_exception_name()
+    function it_supports_the_throw_alias_for_object_and_exception_name()
     {
         $this->object
             ->supports('throw', new stdClass, array('\Exception'))
-            ->should_return_true();
+            ->shouldReturnTrue();
     }
 
     /**
      * @param ObjectStub $subject mock of stdClass
      */
-    function can_specify_a_method_during_which_an_exception_should_be_throw($subject)
+    function it_can_specify_a_method_during_which_an_exception_should_be_throw($subject)
     {
         $subject->someMethod()
-            ->will_throw('\Exception');
+            ->willThrow('\Exception');
 
         $this->object
             ->positiveMatch('throw', $subject, array('\Exception'))
@@ -30,7 +30,7 @@ class ThrowMatcher implements Specification
     /**
      * @param ObjectStub $subject mock of stdClass
      */
-    function can_specify_a_method_during_which_an_exception_should_not_be_throw($subject)
+    function it_can_specify_a_method_during_which_an_exception_should_not_be_throw($subject)
     {
         $this->object
             ->negativeMatch('throw', $subject, array('\Exception'))
