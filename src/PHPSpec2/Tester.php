@@ -208,7 +208,7 @@ class Tester
 
     private function isExampleTestable(ReflectionMethod $example)
     {
-        return 'described_with' !== $example->getName();
+        return (bool) preg_match('/^(it_|its_)/', $example->getName());
     }
 
     private function specContainsFilteredExamples(array $examples)
