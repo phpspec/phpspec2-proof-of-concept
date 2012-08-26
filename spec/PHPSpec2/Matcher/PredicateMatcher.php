@@ -6,7 +6,7 @@ use PHPSpec2\Specification;
 
 class PredicateMatcher implements Specification
 {
-    function infers_matcher_alias_name_from_methods_prefixed_with_is()
+    function it_infers_matcher_alias_name_from_methods_prefixed_with_is()
     {
         $subject = new \ReflectionClass($this);
 
@@ -14,7 +14,7 @@ class PredicateMatcher implements Specification
         $this->object->supports('be_abstract', $subject, array())->shouldReturnTrue();
     }
 
-    function infers_matcher_alias_name_from_methods_prefixed_with_has()
+    function it_infers_matcher_alias_name_from_methods_prefixed_with_has()
     {
         $subject = new \ReflectionClass($this);
 
@@ -22,7 +22,7 @@ class PredicateMatcher implements Specification
         $this->object->supports('have_method', $subject, array())->shouldReturnTrue();
     }
 
-    function matches_is_method_against_true()
+    function it_matches_is_method_against_true()
     {
         $subject = new \ReflectionClass($this);
         $this->object->supports('be_abstract', $subject, array());
@@ -32,7 +32,7 @@ class PredicateMatcher implements Specification
             ->during('positiveMatch', array('be_abstract', $subject, array()));
     }
 
-    function matches_has_method_against_true()
+    function it_matches_has_method_against_true()
     {
         $subject = new \ReflectionClass($this);
         $this->object->supports('have_method', $subject, array());
