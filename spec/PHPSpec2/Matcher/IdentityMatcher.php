@@ -9,20 +9,20 @@ class IdentityMatcher implements Specification
 {
     private static $NO_ARGUMENTS = array();
 
-    function should_support_all_aliases_for_all_kinds_of_subjects()
+    function it_should_support_all_aliases_for_allKindsOfSubjects()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            $this->supports_alias_for_all_kinds($alias, $this->object);
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            $this->supportsAliasForAllKinds($alias, $this->object);
         }
     }
 
     /**
      * @Context "Positive Matching"
      */
-    function matches_empty_string_using_identity_operator()
+    function it_matches_empty_string_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('positiveMatch', array($alias, '', array('')));
         }
     }
@@ -30,10 +30,10 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Positive Matching"
      */
-    function matches_not_empty_string_using_identity_operator()
+    function it_matches_not_empty_string_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('positiveMatch', array($alias, 'chuck', array('chuck')));
         }
     }
@@ -41,12 +41,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Positive Matching"
      */
-    function does_not_matches_empty_string_with_emptish_values_using_identity_operator()
+    function it_does_not_matches_empty_string_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === '') continue;
-                $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, '', array($empty)));
             }
         }
@@ -55,12 +55,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Positive Matching"
      */
-    function does_not_matches_zero_with_emptish_values_using_identity_operator()
+    function it_does_not_matches_zero_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === 0) continue;
-                $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, 0, array($empty)));
             }
         }
@@ -69,12 +69,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Positive Matching"
      */
-    function does_not_matches_null_with_emptish_values_using_identity_operator()
+    function it_does_not_matches_null_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === null) continue;
-                $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, null, array($empty)));
             }
         }
@@ -83,12 +83,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Positive Matching"
      */
-    function does_matches_false_with_emptish_values_using_identity_operator()
+    function it_does_matches_false_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === false) continue;
-                $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, false, array($empty)));
             }
         }
@@ -97,15 +97,15 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Positive Matching"
      */
-    function does_not_match_non_empty_different_value()
+    function it_does_not_match_non_empty_different_value()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->all_kinds_of_subjects() as $value) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->allKindsOfSubjects() as $value) {
 
                 // skip true
                 if ($value === true) continue;
 
-                $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, 'different_value',array($value)));
             }
         }
@@ -114,10 +114,10 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_empty_string_using_identity_operator()
+    function it_mismatches_empty_string_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('negativeMatch', array($alias, '', array('')));
         }
     }
@@ -125,10 +125,10 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_not_empty_string_using_identity_operator($matcher)
+    function it_mismatches_not_empty_string_using_identity_operator($matcher)
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            $this->object->should_throw('PHPSpec2\Exception\Example\FailureException')
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('negativeMatch', array($alias, 'chuck', array('chuck')));
         }
     }
@@ -136,12 +136,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_empty_string_with_emptish_values_using_identity_operator()
+    function it_mismatches_empty_string_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === '') continue;
-                $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, '', array($empty)));
             }
         }
@@ -150,12 +150,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_zero_with_emptish_values_using_identity_operator()
+    function it_mismatches_zero_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === 0) continue;
-                $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, 0, array($empty)));
             }
         }
@@ -164,12 +164,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_null_with_emptish_values_using_identity_operator()
+    function it_mismatches_null_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === null) continue;
-                $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, null, array($empty)));
             }
         }
@@ -178,12 +178,12 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_false_with_emptish_values_using_identity_operator()
+    function it_mismatches_false_with_emptish_values_using_identity_operator()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->php_emptish_values() as $empty) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === false) continue;
-                $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, false, array($empty)));
             }
         }
@@ -192,55 +192,55 @@ class IdentityMatcher implements Specification
     /**
      * @Context "Negative Matching"
      */
-    function mismatches_on_non_empty_different_value()
+    function it_mismatches_on_non_empty_different_value()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->all_kinds_of_subjects() as $value) {
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->allKindsOfSubjects() as $value) {
 
                 // skip true
                 if ($value === true) continue;
 
-                $this->object->should_not_throw('PHPSpec2\Exception\Example\FailureException')
+                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, 'different_value',array($value)));
             }
         }
     }
-    
-    function match_throws_type_specific_failure_exception()
+
+    function its_match_throws_type_specific_failure_exception()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->all_kinds_of_subjects() as $type => $value) {
-                
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->allKindsOfSubjects() as $type => $value) {
+
                 // we need a booleans not equal exception
                 if ($value === true) $value = false;
-                
-                $this->object->should_throw(
-                    $this->failure_exception_for($type)
+
+                $this->object->shouldThrow(
+                    $this->failureExceptionFor($type)
                 )->during('positiveMatch', array($alias, $value, array('different_value')));
             }
         }
     }
-    
-    function mismatch_throws_with_type_specific_message()
+
+    function its_mismatch_throws_with_type_specific_message()
     {
-        foreach ($this->all_identity_matcher_aliases() as $alias) {
-            foreach ($this->all_kinds_of_subjects() as $type => $value) {                
-                $this->object->should_throw(
+        foreach ($this->allIdentityMatcherAliases() as $alias) {
+            foreach ($this->allKindsOfSubjects() as $type => $value) {
+                $this->object->shouldThrow(
                     'PHPSpec2\Exception\Example\FailureException',
-                    $this->mismatch_message_for($type)
+                    $this->missmatchMessageFor($type)
                 )->during('negativeMatch', array($alias, $value, array($value)));
             }
         }
     }
 
-    private function supports_alias_for_all_kinds($alias, $matcher)
+    private function supportsAliasForAllKinds($alias, $matcher)
     {
-        foreach ($this->all_kinds_of_subjects() as $kind => $subject) {
-            $matcher->supports($alias, $subject, self::$NO_ARGUMENTS)->should_be_true();
+        foreach ($this->allKindsOfSubjects() as $kind => $subject) {
+            $matcher->supports($alias, $subject, self::$NO_ARGUMENTS)->shouldBeTrue();
         }
     }
 
-    private function all_kinds_of_subjects()
+    private function allKindsOfSubjects()
     {
         return array(
             'string' => 'some_string',
@@ -252,7 +252,7 @@ class IdentityMatcher implements Specification
         );
     }
 
-    private function php_emptish_values()
+    private function phpEmptishValues()
     {
         return array(
             "",
@@ -262,14 +262,14 @@ class IdentityMatcher implements Specification
         );
     }
 
-    private function all_identity_matcher_aliases()
+    private function allIdentityMatcherAliases()
     {
         return array(
-            'equal', 'return', 'be_equal_to', 'be'
+            'equal', 'return', 'beEqualTo', 'be'
         );
     }
-    
-    private function failure_exception_for($type)
+
+    private function failureExceptionFor($type)
     {
         $namespace = "PHPSpec2\\Exception\\Example\\";
         $exceptions = array(
@@ -282,8 +282,8 @@ class IdentityMatcher implements Specification
         );
         return $namespace . $exceptions[$type];
     }
-    
-    private function mismatch_message_for($type)
+
+    private function missmatchMessageFor($type)
     {
         $messages = array(
             'string' => 'Strings are equal, but they shouldn\'t be',

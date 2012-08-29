@@ -8,7 +8,7 @@ class TypeMatcher extends BasicMatcher
 {
     public function supports($name, $subject, array $arguments)
     {
-        return in_array($name, array('be_an_instance_of', 'return_an_instance_of'));
+        return in_array($name, array('beAnInstanceOf', 'returnAnInstanceOf'));
     }
 
     protected function matches($subject, array $arguments)

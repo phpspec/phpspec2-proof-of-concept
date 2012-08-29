@@ -12,7 +12,7 @@ class TrueMatcher extends BasicMatcher
     public function supports($name, $subject, array $arguments)
     {
         $this->usedAlias = $name;
-        return in_array($name, array('be_true', 'return_true'));
+        return in_array($name, array('beTrue', 'returnTrue'));
     }
 
     protected function matches($subject, array $arguments)
