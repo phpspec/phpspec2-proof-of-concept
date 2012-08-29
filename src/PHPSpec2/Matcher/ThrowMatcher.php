@@ -18,4 +18,9 @@ class ThrowMatcher implements MatcherInterface
     {
         return new Verification\NegativeThrowVerification($subject, $arguments);
     }
+
+    public function getPriority()
+    {
+        return 1;
+    }
 }

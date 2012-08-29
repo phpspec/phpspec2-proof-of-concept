@@ -32,4 +32,11 @@ interface MatcherInterface
      * @param array  $arguments
      */
     public function negativeMatch($name, $subject, array $arguments);
+
+    /**
+     * Returns matcher priority.
+     *
+     * @return integer
+     */
+    public function getPriority();
 }

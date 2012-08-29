@@ -22,6 +22,11 @@ abstract class BasicMatcher implements MatcherInterface
         return $subject;
     }
 
+    public function getPriority()
+    {
+        return 1;
+    }
+
     abstract protected function matches($subject, array $arguments);
     abstract protected function getFailureException($name, $subject, array $arguments);
     abstract protected function getNegativeFailureException($name, $subject, array $arguments);

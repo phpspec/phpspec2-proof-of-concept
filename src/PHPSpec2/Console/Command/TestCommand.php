@@ -30,7 +30,7 @@ class TestCommand extends Command
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run')
         ));
-        
+
         $this->addOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching a given pattern')
              ->addOption('fail-fast', null, InputOption::VALUE_NONE, 'Abort the run on first failure');
     }
@@ -50,6 +50,8 @@ class TestCommand extends Command
         $matchers->add(new Matcher\TrueMatcher);
         $matchers->add(new Matcher\ThrowMatcher);
         $matchers->add(new Matcher\TypeMatcher);
+        $matchers->add(new Matcher\ObjectStateMatcher);
+        $matchers->add(new Matcher\ObjectContainsMatcher);
 
         // setup specs locator and tester
         $locator = new Locator($input->getArgument('spec'));
