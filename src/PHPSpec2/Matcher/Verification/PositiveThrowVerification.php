@@ -2,9 +2,8 @@
 
 namespace PHPSpec2\Matcher\Verification;
 
-use PHPSpec2\Exception\Example\StringsNotEqualException;
 use PHPSpec2\Exception\Example\MatcherException;
-use PHPSpec2\Exception\Example\ObjectsNotEqualException;
+use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Example\FailureException;
 
 class PositiveThrowVerification
@@ -48,8 +47,8 @@ class PositiveThrowVerification
     private function checkIfExceptionClassCorrect(\Exception $e)
     {
         if (!$e instanceof $this->exceptionClass) {
-            throw new StringsNotEqualException(
-                sprintf('Expected to throw %s, but got %s', $this->exceptionClass, get_class($e)),
+            throw new NotEqualException(
+                sprintf('Expected to throw "%s", but got "%s"', $this->exceptionClass, get_class($e)),
                 $this->exceptionClass, get_class($e)
             );
         }
@@ -59,9 +58,9 @@ class PositiveThrowVerification
     {
         if (get_class($e) !== get_class($this->exception)
          || $e->getMessage() !== $this->exception->getMessage()) {
-            throw new ObjectsNotEqualException(
-                sprintf('Expected to throw [%s], but got [%s]', get_class($this->exception), get_class($e)),
-                $this->exception, $e
+            throw new NotEqualException(
+                sprintf('Expected to throw "%s", but got "%s"', $this->exceptionClass, get_class($e)),
+                $this->exceptionClass, get_class($e)
             );
         }
     }

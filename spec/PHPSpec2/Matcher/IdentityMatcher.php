@@ -7,8 +7,6 @@ use stdClass;
 
 class IdentityMatcher implements Specification
 {
-    private static $NO_ARGUMENTS = array();
-
     function it_should_support_all_aliases_for_allKindsOfSubjects()
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
@@ -23,7 +21,7 @@ class IdentityMatcher implements Specification
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
-                    ->during('positiveMatch', array($alias, '', array('')));
+                ->during('positiveMatch', array($alias, '', array('')));
         }
     }
 
@@ -236,7 +234,7 @@ class IdentityMatcher implements Specification
     private function supportsAliasForAllKinds($alias, $matcher)
     {
         foreach ($this->allKindsOfSubjects() as $kind => $subject) {
-            $matcher->supports($alias, $subject, self::$NO_ARGUMENTS)->shouldBeTrue();
+            $matcher->supports($alias, $subject, array(1))->shouldReturnTrue();
         }
     }
 
@@ -273,12 +271,12 @@ class IdentityMatcher implements Specification
     {
         $namespace = "PHPSpec2\\Exception\\Example\\";
         $exceptions = array(
-            'string'   => 'StringsNotEqualException',
-            'integer'  => 'IntegersNotEqualException',
-            'object'   => 'ObjectsNotEqualException',
-            'array'    => 'ArraysNotEqualException',
-            'boolean'  => 'BooleansNotEqualException',
-            'resource' => 'ResourcesNotEqualException'
+            'string'   => 'FailureException',
+            'integer'  => 'FailureException',
+            'object'   => 'FailureException',
+            'array'    => 'FailureException',
+            'boolean'  => 'FailureException',
+            'resource' => 'FailureException'
         );
         return $namespace . $exceptions[$type];
     }

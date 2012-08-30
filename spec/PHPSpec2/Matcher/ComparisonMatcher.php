@@ -7,8 +7,6 @@ use stdClass;
 
 class ComparisonMatcher implements Specification
 {
-    private static $NO_ARGUMENTS = array();
-
     function it_should_support_all_aliases_for_allKindsOfSubjects()
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
@@ -228,7 +226,7 @@ class ComparisonMatcher implements Specification
     private function supportsAliasForAllKinds($alias, $matcher)
     {
         foreach ($this->allKindsOfSubjects() as $kind => $subject) {
-            $matcher->supports($alias, $subject, self::$NO_ARGUMENTS)->shouldBeTrue();
+            $matcher->supports($alias, $subject, array(1))->shouldBeTrue();
         }
     }
 
