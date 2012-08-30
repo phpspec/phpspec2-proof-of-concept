@@ -33,7 +33,7 @@ class MatchersCollection
                 if ($matcher1->getPriority() === $matcher2->getPriority()) {
                     return 0;
                 }
-                return ($matcher1->getPriority() < $matcher2->getPriority()) ? -1 : 1;
+                return ($matcher1->getPriority() > $matcher2->getPriority()) ? -1 : 1;
             });
 
             $this->sorted = true;
