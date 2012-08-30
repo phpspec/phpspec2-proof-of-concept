@@ -23,7 +23,7 @@ class ObjectStateMatcher implements MatcherInterface
             throw new MethodNotFoundException($subject, $method);
         }
 
-        if (true !== call_user_func(array($subject, $method))) {
+        if (true !== call_user_func_array(array($subject, $method), $arguments)) {
             throw new FailureException(
                 "Expected {$method} to return true, got false."
             );
@@ -39,7 +39,7 @@ class ObjectStateMatcher implements MatcherInterface
             throw new MethodNotFoundException($subject, $method);
         }
 
-        if (false !== call_user_func(array($subject, $method))) {
+        if (false !== call_user_func_array(array($subject, $method), $arguments)) {
             throw new FailureException(
                 "Expected {$method} to return false, got true."
             );

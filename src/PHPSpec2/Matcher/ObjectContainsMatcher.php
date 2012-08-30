@@ -3,6 +3,7 @@
 namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Stub\MethodNotFoundException;
+use PHPSpec2\Exception\Example\FailureException;
 
 class ObjectContainsMatcher implements MatcherInterface
 {
@@ -22,7 +23,7 @@ class ObjectContainsMatcher implements MatcherInterface
             throw new MethodNotFoundException($subject, $method);
         }
 
-        if (true !== call_user_func(array($subject, $method), $arguments[0])) {
+        if (true !== call_user_func_array(array($subject, $method), $arguments)) {
             throw new FailureException(
                 "Expected {$method} to return true, got false."
             );
@@ -38,7 +39,7 @@ class ObjectContainsMatcher implements MatcherInterface
             throw new MethodNotFoundException($subject, $method);
         }
 
-        if (false !== call_user_func(array($subject, $method), $arguments[0])) {
+        if (false !== call_user_func_array(array($subject, $method), $arguments)) {
             throw new FailureException(
                 "Expected {$method} to return false, got true."
             );

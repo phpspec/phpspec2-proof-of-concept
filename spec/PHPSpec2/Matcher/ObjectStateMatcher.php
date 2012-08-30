@@ -25,10 +25,10 @@ class ObjectStateMatcher implements Specification
     function it_matches_if_state_checker_returns_true()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('beAbstract', $subject, array());
+        $this->object->supports('beCloneable', $subject, array());
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
-            ->during('positiveMatch', array('beAbstract', $subject, array()));
+        $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+            ->during('positiveMatch', array('beCloneable', $subject, array()));
     }
 
     function it_does_not_matches_if_state_checker_returns_false()
