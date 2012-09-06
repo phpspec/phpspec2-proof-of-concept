@@ -179,7 +179,7 @@ class PrettyFormatter implements FormatterInterface
                 $args = array_map(function($item) use($representer) {
                     return $representer->representValue($item);
                 }, $call['args']);
-                $text .= sprintf("<lineno>%2d</lineno> %s%s%s(%s)\n",
+                $text .= sprintf("<lineno>%4d</lineno> %s%s%s(%s)\n",
                     $offset++,
                     '<trace-class>'.$call['class'].'</trace-class>',
                     '<trace-type>'.$call['type'].'</trace-type>',
@@ -197,7 +197,7 @@ class PrettyFormatter implements FormatterInterface
                 $args = array_map(function($item) use($representer) {
                     return $representer->representValue($item);
                 }, $call['args']);
-                $text .= sprintf("<lineno>%2d</lineno> %s(%s)\n",
+                $text .= sprintf("<lineno>%4d</lineno> %s(%s)\n",
                     $offset++,
                     '<trace-func>'.$call['function'].'</trace-func>',
                     '<trace-args>'.implode(', ', $args).'</trace-args>'
