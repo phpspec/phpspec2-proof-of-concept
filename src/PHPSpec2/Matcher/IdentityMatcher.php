@@ -2,9 +2,10 @@
 
 namespace PHPSpec2\Matcher;
 
-use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Formatter\Representer\RepresenterInterface;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Exception\Example\FailureException;
+use PHPSpec2\Exception\Example\NotEqualException;
 
 class IdentityMatcher extends BasicMatcher
 {
@@ -29,11 +30,11 @@ class IdentityMatcher extends BasicMatcher
 
     protected function getFailureException($name, $subject, array $arguments)
     {
-        return new FailureException(sprintf(
+        return new NotEqualException(sprintf(
             'Expected <value>%s</value>, but got <value>%s</value>.',
             $this->representer->representValue($arguments[0]),
             $this->representer->representValue($subject)
-        ));
+        ), $arguments[0], $subject);
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)

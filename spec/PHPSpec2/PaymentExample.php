@@ -4,7 +4,7 @@ namespace PHPSpec2 {
     class PaymentExample {
         public function getName()
         {
-            return 'blah';
+            return "everzet\nmduarte";
         }
 
         public function something()
@@ -32,7 +32,7 @@ namespace spec\PHPSpec2 {
     {
         function it_should_blah()
         {
-            $this->object->getName()->shouldReturn('blahs');
+            $this->object->getName()->shouldReturn("everzet\nmduarte\njakub");
         }
 
         function it_should_something()
@@ -40,7 +40,7 @@ namespace spec\PHPSpec2 {
             $this->object->something()->shouldReturnTrue();
         }
 
-        function it_is_fucker()
+        function it_is_paid()
         {
             $this->object->shouldBePaid();
         }

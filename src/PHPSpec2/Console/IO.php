@@ -27,6 +27,9 @@ class IO
         $output->getFormatter()->setStyle('trace-type', new OutputFormatterStyle('white'));
         $output->getFormatter()->setStyle('trace-args', new OutputFormatterStyle('white'));
 
+        $output->getFormatter()->setStyle('diff-add', new OutputFormatterStyle('green'));
+        $output->getFormatter()->setStyle('diff-del', new OutputFormatterStyle('red'));
+
         $this->input  = $input;
         $this->output = $output;
     }

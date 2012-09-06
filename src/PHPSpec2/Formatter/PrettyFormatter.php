@@ -10,8 +10,10 @@ use PHPSpec2\Formatter\Representer\RepresenterInterface;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
+use PHPSpec2\Formatter\Diff\StringDiff;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\ExampleException;
+use PHPSpec2\Exception\Example\NotEqualException;
 
 use ReflectionClass;
 use ReflectionMethod;
@@ -146,6 +148,10 @@ class PrettyFormatter implements FormatterInterface
 
     private function getExceptionStackTrace(Exception $exception)
     {
+        if ($exception instanceof NotEqualException) {
+            return rtrim(StringDiff::diff($exception->getExpected(), $exception->getActual()));
+        }
+
         if ($exception instanceof MatcherException) {
             list($file, $lineno) = $this->getExceptionInitialPosition($exception);
 

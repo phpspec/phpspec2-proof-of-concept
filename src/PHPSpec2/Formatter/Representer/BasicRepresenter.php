@@ -24,10 +24,10 @@ class BasicRepresenter implements RepresenterInterface
             case 'array':
                 return sprintf('array(%d)', count($value));
             case 'string':
-                if (30 > strlen($value)) {
+                if (30 > strlen($value) && false === strpos($value, "\n")) {
                     return sprintf('"%s"', $value);
                 }
-                return 'string';
+                return '[string]';
             default:
                 return sprintf('%s(%s)', $type, $value);
         }

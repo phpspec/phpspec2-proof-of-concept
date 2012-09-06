@@ -34,7 +34,7 @@ class ComparisonMatcher extends BasicMatcher
             'Expected <value>%s</value>, but got <value>%s</value>.',
             $this->representer->representValue($arguments[0]),
             $this->representer->representValue($subject)
-        ), $subject, $arguments[0]);
+        ), $arguments[0], $subject);
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
