@@ -128,7 +128,7 @@ class PrettyFormatter implements FormatterInterface
     {
         if (!$exception instanceof ExampleException) {
             $message = sprintf(
-                'Exception <value>%s("%s")</value> has been thrown',
+                'Exception <value>%s("%s")</value> has been thrown.',
                 get_class($exception),
                 $exception->getMessage()
             );
