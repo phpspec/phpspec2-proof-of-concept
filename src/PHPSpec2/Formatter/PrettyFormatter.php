@@ -109,7 +109,10 @@ class PrettyFormatter implements FormatterInterface
         if (!$verbose) {
             return $this->padText($exception->getMessage(), 2);
         } else {
-            return $this->padText((string) $exception);
+            return $this->padText(
+                $exception->getMessage()."\n".
+                $this->padText((string) $exception, 2)
+            );
         }
     }
 

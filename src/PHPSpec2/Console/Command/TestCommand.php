@@ -17,6 +17,7 @@ use PHPSpec2\StatisticsCollector;
 use PHPSpec2\Formatter;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
+use PHPSpec2\Formatter\Representer\BasicRepresenter;
 
 class TestCommand extends Command
 {
@@ -43,15 +44,15 @@ class TestCommand extends Command
         // setup IO
         $io = new IO($input, $output);
 
+        $representer = new BasicRepresenter();
+
         $matchers = new Matcher\MatchersCollection();
-        $matchers->add(new Matcher\IdentityMatcher);
-        $matchers->add(new Matcher\ComparisonMatcher);
-        $matchers->add(new Matcher\CountMatcher);
-        $matchers->add(new Matcher\TrueMatcher);
-        $matchers->add(new Matcher\ThrowMatcher);
-        $matchers->add(new Matcher\TypeMatcher);
-        $matchers->add(new Matcher\ObjectStateMatcher);
-        $matchers->add(new Matcher\ObjectContainsMatcher);
+        $matchers->add(new Matcher\IdentityMatcher($representer));
+        $matchers->add(new Matcher\ComparisonMatcher($representer));
+        $matchers->add(new Matcher\TrueMatcher($representer));
+        $matchers->add(new Matcher\ThrowMatcher($representer));
+        $matchers->add(new Matcher\TypeMatcher($representer));
+        $matchers->add(new Matcher\ObjectStateMatcher($representer));
 
         // setup specs locator and tester
         $locator = new Locator($input->getArgument('spec'));

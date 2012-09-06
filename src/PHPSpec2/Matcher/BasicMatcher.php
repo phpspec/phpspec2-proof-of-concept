@@ -24,7 +24,7 @@ abstract class BasicMatcher implements MatcherInterface
 
     public function getPriority()
     {
-        return 1;
+        return 100;
     }
 
     abstract protected function matches($subject, array $arguments);

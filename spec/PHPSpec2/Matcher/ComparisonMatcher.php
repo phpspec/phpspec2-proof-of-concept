@@ -4,9 +4,18 @@ namespace spec\PHPSpec2\Matcher;
 
 use PHPSpec2\Specification;
 use stdClass;
+use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Exception\Example\FailureException;
 
 class ComparisonMatcher implements Specification
 {
+    function described_with()
+    {
+        $this->object->isAnInstanceOf('PHPSpec2\Matcher\ComparisonMatcher', array(
+            new BasicRepresenter
+        ));
+    }
+
     function it_should_support_all_aliases_for_allKindsOfSubjects()
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
@@ -214,11 +223,8 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->allKindsOfSubjects() as $type => $value) {
-                $this->object->shouldThrow(
-                    'PHPSpec2\Exception\Example\FailureException',
-                    $this->mismatchMessageFor($type)
-                )
-                ->during('negativeMatch', array($alias, $value, array($value)));
+                $this->object->shouldThrow()
+                    ->during('negativeMatch', array($alias, $value, array($value)));
             }
         }
     }
@@ -271,18 +277,5 @@ class ComparisonMatcher implements Specification
             'resource' => 'ResourcesNotEqualException'
         );
         return $namespace . $exceptions[$type];
-    }
-
-    private function mismatchMessageFor($type)
-    {
-        $messages = array(
-            'string' => 'Strings are equal, but they shouldn\'t be',
-            'integer' => 'Integers are equal, but they shouldn\'t be',
-            'object' => 'Objects are equal, but they shouldn\'t be',
-            'array'  => 'Arrays are equal, but they shouldn\'t be',
-            'boolean' => 'Booleans are equal, but they shouldn\'t be',
-            'resource' => 'Resources are equal, but they shouldn\'t be'
-        );
-        return $messages[$type];
     }
 }

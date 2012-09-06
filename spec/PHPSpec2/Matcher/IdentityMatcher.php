@@ -223,10 +223,8 @@ class IdentityMatcher implements Specification
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->allKindsOfSubjects() as $type => $value) {
-                $this->object->shouldThrow(
-                    'PHPSpec2\Exception\Example\FailureException',
-                    $this->missmatchMessageFor($type)
-                )->during('negativeMatch', array($alias, $value, array($value)));
+                $this->object->shouldThrow()
+                    ->during('negativeMatch', array($alias, $value, array($value)));
             }
         }
     }
@@ -279,18 +277,5 @@ class IdentityMatcher implements Specification
             'resource' => 'FailureException'
         );
         return $namespace . $exceptions[$type];
-    }
-
-    private function missmatchMessageFor($type)
-    {
-        $messages = array(
-            'string' => 'Strings are equal, but they shouldn\'t be',
-            'integer' => 'Integers are equal, but they shouldn\'t be',
-            'object' => 'Objects are equal, but they shouldn\'t be',
-            'array'  => 'Arrays are equal, but they shouldn\'t be',
-            'boolean' => 'Booleans are equal, but they shouldn\'t be',
-            'resource' => 'Resources are equal, but they shouldn\'t be'
-        );
-        return $messages[$type];
     }
 }
