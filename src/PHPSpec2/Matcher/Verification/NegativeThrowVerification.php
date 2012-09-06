@@ -32,7 +32,7 @@ class NegativeThrowVerification
             throw new MatcherException(sprintf(
                 "Wrong argument provided in throw matcher.\n".
                 "Fully qualified classname or exception instance expected,\n".
-                "Got <strong>%s</strong>.",
+                "Got <value>%s</value>.",
                 $this->representer->representValue($arguments[0])
             ));
         }
@@ -49,22 +49,22 @@ class NegativeThrowVerification
         } catch (\Exception $e) {
             if (null === $this->class) {
                 throw new FailureException(sprintf(
-                    'Expected to not throw any exceptions, but got <strong>%s</strong>.',
+                    'Expected to not throw any exceptions, but got <value>%s</value>.',
                     $this->representer->representValue($e)
                 ));
             }
 
             if ($e instanceof $this->class && null === $this->message) {
                 throw new FailureException(sprintf(
-                    'Expected to not throw <strong>%s</strong> exception, but got it.',
+                    'Expected to not throw <value>%s</value> exception, but got it.',
                     $this->class
                 ));
             }
 
             if ($e instanceof $this->class && $e->getMessage() === $this->message) {
                 throw new FailureException(sprintf(
-                    "Expected to not throw <strong>%s</strong> exception\n".
-                    "with <strong>%s</strong> message,\nbut got it.",
+                    "Expected to not throw <value>%s</value> exception\n".
+                    "with <value>%s</value> message,\nbut got it.",
                     $this->class,
                     $this->representer->representValue($this->message)
                 ));

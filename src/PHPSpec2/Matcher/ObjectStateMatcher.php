@@ -62,7 +62,7 @@ class ObjectStateMatcher implements MatcherInterface
     private function getFailureExceptionFor($callable, $expectedBool)
     {
         return new FailureException(sprintf(
-            "Expected <strong>%s</strong> to return <strong>%s</strong>, but got <strong>%s</strong>.",
+            "Expected <value>%s</value> to return <value>%s</value>, but got <value>%s</value>.",
             $this->representer->representValue($callable),
             $this->representer->representValue($expectedBool),
             $this->representer->representValue(!$expectedBool)

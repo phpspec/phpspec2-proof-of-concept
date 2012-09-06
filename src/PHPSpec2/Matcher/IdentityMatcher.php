@@ -30,18 +30,17 @@ class IdentityMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            '<strong>%s</strong> is not the same as expected <strong>%s</strong>, but should be.',
-            $this->representer->representValue($subject),
-            $this->representer->representValue($arguments[0])
+            'Expected <value>%s</value>, but got <value>%s</value>.',
+            $this->representer->representValue($arguments[0]),
+            $this->representer->representValue($subject)
         ));
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            '<strong>%s</strong> is the same as expected <strong>%s</strong>, but should not be.',
-            $this->representer->representValue($subject),
-            $this->representer->representValue($arguments[0])
+            'Not expected <value>%s</value>, but got one.',
+            $this->representer->representValue($subject)
         ));
     }
 }

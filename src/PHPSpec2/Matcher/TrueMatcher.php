@@ -28,13 +28,13 @@ class TrueMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Expected <strong>true</strong>, but got <strong>%s</strong>.',
+            'Expected <value>true</value>, but got <value>%s</value>.',
             $this->representer->representValue($subject)
         ));
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
-        return new FailureException('Not expected <strong>true</strong>, but got it.');
+        return new FailureException('Not expected <value>true</value>, but got it.');
     }
 }

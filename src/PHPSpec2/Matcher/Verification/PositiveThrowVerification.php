@@ -33,7 +33,7 @@ class PositiveThrowVerification
             throw new MatcherException(sprintf(
                 "Wrong argument provided in throw matcher.\n".
                 "Fully qualified classname or exception instance expected,\n".
-                "Got <strong>%s</strong>.",
+                "Got <value>%s</value>.",
                 $this->representer->representValue($arguments[0])
             ));
         }
@@ -54,7 +54,7 @@ class PositiveThrowVerification
 
             if (!$e instanceof $this->class) {
                 throw new FailureException(sprintf(
-                    'Expected exception of class <strong>%s</strong>, but got <strong>%s</strong>.',
+                    'Expected exception of class <value>%s</value>, but got <value>%s</value>.',
                     $this->class,
                     $this->representer->representValue($e)
                 ));
@@ -62,7 +62,7 @@ class PositiveThrowVerification
 
             if (null !== $this->message && $e->getMessage() !== $this->message) {
                 throw new NotEqualException(sprintf(
-                    'Expected exception message <strong>%s</strong>, but got <strong>%s</strong>.',
+                    'Expected exception message <value>%s</value>, but got <value>%s</value>.',
                     $this->representer->representValue($this->message),
                     $this->representer->representValue($e->getMessage())
                 ), $this->message, $e->getMessage());

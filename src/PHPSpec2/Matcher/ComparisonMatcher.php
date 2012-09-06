@@ -31,18 +31,17 @@ class ComparisonMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new NotEqualException(sprintf(
-            '<strong>%s</strong> is <strong>not equal</strong> to expected <strong>%s</strong>, but should be.',
-            $this->representer->representValue($subject),
-            $this->representer->representValue($arguments[0])
+            'Expected <value>%s</value>, but got <value>%s</value>.',
+            $this->representer->representValue($arguments[0]),
+            $this->representer->representValue($subject)
         ), $subject, $arguments[0]);
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            '<strong>%s</strong> is <strong>equal</strong> to <strong>%s</strong>, but should not be.',
-            $this->representer->representValue($subject),
-            $this->representer->representValue($arguments[0])
+            'Not expected <value>%s</value>, but got one.',
+            $this->representer->representValue($subject)
         ));
     }
 }

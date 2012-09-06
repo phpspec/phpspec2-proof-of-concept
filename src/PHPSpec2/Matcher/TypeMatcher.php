@@ -30,7 +30,7 @@ class TypeMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Expected an instance of <strong>%s</strong>, but got %s.',
+            'Expected an instance of <value>%s</value>, but got %s.',
             $arguments[0],
             $this->representer->representValue($subject)
         ));
@@ -39,7 +39,7 @@ class TypeMatcher extends BasicMatcher
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Not expected instance of <strong>%s</strong>, but got %s.',
+            'Not expected instance of <value>%s</value>, but got %s.',
             $arguments[0],
             $this->representer->representValue($subject)
         ));

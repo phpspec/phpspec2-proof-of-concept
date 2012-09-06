@@ -16,6 +16,16 @@ class IO
         $output->getFormatter()->setStyle('pending', new OutputFormatterStyle('yellow'));
         $output->getFormatter()->setStyle('failed', new OutputFormatterStyle('red'));
         $output->getFormatter()->setStyle('passed', new OutputFormatterStyle('green'));
+        $output->getFormatter()->setStyle('value', new OutputFormatterStyle('yellow'));
+
+        $output->getFormatter()->setStyle('lineno', new OutputFormatterStyle('white', 'black'));
+        $output->getFormatter()->setStyle('code', new OutputFormatterStyle('white'));
+        $output->getFormatter()->setStyle('hl', new OutputFormatterStyle('black', 'yellow', array('bold')));
+
+        $output->getFormatter()->setStyle('trace-class', new OutputFormatterStyle('red'));
+        $output->getFormatter()->setStyle('trace-func', new OutputFormatterStyle('blue'));
+        $output->getFormatter()->setStyle('trace-type', new OutputFormatterStyle('white'));
+        $output->getFormatter()->setStyle('trace-args', new OutputFormatterStyle('white'));
 
         $this->input  = $input;
         $this->output = $output;

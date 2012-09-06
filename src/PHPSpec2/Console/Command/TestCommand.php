@@ -59,7 +59,7 @@ class TestCommand extends Command
         $tester  = new Tester(new EventDispatcher(), $matchers, $input->getOptions());
 
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter;
+        $formatter = new Formatter\PrettyFormatter($representer);
         $formatter->setIO($io);
         $tester->getEventDispatcher()->addSubscriber($formatter);
 
