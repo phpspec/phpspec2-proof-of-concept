@@ -4,7 +4,7 @@ namespace PHPSpec2 {
     class PaymentExample {
         public function getName()
         {
-            return "everzet\nmduarte";
+            return "everzet\nshashi\nmduarte";
         }
 
         public function something()
