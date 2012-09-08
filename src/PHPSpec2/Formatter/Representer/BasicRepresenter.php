@@ -9,6 +9,8 @@ class BasicRepresenter implements RepresenterInterface
         if (is_callable($value)) {
             if (is_array($value)) {
                 return sprintf('%s::%s()', get_class($value[0]), $value[1]);
+            } elseif ($value instanceof \Closure) {
+                return '[closure]';
             } else {
                 return sprintf('%s()', $value);
             }
