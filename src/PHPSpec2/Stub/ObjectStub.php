@@ -70,6 +70,10 @@ class ObjectStub
             return $this->getStubSubject()->mockMethod($method, $arguments, $this->resolver);
         }
 
+        if ($this->subjectHasAMagicCall()) {
+            return $this->invokeSubjectMagicCall($method, $arguments);
+        }
+
         throw new MethodNotFoundException($this->getStubSubject(), $method);
     }
 
@@ -156,5 +160,18 @@ class ObjectStub
         $propertyReflection = new ReflectionProperty($this->getStubSubject(), $property);
 
         return $propertyReflection->isPublic();
+    }
+
+    private function subjectHasAMagicCall()
+    {
+        return method_exists($this->getStubSubject(), '__call');
+    }
+
+    private function invokeSubjectMagicCall($method, $arguments)
+    {
+        return new static(
+            $this->getStubSubject()->__call($method, $arguments),
+            $this->matchers
+        );
     }
 }
