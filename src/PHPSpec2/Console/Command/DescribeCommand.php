@@ -31,8 +31,12 @@ class DescribeCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!is_dir($path = $input->getOption('path'))) {
+            mkdir($path, 0777, true);
+        }
+
         $classname = str_replace('/', '\\', $input->getArgument('spec'));
-        $filepath  = realpath($input->getOption('path')).DIRECTORY_SEPARATOR
+        $filepath  = realpath($path).DIRECTORY_SEPARATOR
             .str_replace('\\', DIRECTORY_SEPARATOR, $classname).'.php';
 
         if (file_exists($filepath)) {
