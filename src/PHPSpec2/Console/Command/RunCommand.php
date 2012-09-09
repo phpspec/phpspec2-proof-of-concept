@@ -18,6 +18,7 @@ use PHPSpec2\Formatter;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Listener\ClassNotFoundListener;
 
 class RunCommand extends Command
 {
@@ -61,6 +62,9 @@ class RunCommand extends Command
         $formatter = new Formatter\PrettyFormatter($representer);
         $formatter->setIO($io);
         $tester->getEventDispatcher()->addSubscriber($formatter);
+
+        // setup listeners
+        $tester->getEventDispatcher()->addSubscriber(new ClassNotFoundListener($io));
 
         // setup statistics collector
         $collector = new StatisticsCollector;
