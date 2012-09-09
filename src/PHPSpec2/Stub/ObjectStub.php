@@ -109,6 +109,21 @@ class ObjectStub
         return $this->subject;
     }
 
+    public function getStubMatchers()
+    {
+        return $this->matches;
+    }
+
+    public function getStubMockers()
+    {
+        return $this->mockers;
+    }
+
+    public function getStubResolver()
+    {
+        return $this->resolver;
+    }
+
     public function __call($method, array $arguments = array())
     {
         // if user calls function with should prefix - call matcher
