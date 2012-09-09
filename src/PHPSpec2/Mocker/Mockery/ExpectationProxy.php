@@ -13,17 +13,25 @@ class ExpectationProxy
     public function __construct(CompositeExpectation $expectation, array $arguments,
                                 ArgumentsResolver $resolver)
     {
-        $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
+        $this->expectation = $expectation;
         $this->resolver    = $resolver;
 
+        $this->withArguments($arguments);
         $this->willReturn(null);
+    }
+
+    public function withArguments(array $arguments)
+    {
+        call_user_func_array(
+            array($this->expectation, 'with'), $this->resolver->resolve($arguments)
+        );
+
+        return $this;
     }
 
     public function willReturn($value = null)
     {
-        return call_user_func(
-            array($this->expectation, 'andReturn'), $this->resolver->resolveSingle($value)
-        );
+        $this->expectation->andReturn($this->resolver->resolveSingle($value));
 
         return $this;
     }
