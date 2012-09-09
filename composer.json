@@ -27,8 +27,7 @@
 
     "autoload": {
         "psr-0": {
-            "PHPSpec2":  "src/",
-            "spec":      "."
+            "PHPSpec2": "src/"
         }
     },
 
