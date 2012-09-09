@@ -29,7 +29,7 @@ class ExpectationProxy
 
     public function shouldBeCalled()
     {
-        $this->expectation->atLeast(1);
+        $this->expectation->atLeast()->once();
     }
 
     public function shouldNotBeCalled()
