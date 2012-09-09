@@ -14,6 +14,7 @@ use PHPSpec2\Formatter\Diff\StringDiff;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\ExampleException;
 use PHPSpec2\Exception\Example\NotEqualException;
+use PHPSpec2\Exception\Exception as PHPSpec2Exception;
 
 use ReflectionClass;
 use ReflectionMethod;
@@ -128,7 +129,7 @@ class PrettyFormatter implements FormatterInterface
 
     private function getExceptionMessage(Exception $exception, $lineno = true)
     {
-        if (!$exception instanceof ExampleException) {
+        if (!$exception instanceof PHPSpec2Exception) {
             $message = sprintf(
                 'Exception <value>%s("%s")</value> has been thrown.',
                 get_class($exception),
@@ -152,7 +153,7 @@ class PrettyFormatter implements FormatterInterface
             return rtrim(StringDiff::diff($exception->getExpected(), $exception->getActual()));
         }
 
-        if ($exception instanceof MatcherException) {
+        if ($exception instanceof PHPSpec2Exception) {
             list($file, $lineno) = $this->getExceptionInitialPosition($exception);
 
             $showLines = 6;

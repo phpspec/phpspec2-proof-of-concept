@@ -77,12 +77,10 @@ class Tester
     {
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
 
-        $spec    = $example->getDeclaringClass();
-        $subject = null;
-        if (class_exists($class = preg_replace(array("|^spec\\\|", "|Spec$|"), '', $spec->getName()))) {
-            $subject = new LazyInstance($class);
-        }
-
+        $spec     = $example->getDeclaringClass();
+        $subject  = null;
+        $class    = preg_replace(array("|^spec\\\|", "|Spec$|"), '', $spec->getName());
+        $subject  = new LazyInstance($class);
         $instance = $spec->newInstance();
 
         $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
