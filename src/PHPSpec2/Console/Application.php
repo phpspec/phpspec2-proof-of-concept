@@ -43,10 +43,10 @@ class Application extends BaseApplication
 
     protected function getCommandName(InputInterface $input)
     {
-        if (null === $command = $input->getFirstArgument()) {
-            $command = 'run';
+        if (null === $input->getFirstArgument() && !$input->hasParameterOption(array('--help', '-h'))) {
+            return 'run';
         }
 
-        return $command;
+        return $input->getFirstArgument();
     }
 }
