@@ -59,7 +59,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
     {
         $classpath = str_replace('\\', DIRECTORY_SEPARATOR, $classname);
 
-        if ('.' === $namespace = basename($classpath)) {
+        if ('.' === $namespace = dirname($classpath)) {
             return strtr(<<<TPL
 <?php
 
@@ -71,7 +71,7 @@ class %class%
 TPL
             , array(
                 '%class%'     => basename($classpath),
-                '%namespace%' => $namespace,
+                '%namespace%' => str_replace(DIRECTORY_SEPARATOR, '\\', $namespace),
             ));
         } else {
             return strtr(<<<TPL
