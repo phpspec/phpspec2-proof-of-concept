@@ -52,10 +52,10 @@ class ObjectStub
     public function callOnStub($method, array $arguments = array())
     {
         if (null === $this->getStubSubject()) {
-            throw new StubException(
+            throw new StubException(sprintf(
                 'Call to a member function <value>%s()</value> on a non-object.',
                 $method
-            );
+            ));
         }
 
         // resolve arguments
