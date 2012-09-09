@@ -111,7 +111,7 @@ class ObjectStub
 
     public function getStubMatchers()
     {
-        return $this->matches;
+        return $this->matchers;
     }
 
     public function getStubMockers()
