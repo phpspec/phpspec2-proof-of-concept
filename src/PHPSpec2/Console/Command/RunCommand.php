@@ -29,11 +29,10 @@ class RunCommand extends Command
         parent::__construct('run');
 
         $this->setDefinition(array(
-            new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec')
+            new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
+            new InputOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching pattern'),
+            new InputOption('fail-fast', null, InputOption::VALUE_NONE, 'Abort the run on first failure')
         ));
-
-        $this->addOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching a given pattern')
-             ->addOption('fail-fast', null, InputOption::VALUE_NONE, 'Abort the run on first failure');
     }
 
     /**
