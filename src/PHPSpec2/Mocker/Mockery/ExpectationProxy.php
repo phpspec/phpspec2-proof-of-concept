@@ -2,7 +2,6 @@
 
 namespace PHPSpec2\Mocker\Mockery;
 
-use Mockery\CompositeExpectation;
 use PHPSpec2\Stub\ArgumentsResolver;
 
 class ExpectationProxy
@@ -10,8 +9,7 @@ class ExpectationProxy
     private $expectation;
     private $resolver;
 
-    public function __construct(CompositeExpectation $expectation, array $arguments,
-                                ArgumentsResolver $resolver)
+    public function __construct($expectation, array $arguments, ArgumentsResolver $resolver)
     {
         $this->expectation = $expectation;
         $this->resolver    = $resolver;
