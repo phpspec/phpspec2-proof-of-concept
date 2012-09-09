@@ -40,9 +40,15 @@ class Locator
         foreach ($newClassnames as $classname) {
             $reflection = new ReflectionClass($classname);
 
-            if ($reflection->implementsInterface('PHPSpec2\\Specification')) {
-                $specs[] = $reflection;
+            if (!$reflection->implementsInterface('PHPSpec2\\Specification')) {
+                continue;
             }
+
+            if ($reflection->isAbstract()) {
+                continue;
+            }
+
+            $specs[] = $reflection;
         }
 
         return $specs;
