@@ -13,7 +13,7 @@ class ComparisonMatcher extends BasicMatcher
 
     public function __construct(RepresenterInterface $representer = null)
     {
-        $this->representer = $representer ?: new BasicRepresenter;;
+        $this->representer = $representer ?: new BasicRepresenter;
     }
 
     public function supports($name, $subject, array $arguments)
