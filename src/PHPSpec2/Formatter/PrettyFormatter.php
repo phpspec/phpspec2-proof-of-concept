@@ -131,7 +131,7 @@ class PrettyFormatter implements FormatterInterface
 
     private function getExceptionMessage(Exception $exception, $lineno = true)
     {
-        if ($expection instanceof MockeryCountException) {
+        if ($exception instanceof MockeryCountException) {
             $message = $exception->getMessage();
         } elseif (!$exception instanceof PHPSpec2Exception) {
             $message = sprintf(
