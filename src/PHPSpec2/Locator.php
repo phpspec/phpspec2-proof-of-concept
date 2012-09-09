@@ -27,39 +27,36 @@ class Locator
         if (is_dir($this->path)) {
             $files = Finder::create()->files()->name('*.php')->in($this->path);
             foreach ($files as $file) {
-                if ($spec = $this->getSpecificationFromFile($file)) {
-                    $specs[] = $spec;
+                if ($fromFile = $this->getSpecificationsFromFile($file)) {
+                    $specs = array_merge($specs, $fromFile);
                 }
             }
         } elseif (is_file($this->path)) {
             $file = new SplFileInfo(realpath($this->path));
-            if ($spec = $this->getSpecificationFromFile($file)) {
-                $specs[] = $spec;
+            if ($fromFile = $this->getSpecificationsFromFile($file)) {
+                $specs = array_merge($specs, $fromFile);
             }
         }
 
         return $specs;
     }
 
-    public function getSpecificationFromFile(SplFileInfo $file)
+    public function getSpecificationsFromFile(SplFileInfo $file)
     {
-        $filename  = realpath($file->getPathname());
-        $classname = str_replace(DIRECTORY_SEPARATOR, '\\',
-            str_replace(
-                dirname($this->root).DIRECTORY_SEPARATOR, '',
-                str_replace('.php', '', $filename)
-            )
-        );
+        $filename = realpath($file->getPathname());
+        $oldClassnames = get_declared_classes();
+        require_once $filename;
+        $newClassnames = array_diff(get_declared_classes(), $oldClassnames);
 
-        if (!class_exists($classname)) {
-            return;
+        $specs = array();
+        foreach ($newClassnames as $classname) {
+            $reflection = new ReflectionClass($classname);
+
+            if ($reflection->implementsInterface('PHPSpec2\\Specification')) {
+                $specs[] = $reflection;
+            }
         }
 
-        $reflection = new ReflectionClass($classname);
-        if (!$reflection->implementsInterface('PHPSpec2\\Specification')) {
-            return;
-        }
-
-        return $reflection;
+        return $specs;
     }
 }
