@@ -18,30 +18,4 @@ class Application extends BaseApplication
 
         $this->add(new Command\TestCommand);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
-    {
-        return new InputDefinition(array(
-            new InputOption('--help',    '-h', InputOption::VALUE_NONE, 'Display this help message.'),
-            new InputOption('--verbose', '-v', InputOption::VALUE_NONE, 'Increase verbosity of exceptions.'),
-            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this behat version.'),
-            new InputOption('--config',  '-c', InputOption::VALUE_REQUIRED, 'Specify config file to use.'),
-            new InputOption('--profile', '-p', InputOption::VALUE_REQUIRED, 'Specify config profile to use.')
-        ));
-    }
-
-    /**
-     * Gets the name of the command based on input.
-     *
-     * @param InputInterface $input The input interface
-     *
-     * @return string The command name
-     */
-    protected function getCommandName(InputInterface $input)
-    {
-        return 'test';
-    }
 }
