@@ -29,7 +29,7 @@ class RunnerCommand extends Command
         parent::__construct('test');
 
         $this->setDefinition(array(
-            new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run')
+            new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec')
         ));
 
         $this->addOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching a given pattern')
@@ -55,7 +55,7 @@ class RunnerCommand extends Command
         $matchers->add(new Matcher\ObjectStateMatcher($representer));
 
         // setup specs locator and tester
-        $locator = new Locator($input->getArgument('spec'));
+        $locator = new Locator();
         $tester  = new Tester(new EventDispatcher(), $matchers, $input->getOptions());
 
         // setup formatter
@@ -68,7 +68,7 @@ class RunnerCommand extends Command
         $tester->getEventDispatcher()->addSubscriber($collector);
         $tester->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
-        foreach ($locator->getSpecifications() as $spec) {
+        foreach ($locator->getSpecifications($input->getArgument('spec')) as $spec) {
             if ($tester->wasAborted()) {
                 break;
             }
