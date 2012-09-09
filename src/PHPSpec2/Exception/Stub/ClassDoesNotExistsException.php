@@ -11,7 +11,8 @@ class ClassDoesNotExistsException extends StubException
         $this->classname = $classname;
 
         parent::__construct(sprintf(
-            'Class <value>%s</value> does not exists.', $classname
+            'Class <value>%s</value> does not exists.',
+            $classname
         ));
     }
 
