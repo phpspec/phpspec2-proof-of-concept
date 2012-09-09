@@ -24,20 +24,28 @@ class ExpectationProxy
         return call_user_func_array(
             array($this->expectation, 'andReturn'), $this->resolver->resolve($value)
         );
+
+        return $this;
     }
 
     public function shouldBeCalled()
     {
         $this->expectation->atLeast()->once();
+
+        return $this;
     }
 
     public function shouldNotBeCalled()
     {
         $this->expectation->never();
+
+        return $this;
     }
 
     public function willThrow($exception, $message = '')
     {
         $this->expectation->andThrow($exception, $message);
+
+        return $this;
     }
 }
