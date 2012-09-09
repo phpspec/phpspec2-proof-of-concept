@@ -21,8 +21,8 @@ class ExpectationProxy
 
     public function willReturn($value = null)
     {
-        return call_user_func_array(
-            array($this->expectation, 'andReturn'), $this->resolver->resolve($value)
+        return call_user_func(
+            array($this->expectation, 'andReturn'), $this->resolver->resolveSingle($value)
         );
 
         return $this;
