@@ -16,6 +16,8 @@ use PHPSpec2\Exception\Example\ExampleException;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Exception as PHPSpec2Exception;
 
+use Mockery\CountValidator\Exception as MockeryCountException;
+
 use ReflectionClass;
 use ReflectionMethod;
 use Exception;
@@ -129,7 +131,9 @@ class PrettyFormatter implements FormatterInterface
 
     private function getExceptionMessage(Exception $exception, $lineno = true)
     {
-        if (!$exception instanceof PHPSpec2Exception) {
+        if ($expection instanceof MockeryCountException) {
+            $message = $exception->getMessage();
+        } elseif (!$exception instanceof PHPSpec2Exception) {
             $message = sprintf(
                 'Exception <value>%s("%s")</value> has been thrown.',
                 get_class($exception),
@@ -149,6 +153,10 @@ class PrettyFormatter implements FormatterInterface
 
     private function getExceptionStackTrace(Exception $exception)
     {
+        if ($exception instanceof MockeryCountException) {
+            return 'Check your mocks expectations.';
+        }
+
         if ($exception instanceof NotEqualException) {
             return rtrim(StringDiff::diff($exception->getExpected(), $exception->getActual()));
         }

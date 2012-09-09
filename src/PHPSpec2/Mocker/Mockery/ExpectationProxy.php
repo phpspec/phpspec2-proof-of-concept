@@ -16,7 +16,6 @@ class ExpectationProxy
         $this->expectation = call_user_func_array(array($expectation, 'with'), $arguments);
         $this->resolver    = $resolver;
 
-        $this->shouldBeCalled();
         $this->willReturn(null);
     }
 
