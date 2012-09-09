@@ -24,10 +24,15 @@ class MockProxy implements MockProxyInterface
 
     public function mockMethod($method, array $arguments, ArgumentsResolver $resolver)
     {
-        return new ExpectationProxy(
-            $this->originalMock->shouldReceive($method),
-            $arguments,
-            $resolver
-        );
+        $expectation = null;
+        if ($director = $this->originalMock->mockery_getExpectationsFor($method)) {
+            $expectation = $director->findExpectation($arguments);
+        }
+
+        if (null === $expectation) {
+            $expectation = $this->originalMock->shouldReceive($method);
+        }
+
+        return new ExpectationProxy($expectation, $arguments, $resolver);
     }
 }
