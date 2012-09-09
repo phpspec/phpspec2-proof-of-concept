@@ -19,7 +19,7 @@ use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
 
-class RunnerCommand extends Command
+class RunCommand extends Command
 {
     /**
      * Initializes command.
