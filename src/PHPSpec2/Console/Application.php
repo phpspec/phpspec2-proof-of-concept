@@ -16,7 +16,8 @@ class Application extends BaseApplication
     {
         parent::__construct('PHPSpec2', $version);
 
-        $this->add(new Command\TestCommand);
+        $this->add(new Command\RunnerCommand);
+        $this->add(new Command\DescribeCommand);
     }
 
     /**
@@ -42,6 +43,9 @@ class Application extends BaseApplication
      */
     protected function getCommandName(InputInterface $input)
     {
-        return 'test';
+        if (null === $command = $input->getFirstArgument()) {
+            $command = 'test';
+        }
+        return $command;
     }
 }
