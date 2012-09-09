@@ -20,27 +20,4 @@ class MockerFactory implements Specification
         $mock->mockMethod('someMethid', array(), new ArgumentsResolver())
             ->shouldReturnAnInstanceOf('PHPSpec2\Mocker\Mockery\ExpectationProxy');
     }
-
-    function it_can_be_created_with_an_alternative_mocker($mocker, $proxy)
-    {
-        $proxy->isAMockOf('PHPSpec2\Mocker\MockProxyInterface');
-        $mocker->isAMockOf('PHPSpec2\Mocker\MockerInterface');
-        $this->object->isAnInstanceOf('PHPSpec2\Mocker\MockerFactory', array($mocker));
-
-        $mocker->mock('PHPSpec2\Specification')->willReturn($proxy);
-
-        $this->object->mock('PHPSpec2\Specification')->shouldBeEqualTo($proxy);
-    }
-
-    function it_can_be_created_with_later_configured_mocker($mocker, $proxy)
-    {
-        $proxy->isAMockOf('PHPSpec2\Mocker\MockProxyInterface');
-        $mocker->isAMockOf('PHPSpec2\Mocker\MockerInterface');
-
-        $this->object->setMocker($mocker);
-
-        $mocker->mock('PHPSpec2\Specification')->willReturn($proxy);
-
-        $this->object->mock('PHPSpec2\Specification')->shouldBeEqualTo($proxy);
-    }
 }
