@@ -26,7 +26,7 @@ class RunCommand extends Command
      */
     public function __construct()
     {
-        parent::__construct('test');
+        parent::__construct('run');
 
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec')

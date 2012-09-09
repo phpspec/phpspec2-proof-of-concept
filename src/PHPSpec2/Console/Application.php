@@ -16,22 +16,8 @@ class Application extends BaseApplication
     {
         parent::__construct('PHPSpec2', $version);
 
-        $this->add(new Command\RunnerCommand);
+        $this->add(new Command\RunCommand);
         $this->add(new Command\DescribeCommand);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefinition()
-    {
-        return new InputDefinition(array(
-            new InputOption('--help',    '-h', InputOption::VALUE_NONE, 'Display this help message.'),
-            new InputOption('--verbose', '-v', InputOption::VALUE_NONE, 'Increase verbosity of exceptions.'),
-            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this behat version.'),
-            new InputOption('--config',  '-c', InputOption::VALUE_REQUIRED, 'Specify config file to use.'),
-            new InputOption('--profile', '-p', InputOption::VALUE_REQUIRED, 'Specify config profile to use.')
-        ));
     }
 
     /**
@@ -44,7 +30,7 @@ class Application extends BaseApplication
     protected function getCommandName(InputInterface $input)
     {
         if (null === $command = $input->getFirstArgument()) {
-            $command = 'test';
+            $command = 'run';
         }
         return $command;
     }
