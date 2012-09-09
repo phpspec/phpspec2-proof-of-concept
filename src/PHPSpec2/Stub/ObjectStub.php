@@ -52,7 +52,10 @@ class ObjectStub
     public function callOnStub($method, array $arguments = array())
     {
         if (null === $this->getStubSubject()) {
-            throw new StubException('Attempt to call method on stub without a subject');
+            throw new StubException(
+                'Call to a member function <value>%s()</value> on a non-object.',
+                $method
+            );
         }
 
         // resolve arguments
