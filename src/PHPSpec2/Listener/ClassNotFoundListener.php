@@ -38,10 +38,14 @@ class ClassNotFoundListener implements EventSubscriberInterface
                 "         <info>You want me to create it for you?</info> <value>[Y/n]</value> "
             ))) {
                 $classname = $exception->getClassname();
-                $filename  = $this->path.DIRECTORY_SEPARATOR.
+                $filepath  = $this->path.DIRECTORY_SEPARATOR.
                     str_replace('\\', DIRECTORY_SEPARATOR, $classname).'.php';
 
-                file_put_contents($filename, $this->getClassContentFor($classname));
+                $path = dirname($filepath);
+                if (!is_dir($path)) {
+                    mkdir($path, 0777, true);
+                }
+                file_put_contents($filepath, $this->getClassContentFor($classname));
 
                 $output->writeln(sprintf(
                     "         <info>Class <value>%s</value> has been created.</info>\n",

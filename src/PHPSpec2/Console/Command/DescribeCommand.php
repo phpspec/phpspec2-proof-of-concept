@@ -43,6 +43,10 @@ class DescribeCommand extends Command
             return 1;
         }
 
+        $path = dirname($filepath);
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
         file_put_contents($filepath, $this->getSpecContentFor($input, $classname));
 
         $output->writeln(sprintf("<info>Specification for %s created in %s.</info>\n",
