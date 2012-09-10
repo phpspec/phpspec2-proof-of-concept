@@ -65,21 +65,12 @@ class ObjectStub
         if ($this->isSubjectMethodAccessible($method)) {
             $returnValue = call_user_func_array(array($this->getStubSubject(), $method), $arguments);
 
-            return new static(
-                $returnValue,
-                $this->matchers,
-                $this->mockers,
-                $this->resolver
-            );
+            return new static($returnValue, $this->matchers, $this->mockers, $this->resolver);
         }
 
         // if subject is a mock - return method expectation stub
         if ($this->getStubSubject() instanceof MockProxyInterface) {
             return $this->getStubSubject()->mockMethod($method, $arguments, $this->resolver);
-        }
-
-        if ($this->subjectHasAMagicCall()) {
-            return $this->invokeSubjectMagicCall($method, $arguments);
         }
 
         throw new MethodNotFoundException($this->getStubSubject(), $method);
@@ -89,7 +80,7 @@ class ObjectStub
     {
         $value = $this->resolver->resolve($value);
 
-        if ($this->isSubjectPropertyAccessible($property)) {
+        if ($this->isSubjectPropertyAccessible($property, true)) {
             return $this->getStubSubject()->$property = $value;
         }
 
@@ -99,12 +90,9 @@ class ObjectStub
     public function getFromStub($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
-            return new static(
-                $this->getStubSubject()->$property,
-                $this->matchers,
-                $this->mockers,
-                $this->resolver
-            );
+            $returnValue = $this->getStubSubject()->$property;
+
+            return new static($returnValue, $this->matchers, $this->mockers, $this->resolver);
         }
 
         throw new PropertyNotFoundException($this->getStubSubject(), $property);
@@ -149,11 +137,25 @@ class ObjectStub
         return $this->callOnStub($method, $arguments);
     }
 
+    public function __set($property, $value = null)
+    {
+        if (!$this->isSubjectPropertyAccessible($property, true)) {
+            foreach (array('set', 'setIs') as $prefix) {
+                $setter = $prefix.ucfirst($property);
+                if ($this->isSubjectMethodAccessible($setter)) {
+                    return $this->callOnStub($setter, array($value));
+                }
+            }
+        }
+
+        return $this->setToStub($property, $value);
+    }
+
     public function __get($property)
     {
         if (!$this->isSubjectPropertyAccessible($property)) {
             foreach (array('get', 'is') as $prefix) {
-                $getter = sprintf('%s%s', $prefix, ucfirst($property));
+                $getter = $prefix.ucfirst($property);
                 if ($this->isSubjectMethodAccessible($getter)) {
                     return $this->callOnStub($getter);
                 }
@@ -163,14 +165,17 @@ class ObjectStub
         return $this->getFromStub($property);
     }
 
-    public function __set($property, $value = null)
-    {
-        return $this->setToStub($property, $value);
-    }
-
     private function isSubjectMethodAccessible($method)
     {
-        if (!is_object($this->getStubSubject()) || !method_exists($this->getStubSubject(), $method)) {
+        if (!is_object($this->getStubSubject())) {
+            return false;
+        }
+
+        if (method_exists($this->getStubSubject(), '__call')) {
+            return true;
+        }
+
+        if (!method_exists($this->getStubSubject(), $method)) {
             return false;
         }
 
@@ -179,29 +184,22 @@ class ObjectStub
         return $methodReflection->isPublic();
     }
 
-    private function isSubjectPropertyAccessible($property)
+    private function isSubjectPropertyAccessible($property, $withValue = false)
     {
-        if (!is_object($this->getStubSubject()) || !property_exists($this->getStubSubject(), $property)) {
+        if (!is_object($this->getStubSubject())) {
+            return false;
+        }
+
+        if (method_exists($this->getStubSubject(), $withValue ? '__set' : '__get')) {
+            return true;
+        }
+
+        if (!property_exists($this->getStubSubject(), $property)) {
             return false;
         }
 
         $propertyReflection = new ReflectionProperty($this->getStubSubject(), $property);
 
         return $propertyReflection->isPublic();
-    }
-
-    private function subjectHasAMagicCall()
-    {
-        return method_exists($this->getStubSubject(), '__call');
-    }
-
-    private function invokeSubjectMagicCall($method, $arguments)
-    {
-        return new static(
-            $this->getStubSubject()->__call($method, $arguments),
-            $this->matchers,
-            $this->mockers,
-            $this->resolver
-        );
     }
 }
