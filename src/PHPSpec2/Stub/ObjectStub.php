@@ -93,7 +93,7 @@ class ObjectStub
             return $this->getStubSubject()->$property = $value;
         }
 
-        throw new PropertyNotFoundException($property);
+        throw new PropertyNotFoundException($this->getStubSubject(), $property);
     }
 
     public function getFromStub($property)
@@ -107,7 +107,7 @@ class ObjectStub
             );
         }
 
-        throw new PropertyNotFoundException($property);
+        throw new PropertyNotFoundException($this->getStubSubject(), $property);
     }
 
     public function getStubSubject()
