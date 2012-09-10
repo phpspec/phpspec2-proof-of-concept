@@ -71,7 +71,7 @@ class %class%
 TPL
             , array(
                 '%class%'     => basename($classpath),
-                '%namespace%' => str_replace(DIRECTORY_SEPARATOR, '\\', $namespace),
+                '%namespace%' => $namespace,
             ));
         } else {
             return strtr(<<<TPL
@@ -82,7 +82,7 @@ class %class%
 }
 TPL
             , array(
-                '%class%' => basename($classpath),
+                '%class%' => $classpath,
             ));
         }
     }
