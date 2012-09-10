@@ -65,7 +65,12 @@ class ObjectStub
         if ($this->isSubjectMethodAccessible($method)) {
             $returnValue = call_user_func_array(array($this->getStubSubject(), $method), $arguments);
 
-            return new static($returnValue, $this->matchers, $this->mockers, $this->resolver);
+            return new static(
+                $returnValue,
+                $this->matchers,
+                $this->mockers,
+                $this->resolver
+            );
         }
 
         // if subject is a mock - return method expectation stub
@@ -94,7 +99,12 @@ class ObjectStub
     public function getFromStub($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
-            return new static($this->getStubSubject()->$property, $this->matchers);
+            return new static(
+                $this->getStubSubject()->$property,
+                $this->matchers,
+                $this->mockers,
+                $this->resolver
+            );
         }
 
         throw new PropertyNotFoundException($property);
@@ -189,7 +199,9 @@ class ObjectStub
     {
         return new static(
             $this->getStubSubject()->__call($method, $arguments),
-            $this->matchers
+            $this->matchers,
+            $this->mockers,
+            $this->resolver
         );
     }
 }
