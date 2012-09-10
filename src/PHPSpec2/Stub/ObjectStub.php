@@ -141,9 +141,9 @@ class ObjectStub
             $matcherName = lcfirst($matches[2]);
             if ('should' === $matches[1]) {
                 return call_user_func_array(array($this->should(), $matcherName), $arguments);
-            } else {
-                return call_user_func_array(array($this->shouldNot(), $matcherName), $arguments);
             }
+
+            return call_user_func_array(array($this->shouldNot(), $matcherName), $arguments);
         }
 
         return $this->callOnStub($method, $arguments);
