@@ -31,7 +31,7 @@ class Prophet
 
     public function isAnInstanceOf($class, array $constructorArguments = array())
     {
-        $this->subject = new LazyInstance($class, $this->resolver->resolve($constructorArguments));
+        $this->subject = new LazyObject($class, $this->resolver->resolve($constructorArguments));
     }
 
     public function isAMockOf($classOrInterface)

@@ -7,7 +7,7 @@ use ReflectionClass;
 use PHPSpec2\Exception\Prophet\ProphetException;
 use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
 
-class LazyInstance implements LazySubjectInterface
+class LazyObject implements LazySubjectInterface
 {
     private $classname;
     private $arguments;

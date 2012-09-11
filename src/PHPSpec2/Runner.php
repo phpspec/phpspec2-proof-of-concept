@@ -17,7 +17,7 @@ use PHPSpec2\Event\ExampleEvent;
 
 use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
-use PHPSpec2\Prophet\LazyInstance;
+use PHPSpec2\Prophet\LazyObject;
 
 class Runner
 {
@@ -80,7 +80,7 @@ class Runner
         $spec     = $example->getDeclaringClass();
         $subject  = null;
         $class    = preg_replace(array("|^spec\\\|", "|Spec$|"), '', $spec->getName());
-        $subject  = new LazyInstance($class);
+        $subject  = new LazyObject($class);
         $instance = $spec->newInstance();
 
         $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
