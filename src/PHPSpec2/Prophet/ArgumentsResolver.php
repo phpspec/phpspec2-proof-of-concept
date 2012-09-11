@@ -22,7 +22,7 @@ class ArgumentsResolver
         }
 
         if ($argument instanceof Prophet) {
-            $argument = $argument->getStubSubject();
+            $argument = $argument->getProphetSubject();
         }
 
         if ($argument instanceof MockProxyInterface) {

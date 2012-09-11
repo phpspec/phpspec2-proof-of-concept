@@ -41,17 +41,17 @@ class Prophet
 
     public function should()
     {
-        return new Verification\Positive($this->getStubSubject(), $this->matchers, $this->resolver);
+        return new Verification\Positive($this->getProphetSubject(), $this->matchers, $this->resolver);
     }
 
     public function shouldNot()
     {
-        return new Verification\Negative($this->getStubSubject(), $this->matchers, $this->resolver);
+        return new Verification\Negative($this->getProphetSubject(), $this->matchers, $this->resolver);
     }
 
-    public function callOnStub($method, array $arguments = array())
+    public function callOnProphet($method, array $arguments = array())
     {
-        if (null === $this->getStubSubject()) {
+        if (null === $this->getProphetSubject()) {
             throw new ProphetException(sprintf(
                 'Call to a member function <value>%s()</value> on a non-object.',
                 $method
@@ -63,42 +63,42 @@ class Prophet
 
         // if subject is an instance with provided method - call it and stub the result
         if ($this->isSubjectMethodAccessible($method)) {
-            $returnValue = call_user_func_array(array($this->getStubSubject(), $method), $arguments);
+            $returnValue = call_user_func_array(array($this->getProphetSubject(), $method), $arguments);
 
             return new static($returnValue, $this->matchers, $this->mockers, $this->resolver);
         }
 
         // if subject is a mock - return method expectation stub
-        if ($this->getStubSubject() instanceof MockProxyInterface) {
-            return $this->getStubSubject()->mockMethod($method, $arguments, $this->resolver);
+        if ($this->getProphetSubject() instanceof MockProxyInterface) {
+            return $this->getProphetSubject()->mockMethod($method, $arguments, $this->resolver);
         }
 
-        throw new MethodNotFoundException($this->getStubSubject(), $method);
+        throw new MethodNotFoundException($this->getProphetSubject(), $method);
     }
 
-    public function setToStub($property, $value = null)
+    public function setToProphet($property, $value = null)
     {
         $value = $this->resolver->resolve($value);
 
         if ($this->isSubjectPropertyAccessible($property, true)) {
-            return $this->getStubSubject()->$property = $value;
+            return $this->getProphetSubject()->$property = $value;
         }
 
-        throw new PropertyNotFoundException($this->getStubSubject(), $property);
+        throw new PropertyNotFoundException($this->getProphetSubject(), $property);
     }
 
-    public function getFromStub($property)
+    public function getFromProphet($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
-            $returnValue = $this->getStubSubject()->$property;
+            $returnValue = $this->getProphetSubject()->$property;
 
             return new static($returnValue, $this->matchers, $this->mockers, $this->resolver);
         }
 
-        throw new PropertyNotFoundException($this->getStubSubject(), $property);
+        throw new PropertyNotFoundException($this->getProphetSubject(), $property);
     }
 
-    public function getStubSubject()
+    public function getProphetSubject()
     {
         if (is_object($this->subject) && $this->subject instanceof LazySubjectInterface) {
             $this->subject = $this->subject->getInstance();
@@ -107,17 +107,17 @@ class Prophet
         return $this->subject;
     }
 
-    public function getStubMatchers()
+    public function getProphetMatchers()
     {
         return $this->matchers;
     }
 
-    public function getStubMockers()
+    public function getProphetMockers()
     {
         return $this->mockers;
     }
 
-    public function getStubResolver()
+    public function getProphetResolver()
     {
         return $this->resolver;
     }
@@ -134,53 +134,53 @@ class Prophet
             return call_user_func_array(array($this->shouldNot(), $matcherName), $arguments);
         }
 
-        return $this->callOnStub($method, $arguments);
+        return $this->callOnProphet($method, $arguments);
     }
 
     public function __set($property, $value = null)
     {
-        return $this->setToStub($property, $value);
+        return $this->setToProphet($property, $value);
     }
 
     public function __get($property)
     {
-        return $this->getFromStub($property);
+        return $this->getFromProphet($property);
     }
 
     private function isSubjectMethodAccessible($method)
     {
-        if (!is_object($this->getStubSubject())) {
+        if (!is_object($this->getProphetSubject())) {
             return false;
         }
 
-        if (method_exists($this->getStubSubject(), '__call')) {
+        if (method_exists($this->getProphetSubject(), '__call')) {
             return true;
         }
 
-        if (!method_exists($this->getStubSubject(), $method)) {
+        if (!method_exists($this->getProphetSubject(), $method)) {
             return false;
         }
 
-        $methodReflection = new ReflectionMethod($this->getStubSubject(), $method);
+        $methodReflection = new ReflectionMethod($this->getProphetSubject(), $method);
 
         return $methodReflection->isPublic();
     }
 
     private function isSubjectPropertyAccessible($property, $withValue = false)
     {
-        if (!is_object($this->getStubSubject())) {
+        if (!is_object($this->getProphetSubject())) {
             return false;
         }
 
-        if (method_exists($this->getStubSubject(), $withValue ? '__set' : '__get')) {
+        if (method_exists($this->getProphetSubject(), $withValue ? '__set' : '__get')) {
             return true;
         }
 
-        if (!property_exists($this->getStubSubject(), $property)) {
+        if (!property_exists($this->getProphetSubject(), $property)) {
             return false;
         }
 
-        $propertyReflection = new ReflectionProperty($this->getStubSubject(), $property);
+        $propertyReflection = new ReflectionProperty($this->getProphetSubject(), $property);
 
         return $propertyReflection->isPublic();
     }

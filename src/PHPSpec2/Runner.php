@@ -86,10 +86,10 @@ class Runner
         $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
         $className = strtolower($className[0]) . substr($className, 1);
 
-        $stub = new Prophet($subject, clone $this->matchers);
-        $instance->$className = $instance->object = $stub;
+        $prophet = new Prophet($subject, clone $this->matchers);
+        $instance->$className = $instance->object = $prophet;
 
-        $stubs = $this->getStubsForExample($instance, $example);
+        $prophets = $this->getProphetsForExample($instance, $example);
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
@@ -99,7 +99,7 @@ class Runner
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
         try {
-            $this->callMethodWithStubs($instance, $example, $stubs);
+            $this->callMethodWithProphets($instance, $example, $prophets);
             Mockery::close();
 
             $event = new ExampleEvent($example, ExampleEvent::PASSED);
@@ -149,59 +149,59 @@ class Runner
         return $this->wasAborted;
     }
 
-    protected function getStubsForExample(Specification $instance, ReflectionMethod $example)
+    protected function getProphetsForExample(Specification $instance, ReflectionMethod $example)
     {
-        $stubs = array();
+        $prophets = array();
         if (method_exists($instance, 'described_with')) {
             $descriptor = new ReflectionMethod($instance, 'described_with');
-            $stubs = $this->mergeStubsFromMethod($stubs, $descriptor);
-            $this->callMethodWithStubs($instance, $descriptor, $stubs);
+            $prophets = $this->mergeProphetsFromMethod($prophets, $descriptor);
+            $this->callMethodWithProphets($instance, $descriptor, $prophets);
         }
 
-        return $this->mergeStubsFromMethod($stubs, $example);
+        return $this->mergeProphetsFromMethod($prophets, $example);
     }
 
-    protected function callMethodWithStubs(Specification $instance, ReflectionMethod $method, array $stubs)
+    protected function callMethodWithProphets(Specification $instance, ReflectionMethod $method, array $prophets)
     {
         $arguments = array();
         foreach ($method->getParameters() as $parameter) {
-            $arguments[] = $stubs[$parameter->getName()];
+            $arguments[] = $prophets[$parameter->getName()];
         }
 
         $method->invokeArgs($instance, $arguments);
     }
 
-    private function mergeStubsFromMethod(array $stubs, ReflectionMethod $method)
+    private function mergeProphetsFromMethod(array $prophets, ReflectionMethod $method)
     {
-        $stubs = $this->mergeStubsFromDocComment($stubs, $method->getDocComment());
+        $prophets = $this->mergeProphetsFromDocComment($prophets, $method->getDocComment());
 
         foreach ($method->getParameters() as $parameter) {
-            if (!isset($stubs[$parameter->getName()])) {
-                $stubs[$parameter->getName()] = new Prophet(null, clone $this->matchers);
+            if (!isset($prophets[$parameter->getName()])) {
+                $prophets[$parameter->getName()] = new Prophet(null, clone $this->matchers);
             }
         }
 
-        return $stubs;
+        return $prophets;
     }
 
-    private function mergeStubsFromDocComment(array $stubs, $comment)
+    private function mergeProphetsFromDocComment(array $prophets, $comment)
     {
         if (false === $comment || '' == trim($comment)) {
-            return $stubs;
+            return $prophets;
         }
 
         foreach (explode("\n", $comment) as $line) {
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
-            if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *mock of (.*)$#', $line, $match)) {
-                if (!isset($stubs[$match[1]])) {
-                    $stubs[$match[1]] = new Prophet(null, clone $this->matchers);
-                    $stubs[$match[1]]->isAMockOf($match[2]);
+            if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *(double|mock|stub|fake|dummy|spy) of (.*)$#', $line, $match)) {
+                if (!isset($prophets[$match[1]])) {
+                    $prophets[$match[1]] = new Prophet(null, clone $this->matchers);
+                    $prophets[$match[1]]->isAMockOf($match[3]);
                 }
             }
         }
 
-        return $stubs;
+        return $prophets;
     }
 
     private function isExampleTestable(ReflectionMethod $example)
