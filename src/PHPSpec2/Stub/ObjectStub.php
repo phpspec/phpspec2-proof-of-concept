@@ -139,29 +139,11 @@ class ObjectStub
 
     public function __set($property, $value = null)
     {
-        if (!$this->isSubjectPropertyAccessible($property, true)) {
-            foreach (array('set', 'setIs') as $prefix) {
-                $setter = $prefix.ucfirst($property);
-                if ($this->isSubjectMethodAccessible($setter)) {
-                    return $this->callOnStub($setter, array($value));
-                }
-            }
-        }
-
         return $this->setToStub($property, $value);
     }
 
     public function __get($property)
     {
-        if (!$this->isSubjectPropertyAccessible($property)) {
-            foreach (array('get', 'is') as $prefix) {
-                $getter = $prefix.ucfirst($property);
-                if ($this->isSubjectMethodAccessible($getter)) {
-                    return $this->callOnStub($getter);
-                }
-            }
-        }
-
         return $this->getFromStub($property);
     }
 
