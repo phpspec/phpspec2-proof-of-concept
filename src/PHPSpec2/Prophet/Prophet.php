@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Prophet;
 
 use ReflectionMethod;
 use ReflectionProperty;
@@ -9,11 +9,11 @@ use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Mocker\MockerFactory;
 use PHPSpec2\Mocker\MockProxyInterface;
 
-use PHPSpec2\Exception\Stub\StubException;
-use PHPSpec2\Exception\Stub\MethodNotFoundException;
-use PHPSpec2\Exception\Stub\PropertyNotFoundException;
+use PHPSpec2\Exception\Prophet\ProphetException;
+use PHPSpec2\Exception\Prophet\MethodNotFoundException;
+use PHPSpec2\Exception\Prophet\PropertyNotFoundException;
 
-class ObjectStub
+class Prophet
 {
     private $subject;
     private $matchers;
@@ -52,7 +52,7 @@ class ObjectStub
     public function callOnStub($method, array $arguments = array())
     {
         if (null === $this->getStubSubject()) {
-            throw new StubException(sprintf(
+            throw new ProphetException(sprintf(
                 'Call to a member function <value>%s()</value> on a non-object.',
                 $method
             ));

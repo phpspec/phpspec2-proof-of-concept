@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Prophet;
 
 interface LazySubjectInterface
 {

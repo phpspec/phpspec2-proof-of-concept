@@ -9,7 +9,7 @@ use ReflectionMethod;
 
 use Mockery;
 
-use PHPSpec2\Stub\ObjectStub;
+use PHPSpec2\Prophet\Prophet;
 use PHPSpec2\Matcher\MatchersCollection;
 
 use PHPSpec2\Event\SpecificationEvent;
@@ -17,7 +17,7 @@ use PHPSpec2\Event\ExampleEvent;
 
 use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
-use PHPSpec2\Stub\LazyInstance;
+use PHPSpec2\Prophet\LazyInstance;
 
 class Runner
 {
@@ -41,7 +41,7 @@ class Runner
         return $this->eventDispatcher;
     }
 
-    public function testSpecification(ReflectionClass $spec)
+    public function runSpecification(ReflectionClass $spec)
     {
         $examples = $spec->getMethods(ReflectionMethod::IS_PUBLIC);
 
@@ -57,7 +57,7 @@ class Runner
         foreach ($examples as $example) {
             if ($this->isExampleTestable($example) &&
                 $this->exampleIsFiltered($example)) {
-                $result = max($result, $this->testExample($example));
+                $result = max($result, $this->runExample($example));
 
                 if ($this->failFast && $result) {
                     $this->wasAborted = true;
@@ -73,7 +73,7 @@ class Runner
         return $result;
     }
 
-    public function testExample(ReflectionMethod $example)
+    public function runExample(ReflectionMethod $example)
     {
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
 
@@ -86,7 +86,7 @@ class Runner
         $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
         $className = strtolower($className[0]) . substr($className, 1);
 
-        $stub = new ObjectStub($subject, clone $this->matchers);
+        $stub = new Prophet($subject, clone $this->matchers);
         $instance->$className = $instance->object = $stub;
 
         $stubs = $this->getStubsForExample($instance, $example);
@@ -177,7 +177,7 @@ class Runner
 
         foreach ($method->getParameters() as $parameter) {
             if (!isset($stubs[$parameter->getName()])) {
-                $stubs[$parameter->getName()] = new ObjectStub(null, clone $this->matchers);
+                $stubs[$parameter->getName()] = new Prophet(null, clone $this->matchers);
             }
         }
 
@@ -195,7 +195,7 @@ class Runner
 
             if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *mock of (.*)$#', $line, $match)) {
                 if (!isset($stubs[$match[1]])) {
-                    $stubs[$match[1]] = new ObjectStub(null, clone $this->matchers);
+                    $stubs[$match[1]] = new Prophet(null, clone $this->matchers);
                     $stubs[$match[1]]->isAMockOf($match[2]);
                 }
             }

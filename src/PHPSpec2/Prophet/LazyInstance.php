@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Prophet;
 
 use ReflectionClass;
 
-use PHPSpec2\Exception\Stub\StubException;
-use PHPSpec2\Exception\Stub\ClassDoesNotExistsException;
+use PHPSpec2\Exception\Prophet\ProphetException;
+use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
 
 class LazyInstance implements LazySubjectInterface
 {
@@ -31,7 +31,7 @@ class LazyInstance implements LazySubjectInterface
         }
 
         if (!is_string($this->classname)) {
-            throw new StubException(sprintf(
+            throw new ProphetException(sprintf(
                 'Instantiator expects class name, "%s" got', gettype($this->classname)
             ));
         }

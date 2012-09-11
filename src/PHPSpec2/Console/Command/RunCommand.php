@@ -75,7 +75,7 @@ class RunCommand extends Command
             if ($runner->wasAborted()) {
                 break;
             }
-            $runner->testSpecification($spec);
+            $runner->runSpecification($spec);
         }
 
         $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
