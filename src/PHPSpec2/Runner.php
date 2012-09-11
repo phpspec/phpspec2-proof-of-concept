@@ -19,12 +19,12 @@ use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
 use PHPSpec2\Stub\LazyInstance;
 
-class Tester
+class Runner
 {
     const RUN_ALL = '.*';
     private $eventDispatcher;
     private $matchers = array();
-    private $runOnly = Tester::RUN_ALL;
+    private $runOnly = Runner::RUN_ALL;
     private $failFast;
     private $wasAborted = false;
 
@@ -32,7 +32,7 @@ class Tester
     {
         $this->eventDispatcher = $dispatcher;
         $this->matchers        = $matchers;
-        $this->runOnly         = isset($options['example']) ? $options['example'] : Tester::RUN_ALL;
+        $this->runOnly         = isset($options['example']) ? $options['example'] : Runner::RUN_ALL;
         $this->failFast        = isset($options['fail-fast']) ? $options['fail-fast'] : false;
     }
 

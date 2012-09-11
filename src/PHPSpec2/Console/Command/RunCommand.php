@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use PHPSpec2\Console\IO;
 use PHPSpec2\Locator;
-use PHPSpec2\Tester;
+use PHPSpec2\Runner;
 use PHPSpec2\Matcher;
 use PHPSpec2\StatisticsCollector;
 use PHPSpec2\Formatter;
@@ -54,31 +54,31 @@ class RunCommand extends Command
         $matchers->add(new Matcher\TypeMatcher($representer));
         $matchers->add(new Matcher\ObjectStateMatcher($representer));
 
-        // setup specs locator and tester
+        // setup specs locator and runner
         $locator = new Locator();
-        $tester  = new Tester(new EventDispatcher(), $matchers, $input->getOptions());
+        $runner  = new Runner(new EventDispatcher(), $matchers, $input->getOptions());
 
         // setup formatter
         $formatter = new Formatter\PrettyFormatter($representer);
         $formatter->setIO($io);
-        $tester->getEventDispatcher()->addSubscriber($formatter);
+        $runner->getEventDispatcher()->addSubscriber($formatter);
 
         // setup listeners
-        $tester->getEventDispatcher()->addSubscriber(new ClassNotFoundListener($io));
+        $runner->getEventDispatcher()->addSubscriber(new ClassNotFoundListener($io));
 
         // setup statistics collector
         $collector = new StatisticsCollector;
-        $tester->getEventDispatcher()->addSubscriber($collector);
-        $tester->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
+        $runner->getEventDispatcher()->addSubscriber($collector);
+        $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
         foreach ($locator->getSpecifications($input->getArgument('spec')) as $spec) {
-            if ($tester->wasAborted()) {
+            if ($runner->wasAborted()) {
                 break;
             }
-            $tester->testSpecification($spec);
+            $runner->testSpecification($spec);
         }
 
-        $tester->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
+        $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
 
         return intval(ExampleEvent::PASSED !== $collector->getGlobalResult());
     }
