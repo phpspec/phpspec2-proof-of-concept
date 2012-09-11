@@ -20,7 +20,7 @@ class ObjectStateMatcher implements Specification
         $subject = new \ReflectionClass($this);
         $this->object->supports('beSimple', $subject, array());
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Stub\MethodNotFoundException')
+        $this->object->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
             ->during('positiveMatch', array('beSimple', $subject, array()));
     }
 
@@ -54,7 +54,7 @@ class ObjectStateMatcher implements Specification
         $subject = new \ReflectionClass($this);
         $this->object->supports('haveAnything', $subject, array('str'));
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Stub\MethodNotFoundException')
+        $this->object->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
             ->during('positiveMatch', array('haveAnything', $subject, array('str')));
     }
 

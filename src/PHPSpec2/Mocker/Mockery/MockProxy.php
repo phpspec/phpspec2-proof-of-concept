@@ -5,7 +5,7 @@ namespace PHPSpec2\Mocker\Mockery;
 use Mockery;
 
 use PHPSpec2\Mocker\MockProxyInterface;
-use PHPSpec2\Stub\ArgumentsResolver;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 class MockProxy implements MockProxyInterface
 {

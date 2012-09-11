@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Exception\Stub;
+namespace PHPSpec2\Exception\Prophet;
 
-class PropertyNotFoundException extends StubException
+class PropertyNotFoundException extends ProphetException
 {
     private $subject;
     private $property;

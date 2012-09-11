@@ -3,7 +3,7 @@
 namespace spec\PHPSpec2\Mocker;
 
 use PHPSpec2\Specification;
-use PHPSpec2\Stub\ArgumentsResolver;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 class MockerFactory implements Specification
 {

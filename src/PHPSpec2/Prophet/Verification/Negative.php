@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPSpec2\Stub\Verification;
+namespace PHPSpec2\Prophet\Verification;
 
 use PHPSpec2\Matcher\MatchersCollection;
-use PHPSpec2\Stub\ArgumentsResolver;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 class Negative
 {

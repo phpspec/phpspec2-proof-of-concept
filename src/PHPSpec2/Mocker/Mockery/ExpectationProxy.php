@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Mocker\Mockery;
 
-use PHPSpec2\Stub\ArgumentsResolver;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 class ExpectationProxy
 {

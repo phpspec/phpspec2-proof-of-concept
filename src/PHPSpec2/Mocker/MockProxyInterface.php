@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Mocker;
 
-use PHPSpec2\Stub\ArgumentsResolver;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 interface MockProxyInterface
 {

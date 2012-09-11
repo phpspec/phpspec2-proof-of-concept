@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Exception\Stub;
+namespace PHPSpec2\Exception\Prophet;
 
-class ClassDoesNotExistsException extends StubException
+class ClassDoesNotExistsException extends ProphetException
 {
     private $classname;
 

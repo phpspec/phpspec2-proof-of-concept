@@ -15,7 +15,7 @@ class ThrowMatcher implements Specification
     }
 
     /**
-     * @param ObjectStub $subject mock of stdClass
+     * @param Prophet $subject mock of stdClass
      */
     function it_can_specify_a_method_during_which_an_exception_should_be_throw($subject)
     {
@@ -28,7 +28,7 @@ class ThrowMatcher implements Specification
     }
 
     /**
-     * @param ObjectStub $subject mock of stdClass
+     * @param Prophet $subject mock of stdClass
      */
     function it_can_specify_a_method_during_which_an_exception_should_not_be_throw($subject)
     {
