@@ -18,20 +18,28 @@ use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
 use PHPSpec2\Prophet\LazyObject;
+use PHPSpec2\Mocker\MockerInterface;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 class Runner
 {
     const RUN_ALL = '.*';
     private $eventDispatcher;
-    private $matchers = array();
+    private $matchers;
+    private $mocker;
+    private $resolver;
     private $runOnly = Runner::RUN_ALL;
     private $failFast;
     private $wasAborted = false;
 
-    public function __construct(EventDispatcherInterface $dispatcher, MatchersCollection $matchers, array $options = array())
+    public function __construct(EventDispatcherInterface $dispatcher,
+                                MatchersCollection $matchers, MockerInterface $mocker,
+                                ArgumentsResolver $resolver, array $options = array())
     {
         $this->eventDispatcher = $dispatcher;
         $this->matchers        = $matchers;
+        $this->mocker          = $mocker;
+        $this->resolver        = $resolver;
         $this->runOnly         = isset($options['example']) ? $options['example'] : Runner::RUN_ALL;
         $this->failFast        = isset($options['fail-fast']) ? $options['fail-fast'] : false;
     }
@@ -86,7 +94,9 @@ class Runner
         $className = substr($spec->getName(), (int)strrpos($spec->getName(), '\\') + 1);
         $className = strtolower($className[0]) . substr($className, 1);
 
-        $prophet = new Prophet($subject, clone $this->matchers);
+        $prophet = new Prophet(
+            $subject, clone $this->matchers, $this->mocker, $this->resolver
+        );
         $instance->$className = $instance->object = $prophet;
 
         $prophets = $this->getProphetsForExample($instance, $example);
@@ -177,7 +187,9 @@ class Runner
 
         foreach ($method->getParameters() as $parameter) {
             if (!isset($prophets[$parameter->getName()])) {
-                $prophets[$parameter->getName()] = new Prophet(null, clone $this->matchers);
+                $prophets[$parameter->getName()] = new Prophet(
+                    null, clone $this->matchers, $this->mocker, $this->resolver
+                );
             }
         }
 
@@ -195,7 +207,9 @@ class Runner
 
             if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *(double|mock|stub|fake|dummy|spy) of (.*)$#', $line, $match)) {
                 if (!isset($prophets[$match[1]])) {
-                    $prophets[$match[1]] = new Prophet(null, clone $this->matchers);
+                    $prophets[$match[1]] = new Prophet(
+                        null, clone $this->matchers, $this->mocker, $this->resolver
+                    );
                     $prophets[$match[1]]->isAMockOf($match[3]);
                 }
             }

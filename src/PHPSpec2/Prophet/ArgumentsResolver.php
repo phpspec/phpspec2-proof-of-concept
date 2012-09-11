@@ -6,13 +6,13 @@ use PHPSpec2\Mocker\MockProxyInterface;
 
 class ArgumentsResolver
 {
-    public function resolve($arguments)
+    public function resolve(array $arguments)
     {
         if (null === $arguments) {
             return array();
         }
 
-        return array_map(array($this, 'resolveSingle'), (array)$arguments);
+        return array_map(array($this, 'resolveSingle'), $arguments);
     }
 
     public function resolveSingle($argument)

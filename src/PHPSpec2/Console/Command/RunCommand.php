@@ -19,6 +19,8 @@ use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
+use PHPSpec2\Mocker\Mockery\Mocker;
+use PHPSpec2\Prophet\ArgumentsResolver;
 
 class RunCommand extends Command
 {
@@ -54,9 +56,12 @@ class RunCommand extends Command
         $matchers->add(new Matcher\TypeMatcher($representer));
         $matchers->add(new Matcher\ObjectStateMatcher($representer));
 
+        $mocker = new Mocker;
+        $resolver = new ArgumentsResolver;
+
         // setup specs locator and runner
         $locator = new Locator();
-        $runner  = new Runner(new EventDispatcher(), $matchers, $input->getOptions());
+        $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $resolver, $input->getOptions());
 
         // setup formatter
         $formatter = new Formatter\PrettyFormatter($representer);
