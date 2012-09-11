@@ -49,7 +49,7 @@ class Prophet
         return new Verification\Negative($this->getProphetSubject(), $this->matchers, $this->resolver);
     }
 
-    public function callOnProphet($method, array $arguments = array())
+    public function callOnProphetSubject($method, array $arguments = array())
     {
         if (null === $this->getProphetSubject()) {
             throw new ProphetException(sprintf(
@@ -76,7 +76,7 @@ class Prophet
         throw new MethodNotFoundException($this->getProphetSubject(), $method);
     }
 
-    public function setToProphet($property, $value = null)
+    public function setToProphetSubject($property, $value = null)
     {
         $value = $this->resolver->resolve($value);
 
@@ -87,7 +87,7 @@ class Prophet
         throw new PropertyNotFoundException($this->getProphetSubject(), $property);
     }
 
-    public function getFromProphet($property)
+    public function getFromProphetSubject($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
             $returnValue = $this->getProphetSubject()->$property;
@@ -134,17 +134,17 @@ class Prophet
             return call_user_func_array(array($this->shouldNot(), $matcherName), $arguments);
         }
 
-        return $this->callOnProphet($method, $arguments);
+        return $this->callOnProphetSubject($method, $arguments);
     }
 
     public function __set($property, $value = null)
     {
-        return $this->setToProphet($property, $value);
+        return $this->setToProphetSubject($property, $value);
     }
 
     public function __get($property)
     {
-        return $this->getFromProphet($property);
+        return $this->getFromProphetSubject($property);
     }
 
     private function isSubjectMethodAccessible($method)
