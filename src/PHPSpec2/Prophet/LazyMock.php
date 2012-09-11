@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Prophet;
 
 use ReflectionClass;
 
 use PHPSpec2\Mocker\MockerFactory;
 
-use PHPSpec2\Exception\Stub\StubException;
-use PHPSpec2\Exception\Stub\ClassDoesNotExistsException;
+use PHPSpec2\Exception\Prophet\ProphetException;
+use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
 
 class LazyMock implements LazySubjectInterface
 {
@@ -28,7 +28,7 @@ class LazyMock implements LazySubjectInterface
         }
 
         if (!is_string($this->classOrInterface)) {
-            throw new StubException(sprintf(
+            throw new ProphetException(sprintf(
                 'Mock creator expects class or interface name, "%s" got',
                 gettype($this->classOrInterface)
             ));

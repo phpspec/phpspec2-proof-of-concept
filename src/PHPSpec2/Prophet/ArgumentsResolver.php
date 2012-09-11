@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Stub;
+namespace PHPSpec2\Prophet;
 
 use PHPSpec2\Mocker\MockProxyInterface;
 
@@ -21,8 +21,8 @@ class ArgumentsResolver
             return $argument;
         }
 
-        if ($argument instanceof ObjectStub) {
-            $argument = $argument->getStubSubject();
+        if ($argument instanceof Prophet) {
+            $argument = $argument->getProphetSubject();
         }
 
         if ($argument instanceof MockProxyInterface) {

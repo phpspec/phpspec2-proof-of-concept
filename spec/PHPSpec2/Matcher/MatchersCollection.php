@@ -14,7 +14,7 @@ class MatchersCollection implements Specification
     }
 
     /**
-     * @param ObjectStub $matcher mock of PHPSpec2\Matcher\MatcherInterface
+     * @param Prophet $matcher dummy of PHPSpec2\Matcher\MatcherInterface
      */
     function it_will_complain_if_matcher_is_not_found($matcher)
     {
@@ -24,7 +24,7 @@ class MatchersCollection implements Specification
     }
 
     /**
-     * @param ObjectStub $matcher mock of PHPSpec2\Matcher\MatcherInterface
+     * @param Prophet $matcher stub of PHPSpec2\Matcher\MatcherInterface
      */
     function it_will_return_matcher_if_found($matcher)
     {

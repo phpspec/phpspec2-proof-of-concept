@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Exception\Stub;
+namespace PHPSpec2\Exception\Prophet;
 
-class MethodNotFoundException extends StubException
+class MethodNotFoundException extends ProphetException
 {
     private $subject;
     private $method;
