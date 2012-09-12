@@ -18,17 +18,22 @@ class Locator
 
     public function getSpecifications($path)
     {
+        $line = null;
+        if (preg_match('/^(.*)\:(\d+)$/', $path, $matches)) {
+            list($_, $path, $line) = $matches;
+        }
+
         $specs = array();
         if (is_dir($path)) {
             $files = Finder::create()->files()->name('*.php')->in($path);
             foreach ($files as $file) {
-                if ($fromFile = $this->getSpecificationsFromFile($file)) {
+                if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
                     $specs = array_merge($specs, $fromFile);
                 }
             }
         } elseif (is_file($path)) {
             $file = new SplFileInfo(realpath($path));
-            if ($fromFile = $this->getSpecificationsFromFile($file)) {
+            if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
                 $specs = array_merge($specs, $fromFile);
             }
         }
@@ -36,8 +41,8 @@ class Locator
         return $specs;
     }
 
-    public function getSpecificationsFromFile(SplFileInfo $file)
+    public function getSpecificationsFromFile(SplFileInfo $file, $line = null)
     {
-        return $this->loader->loadFromFile($file->getPathname());
+        return $this->loader->loadFromFile($file->getPathname(), $line);
     }
 }
