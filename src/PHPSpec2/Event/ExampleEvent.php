@@ -13,12 +13,15 @@ class ExampleEvent extends Event implements EventInterface
     const FAILED    = 2;
 
     private $example;
+    private $time;
     private $result;
     private $exception;
 
-    public function __construct(Example $example, $result = null, \Exception $exception = null)
+    public function __construct(Example $example, $time = null, $result = null,
+                                \Exception $exception = null)
     {
         $this->example   = $example;
+        $this->time      = $time;
         $this->result    = $result;
         $this->exception = $exception;
     }
@@ -31,6 +34,11 @@ class ExampleEvent extends Event implements EventInterface
     public function getExample()
     {
         return $this->example;
+    }
+
+    public function getTime()
+    {
+        return $this->time;
     }
 
     public function getResult()

@@ -50,6 +50,7 @@ class Runner
         $this->eventDispatcher->dispatch('beforeSpecification',
             new SpecificationEvent($specification)
         );
+        $startTime = microtime(true);
 
         $result = ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
@@ -57,7 +58,7 @@ class Runner
         }
 
         $this->eventDispatcher->dispatch('afterSpecification',
-            new SpecificationEvent($specification, $result)
+            new SpecificationEvent($specification, microtime(true) - $startTime, $result)
         );
 
         return $result;
@@ -66,6 +67,7 @@ class Runner
     public function runExample(Example $example)
     {
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
+        $startTime = microtime(true);
 
         $subject = new LazyObject($example->getSubject());
         $context = $example->getFunction()->getDeclaringClass()->newInstance();
@@ -89,11 +91,17 @@ class Runner
                 $this->invokeWithDependencies($context, $postFunction, $dependencies);
             }
 
-            $event = new ExampleEvent($example, ExampleEvent::PASSED);
+            $event = new ExampleEvent(
+                $example, microtime(true) - $startTime, ExampleEvent::PASSED
+            );
         } catch (PendingException $e) {
-            $event = new ExampleEvent($example, ExampleEvent::PENDING, $e);
+            $event = new ExampleEvent(
+                $example, microtime(true) - $startTime, ExampleEvent::PENDING, $e
+            );
         } catch (\Exception $e) {
-            $event = new ExampleEvent($example, ExampleEvent::FAILED, $e);
+            $event = new ExampleEvent(
+                $example, microtime(true) - $startTime, ExampleEvent::FAILED, $e
+            );
         }
 
         if (null !== $oldHandler) {
