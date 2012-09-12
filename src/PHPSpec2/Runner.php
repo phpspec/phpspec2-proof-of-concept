@@ -7,8 +7,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use ReflectionClass;
 use ReflectionMethod;
 
-use Mockery;
-
 use PHPSpec2\Prophet\Prophet;
 use PHPSpec2\Matcher\MatchersCollection;
 
@@ -110,7 +108,7 @@ class Runner
 
         try {
             $this->callMethodWithProphets($instance, $example, $prophets);
-            Mockery::close();
+            $this->mocker->teardown();
 
             $event = new ExampleEvent($example, ExampleEvent::PASSED);
         } catch (PendingException $e) {
