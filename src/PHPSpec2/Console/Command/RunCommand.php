@@ -21,6 +21,7 @@ use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Mocker\Mockery\Mocker;
 use PHPSpec2\Prophet\ArgumentsResolver;
+use PHPSpec2\Loader\SpecificationsClassLoader;
 
 class RunCommand extends Command
 {
@@ -61,7 +62,7 @@ class RunCommand extends Command
         $resolver = new ArgumentsResolver;
 
         // setup specs locator and runner
-        $locator = new Locator();
+        $locator = new Locator(new SpecificationsClassLoader);
         $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $resolver, $input->getOptions());
 
         // setup formatter
@@ -78,9 +79,6 @@ class RunCommand extends Command
         $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
         foreach ($locator->getSpecifications($input->getArgument('spec')) as $spec) {
-            if ($runner->wasAborted()) {
-                break;
-            }
             $runner->runSpecification($spec);
         }
 

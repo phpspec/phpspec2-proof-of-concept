@@ -47,4 +47,14 @@ class Example implements Specification
         $this->example->addPostFunction($function);
         $this->example->getPostFunctions()->shouldHaveCount(1);
     }
+
+    /**
+     * @param Prophet $specification mock of PHPSpec2\Loader\Node\Specification
+     */
+    function its_subject_should_be_calculated_from_parent($specification)
+    {
+        $specification->getSubject()->willReturn('Class');
+        $this->example->setParent($specification);
+        $this->example->getSubject()->shouldReturn('Class');
+    }
 }

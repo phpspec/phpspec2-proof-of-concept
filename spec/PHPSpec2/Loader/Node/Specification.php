@@ -76,4 +76,15 @@ class Specification implements SpecificationInterface
 
         $this->specification->getDepth()->shouldReturn(11);
     }
+
+    function its_subject_should_be_null_by_default()
+    {
+        $this->specification->getSubject()->shouldReturn(null);
+    }
+
+    function its_subject_should_be_mutable()
+    {
+        $this->specification->setSubject('Some\Class');
+        $this->specification->getSubject()->shouldReturn('Some\Class');
+    }
 }

@@ -5,10 +5,17 @@ namespace PHPSpec2;
 use Symfony\Component\Finder\Finder;
 
 use SplFileInfo;
-use ReflectionClass;
+use PHPSpec2\Loader\LoaderInterface;
 
 class Locator
 {
+    private $loader;
+
+    public function __construct(LoaderInterface $loader)
+    {
+        $this->loader = $loader;
+    }
+
     public function getSpecifications($path)
     {
         $specs = array();
@@ -31,26 +38,6 @@ class Locator
 
     public function getSpecificationsFromFile(SplFileInfo $file)
     {
-        $filename = realpath($file->getPathname());
-        $oldClassnames = get_declared_classes();
-        require_once $filename;
-        $newClassnames = array_diff(get_declared_classes(), $oldClassnames);
-
-        $specs = array();
-        foreach ($newClassnames as $classname) {
-            $reflection = new ReflectionClass($classname);
-
-            if (!$reflection->implementsInterface('PHPSpec2\\Specification')) {
-                continue;
-            }
-
-            if ($reflection->isAbstract()) {
-                continue;
-            }
-
-            $specs[] = $reflection;
-        }
-
-        return $specs;
+        return $this->loader->loadFromFile($file->getPathname());
     }
 }

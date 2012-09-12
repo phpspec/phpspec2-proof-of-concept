@@ -5,16 +5,28 @@ namespace PHPSpec2\Loader\Node;
 class Specification extends Node
 {
     private $title;
+    private $subject;
     private $children = array();
 
-    public function __construct($title)
+    public function __construct($title, $subject = null)
     {
-        $this->title = $title;
+        $this->title   = $title;
+        $this->subject = $subject;
     }
 
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+    }
+
+    public function getSubject()
+    {
+        return $this->subject;
     }
 
     public function addChild(Node $child)

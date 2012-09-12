@@ -4,8 +4,7 @@ namespace PHPSpec2\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-use ReflectionMethod;
-use Exception;
+use PHPSpec2\Loader\Node\Example;
 
 class ExampleEvent extends Event implements EventInterface
 {
@@ -17,7 +16,7 @@ class ExampleEvent extends Event implements EventInterface
     private $result;
     private $exception;
 
-    public function __construct(ReflectionMethod $example, $result = null, Exception $exception = null)
+    public function __construct(Example $example, $result = null, \Exception $exception = null)
     {
         $this->example   = $example;
         $this->result    = $result;

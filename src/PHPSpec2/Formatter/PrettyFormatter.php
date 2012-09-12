@@ -47,7 +47,7 @@ class PrettyFormatter implements FormatterInterface
     public function beforeSpecification(SpecificationEvent $event)
     {
         $this->writeln(sprintf(
-            "\n> %s\n", $this->formatSpecificationName($event->getSpecification())
+            "\n> %s\n", $event->getSpecification()->getTitle()
         ));
     }
 
@@ -57,13 +57,13 @@ class PrettyFormatter implements FormatterInterface
             case ExampleEvent::PASSED:
                 $this->writeln(sprintf(
                     "  <passed>✔ %s</passed>",
-                    $this->formatExampleName($event->getExample())
+                    $event->getExample()->getTitle()
                 ));
                 break;
             case ExampleEvent::PENDING:
                 $this->writeln(sprintf(
                     "  <pending>- %s</pending>",
-                    $this->formatExampleName($event->getExample())
+                    $event->getExample()->getTitle()
                 ));
                 $this->writeln(sprintf(
                     "<pending>%s</pending>\n",
@@ -73,7 +73,7 @@ class PrettyFormatter implements FormatterInterface
             case ExampleEvent::FAILED:
                 $this->writeln(sprintf(
                     "  <failed>✘ %s</failed>",
-                    $this->formatExampleName($event->getExample())
+                    $event->getExample()->getTitle()
                 ));
                 $this->writeln(sprintf(
                     "<failed>%s</failed>\n",
@@ -107,16 +107,6 @@ class PrettyFormatter implements FormatterInterface
         $seconds = round($time - ($minutes * 60), 3);
 
         $this->writeln($minutes . 'm' . $seconds . 's');
-    }
-
-    protected function formatSpecificationName(ReflectionClass $specification)
-    {
-        return str_replace('Spec\\', '', $specification->getName());
-    }
-
-    protected function formatExampleName(ReflectionMethod $example)
-    {
-        return str_replace('_', ' ', $example->getName());
     }
 
     protected function formatExampleException(Exception $exception, $verbose = false)

@@ -30,8 +30,11 @@ class SpecificationsClassLoader implements LoaderInterface
                 $preFunctions[] = $class->getMethod('described_with');
             }
 
-            $specification = new Node\Specification($class->getName());
-            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            $specification = new Node\Specification(
+                $class->getName(),
+                preg_replace("|^spec\\\|", '', $class->getName())
+            );
+            foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it_|its_)/', $method->getName())) {
                     continue;
                 }
