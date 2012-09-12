@@ -73,7 +73,6 @@ class Runner
         $prophet = $this->createProphet($subject);
 
         $context->$ivar  = $context->object = $prophet;
-        $dependencies = $this->getExampleDependencies($example, $context);
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
@@ -83,9 +82,7 @@ class Runner
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
         try {
-            foreach ($example->getPreFunctions() as $preFunction) {
-                $this->invokeWithArguments($context, $preFunction, $dependencies);
-            }
+            $dependencies = $this->getExampleDependencies($example, $context);
             $this->invokeWithArguments($context, $example->getFunction(), $dependencies);
             $this->mocker->teardown();
 
@@ -115,6 +112,7 @@ class Runner
                     $dependencies[$name] = $dependency;
                 }
             }
+            $this->invokeWithArguments($context, $preFunction, $dependencies);
         }
 
         foreach ($this->getMethodDependencies($example->getFunction()) as $name => $dependency) {
