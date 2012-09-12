@@ -83,8 +83,11 @@ class Runner
 
         try {
             $dependencies = $this->getExampleDependencies($example, $context);
-            $this->invokeWithArguments($context, $example->getFunction(), $dependencies);
+            $this->invokeWithDependencies($context, $example->getFunction(), $dependencies);
             $this->mocker->teardown();
+            foreach ($example->getPostFunctions() as $postFunction) {
+                $this->invokeWithDependencies($context, $postFunction, $dependencies);
+            }
 
             $event = new ExampleEvent($example, ExampleEvent::PASSED);
         } catch (PendingException $e) {
@@ -107,27 +110,15 @@ class Runner
         $dependencies = array();
 
         foreach ($example->getPreFunctions() as $preFunction) {
-            foreach ($this->getMethodDependencies($preFunction) as $name => $dependency) {
-                if (!isset($dependencies[$name])) {
-                    $dependencies[$name] = $dependency;
-                }
-            }
-            $this->invokeWithArguments($context, $preFunction, $dependencies);
+            $dependencies = $this->getDependencies($preFunction, $dependencies);
+            $this->invokeWithDependencies($context, $preFunction, $dependencies);
         }
 
-        foreach ($this->getMethodDependencies($example->getFunction()) as $name => $dependency) {
-            if (!isset($dependencies[$name])) {
-                $dependencies[$name] = $dependency;
-            }
-        }
-
-        return $dependencies;
+        return $this->getDependencies($example->getFunction(), $dependencies);
     }
 
-    private function getMethodDependencies(ReflectionFunctionAbstract $function)
+    private function getDependencies(ReflectionFunctionAbstract $function, array $dependencies)
     {
-        $dependencies = array();
-
         foreach (explode("\n", trim($function->getDocComment())) as $line) {
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
@@ -146,11 +137,15 @@ class Runner
         return $dependencies;
     }
 
-    private function invokeWithArguments($context, ReflectionMethod $method, array $arguments)
+    private function invokeWithDependencies($context, ReflectionMethod $method, array $dependencies)
     {
         $parameters = array();
         foreach ($method->getParameters() as $parameter) {
-            $parameters[] = $arguments[$parameter->getName()];
+            if (isset($dependencies[$parameter->getName()])) {
+                $parameters[] = $dependencies[$parameter->getName()];
+            } else {
+                $parameters[] = $this->createProphet();
+            }
         }
 
         $method->invokeArgs($context, $parameters);
