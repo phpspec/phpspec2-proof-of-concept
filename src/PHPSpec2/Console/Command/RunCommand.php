@@ -68,7 +68,7 @@ class RunCommand extends Command
 
         // setup differ
         $differ = new Diff\Diff;
-        $differ->addEngine(new Diff\StringDiff);
+        $differ->addEngine(new Diff\StringEngine);
 
         // setup formatter
         $formatter = new Formatter\PrettyFormatter($representer, $differ);
