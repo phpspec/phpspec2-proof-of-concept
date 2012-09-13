@@ -73,12 +73,16 @@ class Runner
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
         $startTime = microtime(true);
 
-        $subject = new LazyObject($example->getSubject());
-        $context = $example->getFunction()->getDeclaringClass()->newInstance();
-        $ivar    = lcfirst(basename(str_replace('\\', '/', $example->getSubject())));
-        $prophet = $this->createProphet($subject);
+        $subject = null;
+        $varName = 'thing';
+        if (null !== $subjectName = $example->getSubject()) {
+            $subject = new LazyObject($subjectName);
+            $varName = lcfirst(basename(str_replace('\\', '/', $subjectName)));
+        }
 
-        $context->$ivar  = $context->object = $prophet;
+        $prophet = $this->createProphet($subject);
+        $context = $this->createContext($example);
+        $context->$varName = $context->object = $prophet;
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
@@ -89,10 +93,10 @@ class Runner
 
         try {
             $dependencies = $this->getExampleDependencies($example, $context);
-            $this->invokeWithDependencies($context, $example->getFunction(), $dependencies);
+            $this->invoke($context, $example->getFunction(), $dependencies);
             $this->mocker->teardown();
             foreach ($example->getPostFunctions() as $postFunction) {
-                $this->invokeWithDependencies($context, $postFunction, $dependencies);
+                $this->invoke($context, $postFunction, $dependencies);
             }
 
             $event = new ExampleEvent(
@@ -117,13 +121,29 @@ class Runner
         return $event->getResult();
     }
 
-    private function getExampleDependencies(Example $example, $context)
+    protected function createContext(Example $example)
+    {
+        $function = $example->getFunction();
+
+        if ($function instanceof ReflectionMethod) {
+            return $function->getDeclaringClass()->newInstance();
+        } else {
+            return new \stdClass;
+        }
+    }
+
+    protected function createProphet($subject = null)
+    {
+        return new Prophet($subject, clone $this->matchers, $this->mocker, $this->resolver);
+    }
+
+    protected function getExampleDependencies(Example $example, $context)
     {
         $dependencies = array();
 
         foreach ($example->getPreFunctions() as $preFunction) {
             $dependencies = $this->getDependencies($preFunction, $dependencies);
-            $this->invokeWithDependencies($context, $preFunction, $dependencies);
+            $this->invoke($context, $preFunction, $dependencies);
         }
 
         return $this->getDependencies($example->getFunction(), $dependencies);
@@ -149,10 +169,10 @@ class Runner
         return $dependencies;
     }
 
-    private function invokeWithDependencies($context, ReflectionMethod $method, array $dependencies)
+    private function invoke($context, ReflectionFunctionAbstract $function, array $dependencies)
     {
         $parameters = array();
-        foreach ($method->getParameters() as $parameter) {
+        foreach ($function->getParameters() as $parameter) {
             if (isset($dependencies[$parameter->getName()])) {
                 $parameters[] = $dependencies[$parameter->getName()];
             } else {
@@ -160,12 +180,12 @@ class Runner
             }
         }
 
-        $method->invokeArgs($context, $parameters);
-    }
-
-    private function createProphet($subject = null)
-    {
-        return new Prophet($subject, clone $this->matchers, $this->mocker, $this->resolver);
+        if ($function instanceof ReflectionMethod) {
+            $function->invokeArgs($context, $parameters);
+        } elseif ($function->isClosure()) {
+            $closure = $function->getClosure()->bindTo($context);
+            call_user_func_array($closure, $parameters);
+        }
     }
 
     /**
