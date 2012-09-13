@@ -20,7 +20,7 @@ abstract class Node
     {
         return null !== $this->getParent()
              ? $this->getParent()->getDepth() + 1
-             : 1
+             : 0
         ;
     }
 }
