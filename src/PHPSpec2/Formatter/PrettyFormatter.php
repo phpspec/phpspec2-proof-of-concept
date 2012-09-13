@@ -100,9 +100,16 @@ class PrettyFormatter implements FormatterInterface
             $counts[] = sprintf('<failed>%d failed</failed>', $count);
         }
 
-        $this->writeln(sprintf(
-            "\n%d examples (%s)", count($stats->getAllEvents()), implode(', ', $counts)
+        $this->write(sprintf(
+            "\n%d examples ", count($stats->getAllEvents())
         ));
+        if (count($counts)) {
+            $this->writeln(sprintf(
+                "(%s)", implode(', ', $counts)
+            ));
+        } else {
+            $this->writeln('');
+        }
 
         $time    = $stats->getTotalTime();
         $minutes = floor($time / 60);
@@ -239,6 +246,11 @@ class PrettyFormatter implements FormatterInterface
         return implode("\n", array_map(function($line) use($indent) {
             return str_repeat(' ', $indent).$line;
         }, explode("\n", $text)));
+    }
+
+    private function write($text)
+    {
+        $this->io->getOutput()->write($text);
     }
 
     private function writeln($text)
