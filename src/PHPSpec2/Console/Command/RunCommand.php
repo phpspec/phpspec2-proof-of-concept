@@ -22,6 +22,7 @@ use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Mocker\Mockery\Mocker;
 use PHPSpec2\Prophet\ArgumentsResolver;
 use PHPSpec2\Loader\SpecificationsClassLoader;
+use PHPSpec2\Diff;
 
 class RunCommand extends Command
 {
@@ -65,8 +66,12 @@ class RunCommand extends Command
         $locator = new Locator(new SpecificationsClassLoader);
         $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $resolver, $input->getOptions());
 
+        // setup differ
+        $differ = new Diff\Diff;
+        $differ->addEngine(new Diff\StringDiff);
+
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter($representer);
+        $formatter = new Formatter\PrettyFormatter($representer, $differ);
         $formatter->setIO($io);
         $runner->getEventDispatcher()->addSubscriber($formatter);
 

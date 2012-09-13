@@ -1,17 +1,22 @@
 <?php
 
-namespace PHPSpec2\Formatter\Diff;
+namespace PHPSpec2\Diff;
 
 require_once __DIR__.'/PhpDiff.php';
 
-class StringDiff
+class StringDiff implements EngineInterface
 {
-    public static function diff($a, $b)
+    public function supports($expected, $actual)
     {
-        $a = is_array($a) ? $a : explode("\n", $a);
-        $b = is_array($b) ? $b : explode("\n", $b);
+        return is_string($expected) && is_string($actual);
+    }
 
-        $diff = new \Diff($a, $b, array());
+    public function compare($expected, $actual)
+    {
+        $expected = explode("\n", (string) $expected);
+        $actual   = explode("\n", (string) $actual);
+
+        $diff = new \Diff($expected, $actual, array());
 
         $renderer = new \Diff_Renderer_Text_Unified;
         $text = $diff->render($renderer);
@@ -27,6 +32,6 @@ class StringDiff
             }
         }
 
-        return sprintf('<code>%s</code>', implode("\n", $lines));
+        return sprintf("<code>\n%s</code>", implode("\n", $lines));
     }
 }

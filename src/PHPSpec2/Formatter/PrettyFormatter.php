@@ -10,7 +10,7 @@ use PHPSpec2\Formatter\Representer\RepresenterInterface;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Formatter\Diff\StringDiff;
+use PHPSpec2\Diff\Diff;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\ExampleException;
 use PHPSpec2\Exception\Example\NotEqualException;
@@ -26,10 +26,12 @@ class PrettyFormatter implements FormatterInterface
 {
     private $io;
     private $representer;
+    private $differ;
 
-    public function __construct(RepresenterInterface $representer)
+    public function __construct(RepresenterInterface $representer, Diff $differ)
     {
         $this->representer = $representer;
+        $this->differ      = $differ;
     }
 
     public static function getSubscribedEvents()
@@ -148,7 +150,9 @@ class PrettyFormatter implements FormatterInterface
         }
 
         if ($exception instanceof NotEqualException) {
-            return rtrim(StringDiff::diff($exception->getExpected(), $exception->getActual()));
+            return rtrim($this->differ->compare(
+                $exception->getExpected(), $exception->getActual()
+            ));
         }
 
         if ($exception instanceof PHPSpec2Exception) {
