@@ -15,7 +15,7 @@ class Diff
     {
         foreach ($this->engines as $engine) {
             if ($engine->supports($expected, $actual)) {
-                return trim($engine->compare($expected, $actual));
+                return rtrim($engine->compare($expected, $actual));
             }
         }
 
