@@ -5,23 +5,35 @@ namespace PHPSpec2;
 use Symfony\Component\Finder\Finder;
 
 use SplFileInfo;
-use ReflectionClass;
+use PHPSpec2\Loader\LoaderInterface;
 
 class Locator
 {
+    private $loader;
+
+    public function __construct(LoaderInterface $loader)
+    {
+        $this->loader = $loader;
+    }
+
     public function getSpecifications($path)
     {
+        $line = null;
+        if (preg_match('/^(.*)\:(\d+)$/', $path, $matches)) {
+            list($_, $path, $line) = $matches;
+        }
+
         $specs = array();
         if (is_dir($path)) {
             $files = Finder::create()->files()->name('*.php')->in($path);
             foreach ($files as $file) {
-                if ($fromFile = $this->getSpecificationsFromFile($file)) {
+                if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
                     $specs = array_merge($specs, $fromFile);
                 }
             }
         } elseif (is_file($path)) {
             $file = new SplFileInfo(realpath($path));
-            if ($fromFile = $this->getSpecificationsFromFile($file)) {
+            if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
                 $specs = array_merge($specs, $fromFile);
             }
         }
@@ -29,28 +41,8 @@ class Locator
         return $specs;
     }
 
-    public function getSpecificationsFromFile(SplFileInfo $file)
+    public function getSpecificationsFromFile(SplFileInfo $file, $line = null)
     {
-        $filename = realpath($file->getPathname());
-        $oldClassnames = get_declared_classes();
-        require_once $filename;
-        $newClassnames = array_diff(get_declared_classes(), $oldClassnames);
-
-        $specs = array();
-        foreach ($newClassnames as $classname) {
-            $reflection = new ReflectionClass($classname);
-
-            if (!$reflection->implementsInterface('PHPSpec2\\Specification')) {
-                continue;
-            }
-
-            if ($reflection->isAbstract()) {
-                continue;
-            }
-
-            $specs[] = $reflection;
-        }
-
-        return $specs;
+        return $this->loader->loadFromFile($file->getPathname(), $line);
     }
 }
