@@ -19,6 +19,7 @@ use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
+use PHPSpec2\Listener\MethodNotFoundListener;
 use PHPSpec2\Mocker\Mockery\Mocker;
 use PHPSpec2\Prophet\ArgumentsResolver;
 use PHPSpec2\Loader\SpecificationsClassLoader;
@@ -77,6 +78,7 @@ class RunCommand extends Command
 
         // setup listeners
         $runner->getEventDispatcher()->addSubscriber(new ClassNotFoundListener($io));
+        $runner->getEventDispatcher()->addSubscriber(new MethodNotFoundListener($io));
 
         // setup statistics collector
         $collector = new StatisticsCollector;
