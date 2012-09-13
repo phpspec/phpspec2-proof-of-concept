@@ -24,7 +24,9 @@ class Example extends Node
 
     public function getSubject()
     {
-        return $this->getParent()->getSubject();
+        if (null !== $parent = $this->getParent()) {
+            return $parent->getSubject();
+        }
     }
 
     public function getFunction()

@@ -57,4 +57,13 @@ class Example implements Specification
         $this->example->setParent($specification);
         $this->example->getSubject()->shouldReturn('Class');
     }
+
+    /**
+     * @param Prophet $specification mock of PHPSpec2\Loader\Node\Specification
+     */
+    function its_subject_should_be_null_if_theres_no_parent($specification)
+    {
+        $specification->getSubject()->willReturn(null);
+        $this->example->getSubject()->shouldReturn(null);
+    }
 }

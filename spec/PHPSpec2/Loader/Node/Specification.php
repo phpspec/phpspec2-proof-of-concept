@@ -87,4 +87,14 @@ class Specification implements SpecificationInterface
         $this->specification->setSubject('Some\Class');
         $this->specification->getSubject()->shouldReturn('Some\Class');
     }
+
+    /**
+     * @param Prophet $parent mock of PHPSpec2\Loader\Node\Specification
+     */
+    function its_subject_should_be_parent_spec_if_does_not_have_own($parent)
+    {
+        $parent->getSubject()->willReturn('Other\Class');
+        $this->specification->setParent($parent);
+        $this->specification->getSubject()->shouldReturn('Other\Class');
+    }
 }

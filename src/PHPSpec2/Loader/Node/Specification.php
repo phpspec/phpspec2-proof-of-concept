@@ -26,7 +26,13 @@ class Specification extends Node
 
     public function getSubject()
     {
-        return $this->subject;
+        if (null !== $this->subject) {
+            return $this->subject;
+        }
+
+        if (null !== $parent = $this->getParent()) {
+            return $parent->getSubject();
+        }
     }
 
     public function addChild(Node $child)
