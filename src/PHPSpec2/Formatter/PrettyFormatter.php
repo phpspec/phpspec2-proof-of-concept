@@ -132,21 +132,14 @@ class PrettyFormatter implements FormatterInterface
 
     protected function formatExampleException(Example $example, Exception $exception, $verbose = false)
     {
-        if (!$verbose) {
-            return $this->padText(
-                $this->getExceptionMessage($exception),
-                2 * ($example->getDepth() + 1)
-            );
+        $message = $this->getExceptionMessage($exception);
+        $trace   = $this->getExceptionStackTrace($exception);
+
+        if (!$verbose || null === $trace) {
+            return $this->padText($message, 2 * ($example->getDepth() + 1));
         } else {
-            return
-                $this->padText(
-                    $this->getExceptionMessage($exception, false),
-                    2 * ($example->getDepth() + 1)
-                ) . "\n\n" .
-                $this->padText(
-                    $this->getExceptionStackTrace($exception),
-                    2 * ($example->getDepth() + 1)
-                );
+            return $this->padText($message, 2 * ($example->getDepth() + 1)) . "\n\n" .
+                $this->padText($trace, 2 * ($example->getDepth() + 1));
         }
     }
 
@@ -179,9 +172,9 @@ class PrettyFormatter implements FormatterInterface
         }
 
         if ($exception instanceof NotEqualException) {
-            return rtrim($this->differ->compare(
+            return $this->differ->compare(
                 $exception->getExpected(), $exception->getActual()
-            ));
+            );
         }
 
         if ($exception instanceof PHPSpec2Exception) {

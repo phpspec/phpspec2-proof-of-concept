@@ -26,4 +26,9 @@ class Diff implements Specification
         $this->diff->compare('string1', 'string2')->shouldReturn('string1 !== string2');
         $this->diff->compare(2, 1)->shouldReturn('2 !== 1');
     }
+
+    function it_should_return_null_if_engine_not_found()
+    {
+        $this->diff->compare(1, 2)->shouldReturn(null);
+    }
 }

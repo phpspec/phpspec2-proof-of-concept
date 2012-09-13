@@ -15,10 +15,10 @@ class Diff
     {
         foreach ($this->engines as $engine) {
             if ($engine->supports($expected, $actual)) {
-                return $engine->compare($expected, $actual);
+                return trim($engine->compare($expected, $actual));
             }
         }
 
-        return 'Can not calculate diff between those values.';
+        return null;
     }
 }
