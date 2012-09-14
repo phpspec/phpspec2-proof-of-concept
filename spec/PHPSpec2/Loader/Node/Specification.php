@@ -61,9 +61,9 @@ class Specification implements SpecificationInterface
         $this->specification->addChild($child);
     }
 
-    function it_should_have_depth_of_1_by_default()
+    function it_should_have_depth_of_0_by_default()
     {
-        $this->specification->getDepth()->shouldReturn(1);
+        $this->specification->getDepth()->shouldReturn(0);
     }
 
     /**
