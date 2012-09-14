@@ -10,26 +10,30 @@ use PHPSpec2\Formatter\Representer\RepresenterInterface;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Formatter\Diff\StringDiff;
+use PHPSpec2\Diff\Diff;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\ExampleException;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Exception as PHPSpec2Exception;
 
 use Mockery\CountValidator\Exception as MockeryCountException;
+use Mockery\Exception as MockeryException;
 
 use ReflectionClass;
 use ReflectionMethod;
 use Exception;
+use PHPSpec2\Loader\Node\Example;
 
 class PrettyFormatter implements FormatterInterface
 {
     private $io;
     private $representer;
+    private $differ;
 
-    public function __construct(RepresenterInterface $representer)
+    public function __construct(RepresenterInterface $representer, Diff $differ)
     {
         $this->representer = $representer;
+        $this->differ      = $differ;
     }
 
     public static function getSubscribedEvents()
@@ -46,8 +50,9 @@ class PrettyFormatter implements FormatterInterface
 
     public function beforeSpecification(SpecificationEvent $event)
     {
-        $this->writeln(sprintf(
-            "\n> %s\n", $event->getSpecification()->getTitle()
+        $this->writeln($this->padText(
+            sprintf("\n> %s\n", $event->getSpecification()->getTitle()),
+            2 * $event->getSpecification()->getDepth()
         ));
     }
 
@@ -55,29 +60,42 @@ class PrettyFormatter implements FormatterInterface
     {
         switch ($event->getResult()) {
             case ExampleEvent::PASSED:
-                $this->writeln(sprintf(
-                    "  <passed>✔ %s</passed>",
+                $this->write(sprintf(
+                    $this->padText('<passed>✔ %s</passed>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
+
+                $ms = $event->getTime() * 1000;
+                if ($ms > 100) {
+                    $this->write(sprintf(' <failed>(%sms)</failed>', round($ms)));
+                } elseif ($ms > 50) {
+                    $this->write(sprintf(' <pending>(%sms)</pending>', round($ms)));
+                }
+                $this->writeln('');
+
                 break;
             case ExampleEvent::PENDING:
                 $this->writeln(sprintf(
-                    "  <pending>- %s</pending>",
+                    $this->padText('<pending>- %s</pending>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
                 $this->writeln(sprintf(
                     "<pending>%s</pending>\n",
-                    $this->formatExampleException($event->getException(), false)
+                    $this->formatExampleException(
+                        $event->getExample(), $event->getException(), false
+                    )
                 ));
                 break;
             case ExampleEvent::FAILED:
                 $this->writeln(sprintf(
-                    "  <failed>✘ %s</failed>",
+                    $this->padText('<failed>✘ %s</failed>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
                 $this->writeln(sprintf(
                     "<failed>%s</failed>\n",
-                    $this->formatExampleException($event->getException(), $this->isVerbose())
+                    $this->formatExampleException(
+                        $event->getExample(), $event->getException(), $this->isVerbose()
+                    )
                 ));
                 break;
         }
@@ -98,30 +116,36 @@ class PrettyFormatter implements FormatterInterface
             $counts[] = sprintf('<failed>%d failed</failed>', $count);
         }
 
-        $this->writeln(sprintf(
-            "\n%d examples (%s)", count($stats->getAllEvents()), implode(', ', $counts)
+        $this->write(sprintf(
+            "\n%d examples ", count($stats->getAllEvents())
         ));
+        if (count($counts)) {
+            $this->write(sprintf(
+                "(%s)", implode(', ', $counts)
+            ));
+        }
 
-        $time    = $stats->getTotalTime();
-        $minutes = floor($time / 60);
-        $seconds = round($time - ($minutes * 60), 3);
-
-        $this->writeln($minutes . 'm' . $seconds . 's');
+        $this->writeln(sprintf(
+            "\n%s", round($stats->getTotalTime() * 1000) . 'ms'
+        ));
     }
 
-    protected function formatExampleException(Exception $exception, $verbose = false)
+    protected function formatExampleException(Example $example, Exception $exception, $verbose = false)
     {
-        if (!$verbose) {
-            return $this->padText($this->getExceptionMessage($exception), 4);
+        $message = $this->getExceptionMessage($exception);
+        $trace   = $this->getExceptionStackTrace($exception);
+
+        if (!$verbose || null === $trace) {
+            return $this->padText($message, 2 * ($example->getDepth() + 1));
         } else {
-            return $this->padText($this->getExceptionMessage($exception, false), 4) . "\n\n" .
-                $this->padText($this->getExceptionStackTrace($exception), 4);
+            return $this->padText($message, 2 * ($example->getDepth() + 1)) . "\n\n" .
+                $this->padText($trace, 2 * ($example->getDepth() + 1));
         }
     }
 
     private function getExceptionMessage(Exception $exception, $lineno = true)
     {
-        if ($exception instanceof MockeryCountException) {
+        if ($exception instanceof MockeryCountException || $exception instanceof MockeryException) {
             $message = $exception->getMessage();
         } elseif (!$exception instanceof PHPSpec2Exception) {
             $message = sprintf(
@@ -148,7 +172,9 @@ class PrettyFormatter implements FormatterInterface
         }
 
         if ($exception instanceof NotEqualException) {
-            return rtrim(StringDiff::diff($exception->getExpected(), $exception->getActual()));
+            return $this->differ->compare(
+                $exception->getExpected(), $exception->getActual()
+            );
         }
 
         if ($exception instanceof PHPSpec2Exception) {
@@ -235,6 +261,11 @@ class PrettyFormatter implements FormatterInterface
         return implode("\n", array_map(function($line) use($indent) {
             return str_repeat(' ', $indent).$line;
         }, explode("\n", $text)));
+    }
+
+    private function write($text)
+    {
+        $this->io->getOutput()->write($text);
     }
 
     private function writeln($text)
