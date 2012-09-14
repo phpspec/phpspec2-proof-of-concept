@@ -2,9 +2,9 @@
 
 namespace spec\PHPSpec2\Loader\Node;
 
-use PHPSpec2\Specification;
+use PHPSpec2\Specification as SpecificationInterface;
 
-class Example implements Specification
+class Example implements SpecificationInterface
 {
     /**
      * @param Prophet $function mock of ReflectionFunctionAbstract
