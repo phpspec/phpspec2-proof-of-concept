@@ -4,22 +4,29 @@ namespace PHPSpec2\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-use ReflectionClass;
+use PHPSpec2\Loader\Node\Specification;
 
 class SpecificationEvent extends Event implements EventInterface
 {
-    private $spec;
+    private $specification;
+    private $time;
     private $result;
 
-    public function __construct(ReflectionClass $spec, $result = null)
+    public function __construct(Specification $specification, $time = null, $result = null)
     {
-        $this->spec   = $spec;
-        $this->result = null;
+        $this->specification = $specification;
+        $this->time          = $time;
+        $this->result        = null;
     }
 
     public function getSpecification()
     {
-        return $this->spec;
+        return $this->specification;
+    }
+
+    public function getTime()
+    {
+        return $this->time;
     }
 
     public function getResult()
