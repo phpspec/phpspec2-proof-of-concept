@@ -34,8 +34,8 @@ class ObjectStateMatcher implements MatcherInterface
         }
 
         $callable = array($subject, $method);
-        if (true !== call_user_func_array($callable, $arguments)) {
-            throw $this->getFailureExceptionFor($callable, true);
+        if (true !== $result = call_user_func_array($callable, $arguments)) {
+            throw $this->getFailureExceptionFor($callable, true, $result);
         }
     }
 
@@ -49,8 +49,8 @@ class ObjectStateMatcher implements MatcherInterface
         }
 
         $callable = array($subject, $method);
-        if (false !== call_user_func_array($callable, $arguments)) {
-            throw $this->getFailureExceptionFor($callable, false);
+        if (false !== $result = call_user_func_array($callable, $arguments)) {
+            throw $this->getFailureExceptionFor($callable, false, $result);
         }
     }
 
@@ -59,13 +59,13 @@ class ObjectStateMatcher implements MatcherInterface
         return 50;
     }
 
-    private function getFailureExceptionFor($callable, $expectedBool)
+    private function getFailureExceptionFor($callable, $expectedBool, $result)
     {
         return new FailureException(sprintf(
             "Expected <value>%s</value> to return <value>%s</value>, but got <value>%s</value>.",
             $this->representer->representValue($callable),
             $this->representer->representValue($expectedBool),
-            $this->representer->representValue(!$expectedBool)
+            $this->representer->representValue($result)
         ));
     }
 }
