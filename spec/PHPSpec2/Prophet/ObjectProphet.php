@@ -5,7 +5,7 @@ namespace spec\PHPSpec2\Prophet;
 use PHPSpec2\Specification;
 use PHPSpec2\Prophet\ArgumentsResolver;
 
-class Prophet implements Specification
+class ObjectProphet implements Specification
 {
     function described_with($matchers, $mocker, $resolver)
     {
@@ -14,14 +14,14 @@ class Prophet implements Specification
 
         $subject  = new Fake;
         $resolver = new ArgumentsResolver;
-        $this->prophet->isAnInstanceOf('PHPSpec2\Prophet\Prophet', array(
-            $subject, $matchers, $mocker, $resolver
+        $this->objectProphet->isAnInstanceOf('PHPSpec2\Prophet\ObjectProphet', array(
+            $subject, $matchers, $resolver
         ));
     }
 
     function it_calls_magic_method_of_subject_if_one_exists()
     {
-        $this->prophet->foo('bar')->shouldReturn('bar');
+        $this->objectProphet->foo('bar')->shouldReturn('bar');
     }
 }
 

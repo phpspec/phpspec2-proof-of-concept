@@ -7,7 +7,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 
-use PHPSpec2\Prophet\Prophet;
+use PHPSpec2\Prophet\ObjectProphet;
+use PHPSpec2\Prophet\MockProphet;
 use PHPSpec2\Prophet\LazyObject;
 use PHPSpec2\Prophet\ArgumentsResolver;
 
@@ -80,7 +81,7 @@ class Runner
             $varName = lcfirst(basename(str_replace('\\', '/', $subjectName)));
         }
 
-        $prophet = $this->createProphet($subject);
+        $prophet = $this->createObjectProphet($subject);
         $context = $this->createContext($example);
         $context->$varName = $context->object = $prophet;
 
@@ -94,7 +95,7 @@ class Runner
         try {
             $dependencies = $this->getExampleDependencies($example, $context);
             $this->invoke($context, $example->getFunction(), $dependencies);
-            $this->mocker->teardown();
+            $this->mocker->verify();
             foreach ($example->getPostFunctions() as $postFunction) {
                 $this->invoke($context, $postFunction, $dependencies);
             }
@@ -132,9 +133,14 @@ class Runner
         }
     }
 
-    protected function createProphet($subject = null)
+    protected function createObjectProphet($subject = null)
     {
-        return new Prophet($subject, clone $this->matchers, $this->mocker, $this->resolver);
+        return new ObjectProphet($subject, clone $this->matchers, $this->resolver);
+    }
+
+    protected function createMockProphet($subject = null)
+    {
+        return new MockProphet($subject, $this->mocker, $this->resolver);
     }
 
     protected function getExampleDependencies(Example $example, $context)
@@ -155,14 +161,14 @@ class Runner
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
             if (preg_match('#^@param(?: *[^ ]*)? *\$([^ ]*) *(double|mock|stub|fake|dummy|spy) of (.*)$#', $line, $match)) {
-                $dependencies[$match[1]] = $this->createProphet();
+                $dependencies[$match[1]] = $this->createMockProphet();
                 $dependencies[$match[1]]->isAMockOf($match[3]);
             }
         }
 
         foreach ($function->getParameters() as $parameter) {
             if (!isset($dependencies[$parameter->getName()])) {
-                $dependencies[$parameter->getName()] = $this->createProphet();
+                $dependencies[$parameter->getName()] = $this->createMockProphet();
             }
         }
 
@@ -176,7 +182,7 @@ class Runner
             if (isset($dependencies[$parameter->getName()])) {
                 $parameters[] = $dependencies[$parameter->getName()];
             } else {
-                $parameters[] = $this->createProphet();
+                $parameters[] = $this->createMockProphet();
             }
         }
 

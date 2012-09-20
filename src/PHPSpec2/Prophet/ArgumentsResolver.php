@@ -21,12 +21,8 @@ class ArgumentsResolver
             return $argument;
         }
 
-        if ($argument instanceof Prophet) {
+        if ($argument instanceof ProphetInterface) {
             $argument = $argument->getProphetSubject();
-        }
-
-        if ($argument instanceof MockProxyInterface) {
-            $argument = $argument->getOriginalMock();
         }
 
         return $argument;

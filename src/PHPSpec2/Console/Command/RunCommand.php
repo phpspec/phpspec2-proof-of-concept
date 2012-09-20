@@ -20,7 +20,7 @@ use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Listener\MethodNotFoundListener;
-use PHPSpec2\Mocker\Mockery\Mocker;
+use PHPSpec2\Mocker\MockeryMocker;
 use PHPSpec2\Prophet\ArgumentsResolver;
 use PHPSpec2\Loader\SpecificationsClassLoader;
 use PHPSpec2\Diff;
@@ -60,7 +60,7 @@ class RunCommand extends Command
         $matchers->add(new Matcher\TypeMatcher($representer));
         $matchers->add(new Matcher\ObjectStateMatcher($representer));
 
-        $mocker = new Mocker;
+        $mocker   = new MockeryMocker;
         $resolver = new ArgumentsResolver;
 
         // setup specs locator and runner

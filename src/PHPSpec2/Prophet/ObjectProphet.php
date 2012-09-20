@@ -6,37 +6,28 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 use PHPSpec2\Matcher\MatchersCollection;
-use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Mocker\MockProxyInterface;
 
 use PHPSpec2\Exception\Prophet\ProphetException;
 use PHPSpec2\Exception\Prophet\MethodNotFoundException;
 use PHPSpec2\Exception\Prophet\PropertyNotFoundException;
 
-class Prophet
+class ObjectProphet implements ProphetInterface
 {
     private $subject;
     private $matchers;
-    private $mocker;
     private $resolver;
 
     public function __construct($subject = null, MatchersCollection $matchers,
-                                MockerInterface $mocker, ArgumentsResolver $resolver)
+                                ArgumentsResolver $resolver)
     {
         $this->subject  = $subject;
         $this->matchers = $matchers;
-        $this->mocker   = $mocker;
         $this->resolver = $resolver;
     }
 
     public function isAnInstanceOf($class, array $constructorArguments = array())
     {
         $this->subject = new LazyObject($class, $this->resolver->resolve($constructorArguments));
-    }
-
-    public function isAMockOf($classOrInterface)
-    {
-        $this->subject = new LazyMock($classOrInterface, $this->mocker);
     }
 
     public function should()
@@ -65,12 +56,7 @@ class Prophet
         if ($this->isSubjectMethodAccessible($method)) {
             $returnValue = call_user_func_array(array($this->getProphetSubject(), $method), $arguments);
 
-            return new static($returnValue, $this->matchers, $this->mocker, $this->resolver);
-        }
-
-        // if subject is a mock - return method expectation stub
-        if ($this->getProphetSubject() instanceof MockProxyInterface) {
-            return $this->getProphetSubject()->mockMethod($method, $arguments, $this->resolver);
+            return new static($returnValue, $this->matchers, $this->resolver);
         }
 
         throw new MethodNotFoundException($this->getProphetSubject(), $method);
@@ -92,7 +78,7 @@ class Prophet
         if ($this->isSubjectPropertyAccessible($property)) {
             $returnValue = $this->getProphetSubject()->$property;
 
-            return new static($returnValue, $this->matchers, $this->mocker, $this->resolver);
+            return new static($returnValue, $this->matchers, $this->resolver);
         }
 
         throw new PropertyNotFoundException($this->getProphetSubject(), $property);
@@ -110,11 +96,6 @@ class Prophet
     public function getProphetMatchers()
     {
         return $this->matchers;
-    }
-
-    public function getProphetMocker()
-    {
-        return $this->mocker;
     }
 
     public function getProphetResolver()
