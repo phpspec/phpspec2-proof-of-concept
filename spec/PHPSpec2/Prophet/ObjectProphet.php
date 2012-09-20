@@ -12,11 +12,7 @@ class ObjectProphet implements Specification
         $matchers->isAMockOf('PHPSpec2\Matcher\MatchersCollection');
         $mocker->isAMockOf('PHPSpec2\Mocker\Mockery\Mocker');
 
-        $subject  = new Fake;
-        $resolver = new ArgumentsResolver;
-        $this->objectProphet->isAnInstanceOf('PHPSpec2\Prophet\ObjectProphet', array(
-            $subject, $matchers, $resolver
-        ));
+        $this->objectProphet->instantiatedWith(new Fake, $matchers, new ArgumentsResolver);
     }
 
     function it_calls_magic_method_of_subject_if_one_exists()

@@ -30,6 +30,19 @@ class ObjectProphet implements ProphetInterface
         $this->subject = new LazyObject($class, $this->resolver->resolve($constructorArguments));
     }
 
+    public function instantiatedWith()
+    {
+        if (null === $this->subject) {
+            throw new ProphetException('Specify object type first.');
+        }
+
+        if (!$this->subject instanceof LazyObject) {
+            throw new ProphetException('Object is already initialized.');
+        }
+
+        $this->subject->setConstructorArguments($this->resolver->resolve(func_get_args()));
+    }
+
     public function should()
     {
         return new Verification\Positive($this->getProphetSubject(), $this->matchers, $this->resolver);
