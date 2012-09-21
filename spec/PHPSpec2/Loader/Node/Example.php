@@ -7,7 +7,7 @@ use PHPSpec2\Specification as SpecificationInterface;
 class Example implements SpecificationInterface
 {
     /**
-     * @param Prophet $function mock of ReflectionFunctionAbstract
+     * @param ReflectionFunctionAbstract $function
      */
     function described_with($function)
     {
@@ -49,7 +49,7 @@ class Example implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $specification mock of PHPSpec2\Loader\Node\Specification
+     * @param PHPSpec2\Loader\Node\Specification $specification
      */
     function its_subject_should_be_calculated_from_parent($specification)
     {
@@ -59,7 +59,7 @@ class Example implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $specification mock of PHPSpec2\Loader\Node\Specification
+     * @param PHPSpec2\Loader\Node\Specification $specification
      */
     function its_subject_should_be_null_if_theres_no_parent($specification)
     {

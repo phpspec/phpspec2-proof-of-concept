@@ -160,10 +160,7 @@ class Runner
         foreach (explode("\n", trim($function->getDocComment())) as $line) {
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
-            if (preg_match('#^@param *Prophet(?:Mock)? *\$([^ ]*) *(double|mock|stub|fake|dummy|spy) of (.*)$#', $line, $match)) {
-                $dependencies[$match[1]] = $this->createMockProphet();
-                $dependencies[$match[1]]->isAMockOf($match[3]);
-            } elseif (preg_match('#^@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
+            if (preg_match('#^@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
                 $dependencies[$match[2]] = $this->createMockProphet();
                 $dependencies[$match[2]]->isAMockOf($match[1]);
             }

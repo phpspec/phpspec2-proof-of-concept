@@ -24,7 +24,7 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $child mock of PHPSpec2\Loader\Node\Example
+     * @param PHPSpec2\Loader\Node\Example $child
      */
     function it_could_have_childs($child)
     {
@@ -33,7 +33,7 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $child mock of PHPSpec2\Loader\Node\Specification
+     * @param PHPSpec2\Loader\Node\Specification $child
      */
     function its_child_could_be_another_specification($child)
     {
@@ -42,8 +42,8 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $child1 mock of PHPSpec2\Loader\Node\Specification
-     * @param Prophet $child2 mock of PHPSpec2\Loader\Node\Example
+     * @param PHPSpec2\Loader\Node\Specification $child1
+     * @param PHPSpec2\Loader\Node\Example       $child2
      */
     function it_could_have_many_childs($child1, $child2)
     {
@@ -53,7 +53,7 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $child mock of PHPSpec2\Loader\Node\Node
+     * @param PHPSpec2\Loader\Node\Node $child
      */
     function it_should_set_parent_on_children($child)
     {
@@ -67,7 +67,7 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $parent mock of PHPSpec2\Loader\Node\Node
+     * @param PHPSpec2\Loader\Node\Node $parent
      */
     function it_should_calculate_proper_depth_depending_on_parent($parent)
     {
@@ -89,7 +89,7 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param Prophet $parent mock of PHPSpec2\Loader\Node\Specification
+     * @param PHPSpec2\Loader\Node\Specification $parent
      */
     function its_subject_should_be_parent_spec_if_does_not_have_own($parent)
     {

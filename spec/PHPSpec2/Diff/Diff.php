@@ -7,8 +7,8 @@ use PHPSpec2\Specification;
 class Diff implements Specification
 {
     /**
-     * @param Prophet $engine1 mock of PHPSpec2\Diff\EngineInterface
-     * @param Prophet $engine2 mock of PHPSpec2\Diff\EngineInterface
+     * @param PHPSpec2\Diff\EngineInterface $engine1
+     * @param PHPSpec2\Diff\EngineInterface $engine2
      */
     function it_should_choose_proper_engine($engine1, $engine2)
     {
