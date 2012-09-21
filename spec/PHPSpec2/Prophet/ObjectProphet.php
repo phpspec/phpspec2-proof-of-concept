@@ -3,20 +3,21 @@
 namespace spec\PHPSpec2\Prophet;
 
 use PHPSpec2\Specification;
-use PHPSpec2\Prophet\ArgumentsResolver;
 
 class ObjectProphet implements Specification
 {
-    function described_with($matchers, $mocker, $resolver)
+    /**
+     * @param PHPSpec2\Matcher\MatchersCollection $matchers
+     * @param PHPSpec2\Prophet\ArgumentsResolver  $resolver
+     */
+    function described_with($matchers, $resolver)
     {
-        $matchers->isAMockOf('PHPSpec2\Matcher\MatchersCollection');
-        $mocker->isAMockOf('PHPSpec2\Mocker\Mockery\Mocker');
-
-        $this->objectProphet->instantiatedWith(new Fake, $matchers, new ArgumentsResolver);
+        $this->objectProphet->instantiatedWith(new Fake, $matchers, $resolver);
     }
 
-    function it_calls_magic_method_of_subject_if_one_exists()
+    function it_calls_magic_method_of_subject_if_one_exists($resolver)
     {
+        $resolver->resolve(array('bar'))->willReturn(array('bar'));
         $this->objectProphet->foo('bar')->shouldReturn('bar');
     }
 }

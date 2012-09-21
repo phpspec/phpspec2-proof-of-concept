@@ -3,6 +3,7 @@
 namespace PHPSpec2\Prophet;
 
 use PHPSpec2\Mocker\MockProxyInterface;
+use Mockery\MockInterface;
 
 class ArgumentsResolver
 {
@@ -17,7 +18,7 @@ class ArgumentsResolver
 
     public function resolveSingle($argument)
     {
-        if (null === $argument || !is_object($argument)) {
+        if (!is_object($argument) || $argument instanceof MockInterface) {
             return $argument;
         }
 
