@@ -13,6 +13,11 @@ class Specification extends Node
         parent::__construct($subject);
     }
 
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
     public function getTitle()
     {
         return $this->title;

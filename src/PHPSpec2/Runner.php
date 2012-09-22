@@ -54,7 +54,7 @@ class Runner
 
         $result = ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
-            if ($child instanceof SpecificationInterface) {
+            if ($child instanceof Specification) {
                 $result = max($result, $this->runSpecification($child));
             } else {
                 $result = max($result, $this->runExample($child));

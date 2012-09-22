@@ -2,7 +2,16 @@
 
 namespace spec\PHPSpec2\Formatter\Representer;
 
+use PHPSpec2\ObjectBehavior;
 use PHPSpec2\MethodBehavior;
+
+class BasicRepresenter extends ObjectBehavior
+{
+    function it_should_represent_any_value()
+    {
+        $this->representValue(42.30)->shouldReturn('double(42.3)');
+    }
+}
 
 class BasicRepresenter_representValue extends MethodBehavior
 {

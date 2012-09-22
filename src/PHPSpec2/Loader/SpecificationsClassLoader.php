@@ -14,6 +14,7 @@ class SpecificationsClassLoader implements LoaderInterface
         $newClassnames = array_diff(get_declared_classes(), $oldClassnames);
 
         $specifications = array();
+        $methodSpecifications = array();
         foreach ($newClassnames as $classname) {
             $class = new ReflectionClass($classname);
 
@@ -31,8 +32,8 @@ class SpecificationsClassLoader implements LoaderInterface
             }
 
             $subject = $this->getClassSubject($class->getName());
+            $specification = new Node\Specification($subject, $subject);
 
-            $specification = new Node\Specification($class->getName());
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it_|its_)/', $method->getName())) {
                     continue;
@@ -43,14 +44,33 @@ class SpecificationsClassLoader implements LoaderInterface
                 }
 
                 $example = new Node\Example(str_replace('_', ' ', $method->getName()), $method);
-                $example->setSubject($subject);
                 array_map(array($example, 'addPreFunction'), $preFunctions);
 
                 $specification->addChild($example);
             }
 
             if (count($specification->getChildren())) {
-                $specifications[] = $specification;
+                if (false === strpos($specification->getSubject(), '::')) {
+                    $specifications[] = $specification;
+                } else {
+                    $methodSpecifications[] = $specification;
+                }
+            }
+        }
+
+        foreach ($methodSpecifications as $methodSpecification) {
+            list($class, $method) = explode('::', $methodSpecification->getSubject());
+            $parentSpecs = array_filter($specifications, function($specification) use($class) {
+                return $class === $specification->getSubject();
+            });
+
+            if (count($parentSpecs)) {
+                $spec = current($parentSpecs);
+                $spec->addChild($methodSpecification);
+                $methodSpecification->setTitle($method.'()');
+            } else {
+                $methodSpecification->setTitle($methodSpecification->getTitle().'()');
+                $specifications[] = $methodSpecification;
             }
         }
 
