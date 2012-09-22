@@ -11,9 +11,7 @@ class Example extends ObjectBehavior
      */
     function described_with($function)
     {
-        $this->isAnInstanceOf('PHPSpec2\Loader\Node\Example', array(
-            'test example', $function
-        ));
+        $this->objectIsConstructedWith('test example', $function);
     }
 
     function it_should_have_title()

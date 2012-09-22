@@ -11,9 +11,7 @@ class ComparisonMatcher extends ObjectBehavior
 {
     function described_with()
     {
-        $this->isAnInstanceOf('PHPSpec2\Matcher\ComparisonMatcher', array(
-            new BasicRepresenter
-        ));
+        $this->objectIsConstructedWith(new BasicRepresenter);
     }
 
     function it_should_support_all_aliases_for_allKindsOfSubjects()

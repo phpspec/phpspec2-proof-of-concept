@@ -75,7 +75,7 @@ class Runner
 
         $context = $this->createContext($example);
         if (null !== $subject = $example->getSubject()) {
-            $context->isAnInstanceOf($subject);
+            $context->objectIsAnInstanceOf($subject);
         }
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {

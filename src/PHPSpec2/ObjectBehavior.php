@@ -31,7 +31,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         $this->resolver = $resolver;
     }
 
-    public function isAnInstanceOf($class, array $constructorArguments = array())
+    public function objectIsAnInstanceOf($class, array $constructorArguments = array())
     {
         if ($class instanceof LazySubjectInterface) {
             $this->subject = $class;
@@ -42,7 +42,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
     }
 
-    public function isInitializedWith()
+    public function objectIsConstructedWith()
     {
         if (null === $this->subject) {
             throw new ProphetException('Specify object type first.');
