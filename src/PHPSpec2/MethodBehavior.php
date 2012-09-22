@@ -3,20 +3,20 @@
 namespace PHPSpec2;
 
 use PHPSpec2\Wrapper\LazyMethod;
-use PHPSpec2\Exception\Exception;
+use PHPSpec2\Exception\BehaviorException;
 
 class MethodBehavior extends ObjectBehavior
 {
     public function methodNameIs($method)
     {
         if (null === $this->getBehaviorSubject()) {
-            throw new Exception(
+            throw new BehaviorException(
                 'You can not set method arguments. Behavior subject is null.'
             );
         }
 
         if (!$this->getBehaviorSubject() instanceof LazyMethod) {
-            throw new Exception(
+            throw new BehaviorException(
                 'You can not set method name. Behavior subject is already called.'
             );
         }
@@ -27,13 +27,13 @@ class MethodBehavior extends ObjectBehavior
     public function methodIsCalledWith()
     {
         if (null === $this->getBehaviorSubject()) {
-            throw new Exception(
+            throw new BehaviorException(
                 'You can not set method arguments. Behavior subject is null.'
             );
         }
 
         if (!$this->getBehaviorSubject() instanceof LazyMethod) {
-            throw new Exception(
+            throw new BehaviorException(
                 'You can not set method arguments. Behavior subject is already called.'
             );
         }

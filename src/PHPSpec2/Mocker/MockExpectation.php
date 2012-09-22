@@ -4,6 +4,7 @@ namespace PHPSpec2\Mocker;
 
 use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Wrapper\ArgumentsResolver;
+use PHPSpec2\Exception\MockException;
 
 use ArrayAccess;
 
@@ -77,7 +78,9 @@ class MockExpectation implements ArrayAccess
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            // TODO: throw exception
+            throw new MockException(sprintf(
+                'Expectation with <value>%d</value> offset not found.', $offset
+            ));
         }
 
         $this->expectation = $this->mocker->getExpectation(
@@ -89,12 +92,12 @@ class MockExpectation implements ArrayAccess
 
     public function offsetUnset($offset)
     {
-        // TODO: throw exception
+        throw new MockException('You can not unset already defined expectation.');
     }
 
     public function offsetSet($offset, $value)
     {
-        // TODO: throw exception
+        throw new MockException('You can not replace already defined expectation.');
     }
 
     public function __invoke()

@@ -13,7 +13,7 @@ use PHPSpec2\Wrapper\LazySubjectInterface;
 use PHPSpec2\Wrapper\ArgumentsResolver;
 use PHPSpec2\Wrapper\SubjectWrapperInterface;
 
-use PHPSpec2\Exception\Exception;
+use PHPSpec2\Exception\BehaviorException;
 use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\PropertyNotFoundException;
 
@@ -38,7 +38,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
 
         if (!is_string($classname)) {
-            throw new Exception(sprintf(
+            throw new BehaviorException(sprintf(
                 'Behavior subject classname should be string, <value>%s</value> given.',
                 $this->representer->representValue($classname)
             ));
@@ -51,13 +51,13 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
     public function objectIsConstructedWith()
     {
         if (null === $this->subject) {
-            throw new Exception(
+            throw new BehaviorException(
                 'You can not set object arguments. Behavior subject is null.'
             );
         }
 
         if (!$this->subject instanceof LazySubjectInterface) {
-            throw new Exception(
+            throw new BehaviorException(
                 'You can not set object arguments. Behavior subject is already initialized.'
             );
         }
@@ -94,7 +94,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
     public function callOnBehaviorSubject($method, array $arguments = array())
     {
         if (null === $this->getWrappedSubject()) {
-            throw new Exception(sprintf(
+            throw new BehaviorException(sprintf(
                 'Call to a member function <value>%s()</value> on a non-object.',
                 $method
             ));
