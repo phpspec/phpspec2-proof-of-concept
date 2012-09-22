@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Exception\Prophet;
+namespace PHPSpec2\Exception;
 
-class ClassDoesNotExistsException extends ProphetException
+class ClassDoesNotExistsException extends Exception
 {
     private $classname;
 

@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Wrapper;
 
-use ReflectionClass;
+use PHPSpec2\Exception\MethodNotFoundException;
 
 class LazyMethod extends LazyObject
 {
@@ -30,6 +30,12 @@ class LazyMethod extends LazyObject
 
     public function getInstance()
     {
-        return call_user_func_array(array(parent::getInstance(), $this->method), $this->arguments);
+        $instance = parent::getInstance();
+
+        if (!method_exists($instance, $this->method) && !method_exists($instance, '__call')) {
+            throw new MethodNotFoundException($instance, $this->method);
+        }
+
+        return call_user_func_array(array($instance, $this->method), $this->arguments);
     }
 }

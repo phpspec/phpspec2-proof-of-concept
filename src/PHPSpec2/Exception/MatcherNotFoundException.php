@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Exception\Example;
+namespace PHPSpec2\Exception;
 
-class MatcherNotFoundException extends ExampleException
+class MatcherNotFoundException extends Exception
 {
     public function __construct($matcher)
     {

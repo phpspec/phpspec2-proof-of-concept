@@ -3,7 +3,7 @@
 namespace spec\PHPSpec2\Matcher;
 
 use PHPSpec2\ObjectBehavior;
-use PHPSpec2\Exception\Example\MatcherNotFoundException;
+use PHPSpec2\Exception\MatcherNotFoundException;
 
 class MatchersCollection extends ObjectBehavior
 {

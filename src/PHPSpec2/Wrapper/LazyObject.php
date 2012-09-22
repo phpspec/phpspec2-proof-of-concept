@@ -4,8 +4,8 @@ namespace PHPSpec2\Wrapper;
 
 use ReflectionClass;
 
-use PHPSpec2\Exception\Prophet\ProphetException;
-use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
+use PHPSpec2\Exception\Exception;
+use PHPSpec2\Exception\ClassDoesNotExistsException;
 
 class LazyObject implements LazySubjectInterface
 {
@@ -36,7 +36,7 @@ class LazyObject implements LazySubjectInterface
         }
 
         if (null === $this->classname || !is_string($this->classname)) {
-            throw new ProphetException(sprintf(
+            throw new Exception(sprintf(
                 'Instantiator expects class name, "%s" got', gettype($this->classname)
             ));
         }

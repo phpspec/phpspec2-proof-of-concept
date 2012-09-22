@@ -13,9 +13,9 @@ use PHPSpec2\Wrapper\LazySubjectInterface;
 use PHPSpec2\Wrapper\ArgumentsResolver;
 use PHPSpec2\Wrapper\SubjectWrapperInterface;
 
-use PHPSpec2\Exception\Prophet\ProphetException;
-use PHPSpec2\Exception\Prophet\MethodNotFoundException;
-use PHPSpec2\Exception\Prophet\PropertyNotFoundException;
+use PHPSpec2\Exception\Exception;
+use PHPSpec2\Exception\MethodNotFoundException;
+use PHPSpec2\Exception\PropertyNotFoundException;
 
 class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 {
@@ -33,8 +33,15 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 
     public function objectIsAnInstanceOf($classname, array $constructorArguments = array())
     {
-        if (!$this->subject instanceof LazyObject) {
-            $this->subject = new LazyObject;
+        if (!$this->subject instanceof LazySubjectInterface) {
+            $this->subject = $this->createLazySubject();
+        }
+
+        if (!is_string($classname)) {
+            throw new Exception(sprintf(
+                'Behavior subject classname should be string, <value>%s</value> given.',
+                $this->representer->representValue($classname)
+            ));
         }
 
         $this->subject->setClassname($classname);
@@ -44,11 +51,15 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
     public function objectIsConstructedWith()
     {
         if (null === $this->subject) {
-            throw new ProphetException('Specify object type first.');
+            throw new Exception(
+                'You can not set object arguments. Behavior subject is null.'
+            );
         }
 
-        if (!$this->subject instanceof LazyObject) {
-            throw new ProphetException('Object is already initialized.');
+        if (!$this->subject instanceof LazySubjectInterface) {
+            throw new Exception(
+                'You can not set object arguments. Behavior subject is already initialized.'
+            );
         }
 
         $this->subject->setConstructorArguments($this->resolver->resolveAll(func_get_args()));
@@ -80,10 +91,10 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         return $matcher->negativeMatch($name, $subject, $arguments);
     }
 
-    public function callOnProphetSubject($method, array $arguments = array())
+    public function callOnBehaviorSubject($method, array $arguments = array())
     {
         if (null === $this->getWrappedSubject()) {
-            throw new ProphetException(sprintf(
+            throw new Exception(sprintf(
                 'Call to a member function <value>%s()</value> on a non-object.',
                 $method
             ));
@@ -102,7 +113,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         throw new MethodNotFoundException($this->getWrappedSubject(), $method);
     }
 
-    public function setToProphetSubject($property, $value = null)
+    public function setToBehaviorSubject($property, $value = null)
     {
         $value = $this->resolver->resolveAll($value);
 
@@ -113,7 +124,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         throw new PropertyNotFoundException($this->getWrappedSubject(), $property);
     }
 
-    public function getFromProphetSubject($property)
+    public function getFromBehaviorSubject($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
             $returnValue = $this->getWrappedSubject()->$property;
@@ -131,11 +142,6 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
 
         return $this->subject;
-    }
-
-    public function setBehaviorSubject($subject)
-    {
-        $this->subject = $subject;
     }
 
     public function getBehaviorSubject()
@@ -165,17 +171,22 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
             return $this->shouldNot($matcherName, $arguments);
         }
 
-        return $this->callOnProphetSubject($method, $arguments);
+        return $this->callOnBehaviorSubject($method, $arguments);
     }
 
     public function __set($property, $value = null)
     {
-        return $this->setToProphetSubject($property, $value);
+        return $this->setToBehaviorSubject($property, $value);
     }
 
     public function __get($property)
     {
-        return $this->getFromProphetSubject($property);
+        return $this->getFromBehaviorSubject($property);
+    }
+
+    protected function createLazySubject()
+    {
+        return new LazyObject;
     }
 
     private function isSubjectMethodAccessible($method)

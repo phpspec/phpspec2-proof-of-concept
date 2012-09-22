@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Console\IO;
 use Symfony\Component\Console\Helper\DialogHelper;
-use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
+use PHPSpec2\Exception\ClassDoesNotExistsException;
 
 class ClassNotFoundListener implements EventSubscriberInterface
 {

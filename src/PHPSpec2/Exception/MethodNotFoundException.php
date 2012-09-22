@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Exception\Prophet;
+namespace PHPSpec2\Exception;
 
-class MethodNotFoundException extends ProphetException
+class MethodNotFoundException extends Exception
 {
     private $subject;
     private $method;

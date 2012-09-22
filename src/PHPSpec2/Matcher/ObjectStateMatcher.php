@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Matcher;
 
-use PHPSpec2\Exception\Prophet\MethodNotFoundException;
+use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Formatter\Representer\RepresenterInterface;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;

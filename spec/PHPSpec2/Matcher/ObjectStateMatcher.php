@@ -20,7 +20,7 @@ class ObjectStateMatcher extends ObjectBehavior
         $subject = new \ReflectionClass($this);
         $this->supports('beSimple', $subject, array());
 
-        $this->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
+        $this->shouldThrow('PHPSpec2\Exception\MethodNotFoundException')
             ->during('positiveMatch', array('beSimple', $subject, array()));
     }
 
@@ -54,7 +54,7 @@ class ObjectStateMatcher extends ObjectBehavior
         $subject = new \ReflectionClass($this);
         $this->supports('haveAnything', $subject, array('str'));
 
-        $this->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
+        $this->shouldThrow('PHPSpec2\Exception\MethodNotFoundException')
             ->during('positiveMatch', array('haveAnything', $subject, array('str')));
     }
 
