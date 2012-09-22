@@ -6,7 +6,7 @@ use PHPSpec2\Wrapper\MockProxyInterface;
 
 class ArgumentsResolver
 {
-    public function resolve(array $arguments)
+    public function resolveAll(array $arguments)
     {
         if (null === $arguments) {
             return array();

@@ -99,7 +99,7 @@ class MockExpectation implements ArrayAccess
 
     public function __invoke()
     {
-        $this->arguments = $this->resolver->resolve(func_get_args());
+        $this->arguments = $this->resolver->resolveAll(func_get_args());
         if (null !== $this->expectation) {
             $this->mocker->withArguments($this->expectation, $this->arguments);
         }

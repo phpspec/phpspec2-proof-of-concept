@@ -33,7 +33,13 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 
     public function isAnInstanceOf($class, array $constructorArguments = array())
     {
-        $this->subject = new LazyObject($class, $this->resolver->resolve($constructorArguments));
+        if ($class instanceof LazySubjectInterface) {
+            $this->subject = $class;
+        } else {
+            $this->subject = new LazyObject(
+                $class, $this->resolver->resolveAll($constructorArguments)
+            );
+        }
     }
 
     public function instantiatedWith()
@@ -46,7 +52,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
             throw new ProphetException('Object is already initialized.');
         }
 
-        $this->subject->setConstructorArguments($this->resolver->resolve(func_get_args()));
+        $this->subject->setConstructorArguments($this->resolver->resolveAll(func_get_args()));
     }
 
     public function should($name = null, array $arguments = array())
@@ -56,7 +62,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
 
         $subject   = $this->resolver->resolveSingle($this);
-        $arguments = $this->resolver->resolve($arguments);
+        $arguments = $this->resolver->resolveAll($arguments);
         $matcher   = $this->matchers->find($name, $subject, $arguments);
 
         return $matcher->positiveMatch($name, $subject, $arguments);
@@ -69,7 +75,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
 
         $subject   = $this->resolver->resolveSingle($this);
-        $arguments = $this->resolver->resolve($arguments);
+        $arguments = $this->resolver->resolveAll($arguments);
         $matcher   = $this->matchers->find($name, $subject, $arguments);
 
         return $matcher->negativeMatch($name, $subject, $arguments);
@@ -85,7 +91,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
 
         // resolve arguments
-        $arguments = $this->resolver->resolve($arguments);
+        $arguments = $this->resolver->resolveAll($arguments);
 
         // if subject is an instance with provided method - call it and stub the result
         if ($this->isSubjectMethodAccessible($method)) {
@@ -99,7 +105,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 
     public function setToProphetSubject($property, $value = null)
     {
-        $value = $this->resolver->resolve($value);
+        $value = $this->resolver->resolveAll($value);
 
         if ($this->isSubjectPropertyAccessible($property, true)) {
             return $this->getWrappedSubject()->$property = $value;
