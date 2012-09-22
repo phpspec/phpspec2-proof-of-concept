@@ -42,7 +42,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         }
     }
 
-    public function instantiatedWith()
+    public function isInitializedWith()
     {
         if (null === $this->subject) {
             throw new ProphetException('Specify object type first.');

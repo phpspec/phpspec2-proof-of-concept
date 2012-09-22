@@ -8,9 +8,7 @@ class Specification extends ObjectBehavior
 {
     function described_with()
     {
-        $this->isAnInstanceOf(
-            'PHPSpec2\Loader\Node\Specification', array('test spec')
-        );
+        $this->isInitializedWith('test spec');
     }
 
     function it_should_have_title()
