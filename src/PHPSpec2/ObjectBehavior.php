@@ -1,17 +1,23 @@
 <?php
 
-namespace PHPSpec2\Prophet;
+namespace PHPSpec2;
 
 use ReflectionMethod;
 use ReflectionProperty;
 
 use PHPSpec2\Matcher\MatchersCollection;
+use PHPSpec2\Looper\Looper;
+
+use PHPSpec2\Wrapper\LazyObject;
+use PHPSpec2\Wrapper\LazySubjectInterface;
+use PHPSpec2\Wrapper\ArgumentsResolver;
+use PHPSpec2\Wrapper\SubjectWrapperInterface;
 
 use PHPSpec2\Exception\Prophet\ProphetException;
 use PHPSpec2\Exception\Prophet\MethodNotFoundException;
 use PHPSpec2\Exception\Prophet\PropertyNotFoundException;
 
-class ObjectProphet implements ProphetInterface
+class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 {
     private $subject;
     private $matchers;
@@ -43,19 +49,35 @@ class ObjectProphet implements ProphetInterface
         $this->subject->setConstructorArguments($this->resolver->resolve(func_get_args()));
     }
 
-    public function should()
+    public function should($name = null, array $arguments = array())
     {
-        return new Verification\Positive($this->getProphetSubject(), $this->matchers, $this->resolver);
+        if (null === $name) {
+            return new Looper(array($this, __METHOD__));
+        }
+
+        $subject   = $this->resolver->resolveSingle($this);
+        $arguments = $this->resolver->resolve($arguments);
+        $matcher   = $this->matchers->find($name, $subject, $arguments);
+
+        return $matcher->positiveMatch($name, $subject, $arguments);
     }
 
-    public function shouldNot()
+    public function shouldNot($name = null, array $arguments = array())
     {
-        return new Verification\Negative($this->getProphetSubject(), $this->matchers, $this->resolver);
+        if (null === $name) {
+            return new Looper(array($this, __METHOD__));
+        }
+
+        $subject   = $this->resolver->resolveSingle($this);
+        $arguments = $this->resolver->resolve($arguments);
+        $matcher   = $this->matchers->find($name, $subject, $arguments);
+
+        return $matcher->negativeMatch($name, $subject, $arguments);
     }
 
     public function callOnProphetSubject($method, array $arguments = array())
     {
-        if (null === $this->getProphetSubject()) {
+        if (null === $this->getWrappedSubject()) {
             throw new ProphetException(sprintf(
                 'Call to a member function <value>%s()</value> on a non-object.',
                 $method
@@ -67,12 +89,12 @@ class ObjectProphet implements ProphetInterface
 
         // if subject is an instance with provided method - call it and stub the result
         if ($this->isSubjectMethodAccessible($method)) {
-            $returnValue = call_user_func_array(array($this->getProphetSubject(), $method), $arguments);
+            $returnValue = call_user_func_array(array($this->getWrappedSubject(), $method), $arguments);
 
             return new static($returnValue, $this->matchers, $this->resolver);
         }
 
-        throw new MethodNotFoundException($this->getProphetSubject(), $method);
+        throw new MethodNotFoundException($this->getWrappedSubject(), $method);
     }
 
     public function setToProphetSubject($property, $value = null)
@@ -80,24 +102,24 @@ class ObjectProphet implements ProphetInterface
         $value = $this->resolver->resolve($value);
 
         if ($this->isSubjectPropertyAccessible($property, true)) {
-            return $this->getProphetSubject()->$property = $value;
+            return $this->getWrappedSubject()->$property = $value;
         }
 
-        throw new PropertyNotFoundException($this->getProphetSubject(), $property);
+        throw new PropertyNotFoundException($this->getWrappedSubject(), $property);
     }
 
     public function getFromProphetSubject($property)
     {
         if ($this->isSubjectPropertyAccessible($property)) {
-            $returnValue = $this->getProphetSubject()->$property;
+            $returnValue = $this->getWrappedSubject()->$property;
 
             return new static($returnValue, $this->matchers, $this->resolver);
         }
 
-        throw new PropertyNotFoundException($this->getProphetSubject(), $property);
+        throw new PropertyNotFoundException($this->getWrappedSubject(), $property);
     }
 
-    public function getProphetSubject()
+    public function getWrappedSubject()
     {
         if (is_object($this->subject) && $this->subject instanceof LazySubjectInterface) {
             $this->subject = $this->subject->getInstance();
@@ -106,12 +128,12 @@ class ObjectProphet implements ProphetInterface
         return $this->subject;
     }
 
-    public function getProphetMatchers()
+    public function getBehaviorMatchers()
     {
         return $this->matchers;
     }
 
-    public function getProphetResolver()
+    public function getBehaviorResolver()
     {
         return $this->resolver;
     }
@@ -122,10 +144,10 @@ class ObjectProphet implements ProphetInterface
         if (preg_match('/^(should(?:Not|))(.+)$/', $method, $matches)) {
             $matcherName = lcfirst($matches[2]);
             if ('should' === $matches[1]) {
-                return call_user_func_array(array($this->should(), $matcherName), $arguments);
+                return $this->should($matcherName, $arguments);
             }
 
-            return call_user_func_array(array($this->shouldNot(), $matcherName), $arguments);
+            return $this->shouldNot($matcherName, $arguments);
         }
 
         return $this->callOnProphetSubject($method, $arguments);
@@ -143,38 +165,38 @@ class ObjectProphet implements ProphetInterface
 
     private function isSubjectMethodAccessible($method)
     {
-        if (!is_object($this->getProphetSubject())) {
+        if (!is_object($this->getWrappedSubject())) {
             return false;
         }
 
-        if (method_exists($this->getProphetSubject(), '__call')) {
+        if (method_exists($this->getWrappedSubject(), '__call')) {
             return true;
         }
 
-        if (!method_exists($this->getProphetSubject(), $method)) {
+        if (!method_exists($this->getWrappedSubject(), $method)) {
             return false;
         }
 
-        $methodReflection = new ReflectionMethod($this->getProphetSubject(), $method);
+        $methodReflection = new ReflectionMethod($this->getWrappedSubject(), $method);
 
         return $methodReflection->isPublic();
     }
 
     private function isSubjectPropertyAccessible($property, $withValue = false)
     {
-        if (!is_object($this->getProphetSubject())) {
+        if (!is_object($this->getWrappedSubject())) {
             return false;
         }
 
-        if (method_exists($this->getProphetSubject(), $withValue ? '__set' : '__get')) {
+        if (method_exists($this->getWrappedSubject(), $withValue ? '__set' : '__get')) {
             return true;
         }
 
-        if (!property_exists($this->getProphetSubject(), $property)) {
+        if (!property_exists($this->getWrappedSubject(), $property)) {
             return false;
         }
 
-        $propertyReflection = new ReflectionProperty($this->getProphetSubject(), $property);
+        $propertyReflection = new ReflectionProperty($this->getWrappedSubject(), $property);
 
         return $propertyReflection->isPublic();
     }

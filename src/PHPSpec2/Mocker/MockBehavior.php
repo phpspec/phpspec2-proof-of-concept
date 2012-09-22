@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPSpec2\Prophet;
+namespace PHPSpec2\Mocker;
 
-use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Mocker\MockExpectation;
+use PHPSpec2\Wrapper\SubjectWrapperInterface;
+use PHPSpec2\Wrapper\ArgumentsResolver;
 
-class MockProphet implements ProphetInterface
+class MockBehavior implements SubjectWrapperInterface
 {
     private $subject;
     private $mocker;
@@ -34,7 +34,7 @@ class MockProphet implements ProphetInterface
         return call_user_func_array($this->$method, $arguments);
     }
 
-    public function getProphetSubject()
+    public function getWrappedSubject()
     {
         return $this->subject;
     }

@@ -21,7 +21,7 @@ use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Listener\MethodNotFoundListener;
 use PHPSpec2\Mocker\MockeryMocker;
-use PHPSpec2\Prophet\ArgumentsResolver;
+use PHPSpec2\Wrapper\ArgumentsResolver;
 use PHPSpec2\Loader\SpecificationsClassLoader;
 use PHPSpec2\Diff;
 

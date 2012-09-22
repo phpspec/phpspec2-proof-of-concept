@@ -2,15 +2,15 @@
 
 namespace spec\PHPSpec2\Formatter\Representer;
 
-use PHPSpec2\Specification;
+use PHPSpec2\ObjectBehavior;
 use stdClass;
 
-class BasicRepresenter implements Specification
+class BasicRepresenter extends ObjectBehavior
 {
     function it_should_support_all_types()
     {
         foreach ($this->allTypes() as $value) {
-            $this->object->representValue($value[0])->shouldBe($value[1]);
+            $this->representValue($value[0])->shouldBe($value[1]);
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace PHPSpec2\Matcher;
 
+use PHPSpec2\Looper\Looper;
 use PHPSpec2\Formatter\Representer\RepresenterInterface;
 use PHPSpec2\Formatter\Representer\BasicRepresenter;
 

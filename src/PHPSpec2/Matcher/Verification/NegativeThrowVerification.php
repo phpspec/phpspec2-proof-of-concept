@@ -71,4 +71,15 @@ class NegativeThrowVerification
             }
         }
     }
+
+    public function __call($method, array $arguments = array())
+    {
+        if (preg_match('/^during(.*)$/', $method, $matches)) {
+            $method = lcfirst($matches[1]);
+
+            return $this->during($method, $arguments);
+        }
+
+        throw new \RuntimeException($method.' not found');
+    }
 }

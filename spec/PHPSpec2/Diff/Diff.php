@@ -2,9 +2,9 @@
 
 namespace spec\PHPSpec2\Diff;
 
-use PHPSpec2\Specification;
+use PHPSpec2\ObjectBehavior;
 
-class Diff implements Specification
+class Diff extends ObjectBehavior
 {
     /**
      * @param PHPSpec2\Diff\EngineInterface $engine1
@@ -20,15 +20,15 @@ class Diff implements Specification
         $engine2->supports(2, 1)->willReturn(true);
         $engine2->compare(2, 1)->willReturn('2 !== 1');
 
-        $this->diff->addEngine($engine1);
-        $this->diff->addEngine($engine2);
+        $this->addEngine($engine1);
+        $this->addEngine($engine2);
 
-        $this->diff->compare('string1', 'string2')->shouldReturn('string1 !== string2');
-        $this->diff->compare(2, 1)->shouldReturn('2 !== 1');
+        $this->compare('string1', 'string2')->shouldReturn('string1 !== string2');
+        $this->compare(2, 1)->shouldReturn('2 !== 1');
     }
 
     function it_should_return_null_if_engine_not_found()
     {
-        $this->diff->compare(1, 2)->shouldReturn(null);
+        $this->compare(1, 2)->shouldReturn(null);
     }
 }

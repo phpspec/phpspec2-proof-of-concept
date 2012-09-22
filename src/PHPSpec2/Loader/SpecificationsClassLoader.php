@@ -21,7 +21,7 @@ class SpecificationsClassLoader implements LoaderInterface
                 continue;
             }
 
-            if (!$class->implementsInterface('PHPSpec2\\Specification')) {
+            if (!$class->implementsInterface('PHPSpec2\\SpecificationInterface')) {
                 continue;
             }
 
@@ -49,7 +49,9 @@ class SpecificationsClassLoader implements LoaderInterface
                 $specification->addChild($example);
             }
 
-            $specifications[] = $specification;
+            if (count($specification->getChildren())) {
+                $specifications[] = $specification;
+            }
         }
 
         return $specifications;

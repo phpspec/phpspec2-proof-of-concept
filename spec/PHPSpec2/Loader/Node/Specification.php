@@ -2,25 +2,25 @@
 
 namespace spec\PHPSpec2\Loader\Node;
 
-use PHPSpec2\Specification as SpecificationInterface;
+use PHPSpec2\ObjectBehavior;
 
-class Specification implements SpecificationInterface
+class Specification extends ObjectBehavior
 {
     function described_with()
     {
-        $this->specification->isAnInstanceOf(
+        $this->isAnInstanceOf(
             'PHPSpec2\Loader\Node\Specification', array('test spec')
         );
     }
 
     function it_should_have_title()
     {
-        $this->specification->getTitle()->shouldReturn('test spec');
+        $this->getTitle()->shouldReturn('test spec');
     }
 
     function it_should_not_have_children_by_default()
     {
-        $this->specification->getChildren()->shouldHaveCount(0);
+        $this->getChildren()->shouldHaveCount(0);
     }
 
     /**
@@ -28,8 +28,8 @@ class Specification implements SpecificationInterface
      */
     function it_could_have_childs($child)
     {
-        $this->specification->addChild($child);
-        $this->specification->getChildren()->shouldHaveCount(1);
+        $this->addChild($child);
+        $this->getChildren()->shouldHaveCount(1);
     }
 
     /**
@@ -37,8 +37,8 @@ class Specification implements SpecificationInterface
      */
     function its_child_could_be_another_specification($child)
     {
-        $this->specification->addChild($child);
-        $this->specification->getChildren()->shouldHaveCount(1);
+        $this->addChild($child);
+        $this->getChildren()->shouldHaveCount(1);
     }
 
     /**
@@ -47,9 +47,9 @@ class Specification implements SpecificationInterface
      */
     function it_could_have_many_childs($child1, $child2)
     {
-        $this->specification->addChild($child1);
-        $this->specification->addChild($child2);
-        $this->specification->getChildren()->shouldHaveCount(2);
+        $this->addChild($child1);
+        $this->addChild($child2);
+        $this->getChildren()->shouldHaveCount(2);
     }
 
     /**
@@ -57,13 +57,13 @@ class Specification implements SpecificationInterface
      */
     function it_should_set_parent_on_children($child)
     {
-        $child->setParent($this->specification)->shouldBeCalled();
-        $this->specification->addChild($child);
+        $child->setParent($this)->shouldBeCalled();
+        $this->addChild($child);
     }
 
     function it_should_have_depth_of_0_by_default()
     {
-        $this->specification->getDepth()->shouldReturn(0);
+        $this->getDepth()->shouldReturn(0);
     }
 
     /**
@@ -71,21 +71,21 @@ class Specification implements SpecificationInterface
      */
     function it_should_calculate_proper_depth_depending_on_parent($parent)
     {
-        $this->specification->setParent($parent);
+        $this->setParent($parent);
         $parent->getDepth()->willReturn(10);
 
-        $this->specification->getDepth()->shouldReturn(11);
+        $this->getDepth()->shouldReturn(11);
     }
 
     function its_subject_should_be_null_by_default()
     {
-        $this->specification->getSubject()->shouldReturn(null);
+        $this->getSubject()->shouldReturn(null);
     }
 
     function its_subject_should_be_mutable()
     {
-        $this->specification->setSubject('Some\Class');
-        $this->specification->getSubject()->shouldReturn('Some\Class');
+        $this->setSubject('Some\Class');
+        $this->getSubject()->shouldReturn('Some\Class');
     }
 
     /**
@@ -94,7 +94,7 @@ class Specification implements SpecificationInterface
     function its_subject_should_be_parent_spec_if_does_not_have_own($parent)
     {
         $parent->getSubject()->willReturn('Other\Class');
-        $this->specification->setParent($parent);
-        $this->specification->getSubject()->shouldReturn('Other\Class');
+        $this->setParent($parent);
+        $this->getSubject()->shouldReturn('Other\Class');
     }
 }

@@ -7,10 +7,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 
-use PHPSpec2\Prophet\ObjectProphet;
-use PHPSpec2\Prophet\MockProphet;
-use PHPSpec2\Prophet\LazyObject;
-use PHPSpec2\Prophet\ArgumentsResolver;
+use PHPSpec2\ObjectBehavior;
+use PHPSpec2\Mocker\MockBehavior;
+use PHPSpec2\Wrapper\ArgumentsResolver;
 
 use PHPSpec2\Loader\Node\Specification;
 use PHPSpec2\Loader\Node\Example;
@@ -55,7 +54,7 @@ class Runner
 
         $result = ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
-            if ($child instanceof Specification) {
+            if ($child instanceof SpecificationInterface) {
                 $result = max($result, $this->runSpecification($child));
             } else {
                 $result = max($result, $this->runExample($child));
@@ -74,16 +73,10 @@ class Runner
         $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
         $startTime = microtime(true);
 
-        $subject = null;
-        $varName = 'thing';
-        if (null !== $subjectName = $example->getSubject()) {
-            $subject = new LazyObject($subjectName);
-            $varName = lcfirst(basename(str_replace('\\', '/', $subjectName)));
-        }
-
-        $prophet = $this->createObjectProphet($subject);
         $context = $this->createContext($example);
-        $context->$varName = $context->object = $prophet;
+        if (null !== $subject = $example->getSubject()) {
+            $context->isAnInstanceOf($subject);
+        }
 
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
@@ -127,20 +120,19 @@ class Runner
         $function = $example->getFunction();
 
         if ($function instanceof ReflectionMethod) {
-            return $function->getDeclaringClass()->newInstance();
+            return $function->getDeclaringClass()->newInstance(
+                null, $this->matchers, $this->resolver
+            );
         } else {
-            return new \stdClass;
+            return new ObjectBehavior(
+                null, $this->matchers, $this->resolver
+            );
         }
     }
 
-    protected function createObjectProphet($subject = null)
+    protected function createMockBehavior($subject = null)
     {
-        return new ObjectProphet($subject, clone $this->matchers, $this->resolver);
-    }
-
-    protected function createMockProphet($subject = null)
-    {
-        return new MockProphet($subject, $this->mocker, $this->resolver);
+        return new MockBehavior($subject, $this->mocker, $this->resolver);
     }
 
     protected function getExampleDependencies(Example $example, $context)
@@ -161,14 +153,14 @@ class Runner
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
             if (preg_match('#^@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
-                $dependencies[$match[2]] = $this->createMockProphet();
+                $dependencies[$match[2]] = $this->createMockBehavior();
                 $dependencies[$match[2]]->isAMockOf($match[1]);
             }
         }
 
         foreach ($function->getParameters() as $parameter) {
             if (!isset($dependencies[$parameter->getName()])) {
-                $dependencies[$parameter->getName()] = $this->createMockProphet();
+                $dependencies[$parameter->getName()] = $this->createMockBehavior();
             }
         }
 
@@ -182,7 +174,7 @@ class Runner
             if (isset($dependencies[$parameter->getName()])) {
                 $parameters[] = $dependencies[$parameter->getName()];
             } else {
-                $parameters[] = $this->createMockProphet();
+                $parameters[] = $this->createMockBehavior();
             }
         }
 

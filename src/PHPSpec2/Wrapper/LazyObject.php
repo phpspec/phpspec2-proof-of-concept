@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Prophet;
+namespace PHPSpec2\Wrapper;
 
 use ReflectionClass;
 

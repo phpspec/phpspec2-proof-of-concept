@@ -2,9 +2,9 @@
 
 namespace spec\PHPSpec2\Matcher;
 
-use PHPSpec2\Specification;
+use PHPSpec2\ObjectBehavior;
 
-class ObjectStateMatcher implements Specification
+class ObjectStateMatcher extends ObjectBehavior
 {
     private $something;
 
@@ -12,33 +12,33 @@ class ObjectStateMatcher implements Specification
     {
         $subject = new \ReflectionClass($this);
 
-        $this->object->supports('beAbstract', $subject, array())->shouldReturnTrue();
+        $this->supports('beAbstract', $subject, array())->shouldReturnTrue();
     }
 
     function it_throws_exception_if_checker_method_not_found()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('beSimple', $subject, array());
+        $this->supports('beSimple', $subject, array());
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
+        $this->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
             ->during('positiveMatch', array('beSimple', $subject, array()));
     }
 
     function it_matches_if_state_checker_returns_true()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('beCloneable', $subject, array());
+        $this->supports('beCloneable', $subject, array());
 
-        $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+        $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
             ->during('positiveMatch', array('beCloneable', $subject, array()));
     }
 
     function it_does_not_matches_if_state_checker_returns_false()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('beFinal', $subject, array());
+        $this->supports('beFinal', $subject, array());
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+        $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
             ->during('positiveMatch', array('beFinal', $subject, array()));
     }
 
@@ -46,33 +46,33 @@ class ObjectStateMatcher implements Specification
     {
         $subject = new \ReflectionClass($this);
 
-        $this->object->supports('haveProperty', $subject, array('something'))->shouldReturnTrue();
+        $this->supports('haveProperty', $subject, array('something'))->shouldReturnTrue();
     }
 
     function it_throws_exception_if_has_checker_method_not_found()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('haveAnything', $subject, array('str'));
+        $this->supports('haveAnything', $subject, array('str'));
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
+        $this->shouldThrow('PHPSpec2\Exception\Prophet\MethodNotFoundException')
             ->during('positiveMatch', array('haveAnything', $subject, array('str')));
     }
 
     function it_matches_if_has_checker_returns_true()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('haveProperty', $subject, array('something'));
+        $this->supports('haveProperty', $subject, array('something'));
 
-        $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+        $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
             ->during('positiveMatch', array('haveProperty', $subject, array('something')));
     }
 
     function it_does_not_matches_if_has_state_checker_returns_false()
     {
         $subject = new \ReflectionClass($this);
-        $this->object->supports('haveProperty', $subject, array('other'));
+        $this->supports('haveProperty', $subject, array('other'));
 
-        $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+        $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
             ->during('positiveMatch', array('haveProperty', $subject, array('other')));
     }
 }

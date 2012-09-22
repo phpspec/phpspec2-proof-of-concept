@@ -1,9 +1,8 @@
 <?php
 
-namespace PHPSpec2\Prophet;
+namespace PHPSpec2\Wrapper;
 
-use PHPSpec2\Mocker\MockProxyInterface;
-use Mockery\MockInterface;
+use PHPSpec2\Wrapper\MockProxyInterface;
 
 class ArgumentsResolver
 {
@@ -18,12 +17,12 @@ class ArgumentsResolver
 
     public function resolveSingle($argument)
     {
-        if (!is_object($argument) || $argument instanceof MockInterface) {
+        if (!is_object($argument)) {
             return $argument;
         }
 
-        if ($argument instanceof ProphetInterface) {
-            $argument = $argument->getProphetSubject();
+        if ($argument instanceof SubjectWrapperInterface) {
+            $argument = $argument->getWrappedSubject();
         }
 
         return $argument;

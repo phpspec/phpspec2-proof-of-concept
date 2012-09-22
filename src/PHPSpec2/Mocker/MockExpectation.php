@@ -3,7 +3,7 @@
 namespace PHPSpec2\Mocker;
 
 use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Prophet\ArgumentsResolver;
+use PHPSpec2\Wrapper\ArgumentsResolver;
 
 use ArrayAccess;
 
