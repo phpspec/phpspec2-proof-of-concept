@@ -31,15 +31,14 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
         $this->resolver = $resolver;
     }
 
-    public function objectIsAnInstanceOf($class, array $constructorArguments = array())
+    public function objectIsAnInstanceOf($classname, array $constructorArguments = array())
     {
-        if ($class instanceof LazySubjectInterface) {
-            $this->subject = $class;
-        } else {
-            $this->subject = new LazyObject(
-                $class, $this->resolver->resolveAll($constructorArguments)
-            );
+        if (!$this->subject instanceof LazyObject) {
+            $this->subject = new LazyObject;
         }
+
+        $this->subject->setClassname($classname);
+        $this->subject->setConstructorArguments($this->resolver->resolveAll($constructorArguments));
     }
 
     public function objectIsConstructedWith()
@@ -131,6 +130,16 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
             $this->subject = $this->subject->getInstance();
         }
 
+        return $this->subject;
+    }
+
+    public function setBehaviorSubject($subject)
+    {
+        $this->subject = $subject;
+    }
+
+    public function getBehaviorSubject()
+    {
         return $this->subject;
     }
 

@@ -2,28 +2,42 @@
 
 namespace spec\PHPSpec2\Formatter\Representer;
 
-use PHPSpec2\ObjectBehavior;
-use stdClass;
+use PHPSpec2\MethodBehavior;
 
-class BasicRepresenter extends ObjectBehavior
+class BasicRepresenter_representValue extends MethodBehavior
 {
-    function it_should_support_all_types()
+    function it_should_represent_short_string_by_showing_it()
     {
-        foreach ($this->allTypes() as $value) {
-            $this->representValue($value[0])->shouldBe($value[1]);
-        }
+        $this('some_string')->shouldReturn('"some_string"');
     }
 
-    private function allTypes()
+    function it_should_represent_long_string_by_showing_its_type()
     {
-        return array(
-            'string' => array('some_string', '"some_string"'),
-            'long_string' => array('some_string_longer_than_thirty_characters', '[string]'),
-            'integer' => array(42, 'integer(42)'),
-            'object' => array(new stdClass, 'object(stdClass)'),
-            'array'  => array(array(1, 2, 3), 'array(3)'),
-            'boolean' => array(true, 'true'),
-            'closure' => array(function () { return 42; }, '[closure]')
-        );
+        $this('some_string_longer_than_thirty_characters')->shouldReturn('[string]');
+    }
+
+    function it_should_represent_integer_by_showing_it()
+    {
+        $this(42)->shouldReturn('integer(42)');
+    }
+
+    function it_should_represent_object_as_classname()
+    {
+        $this(new \stdClass)->shouldReturn('object(stdClass)');
+    }
+
+    function it_should_represent_array_as_elements_count()
+    {
+        $this(array(1, 2, 3))->shouldReturn('array(3)');
+    }
+
+    function it_should_represent_boolean_as_string()
+    {
+        $this(true)->shouldReturn('true');
+    }
+
+    function it_should_represent_closure_as_type()
+    {
+        $this(function(){})->shouldReturn('[closure]');
     }
 }

@@ -74,10 +74,6 @@ class Runner
         $startTime = microtime(true);
 
         $context = $this->createContext($example);
-        if (null !== $subject = $example->getSubject()) {
-            $context->objectIsAnInstanceOf($subject);
-        }
-
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
         } else {
@@ -118,16 +114,24 @@ class Runner
     protected function createContext(Example $example)
     {
         $function = $example->getFunction();
-
         if ($function instanceof ReflectionMethod) {
-            return $function->getDeclaringClass()->newInstance(
+            $context = $function->getDeclaringClass()->newInstance(
                 null, $this->matchers, $this->resolver
             );
         } else {
-            return new ObjectBehavior(
+            $context = new ObjectBehavior(
                 null, $this->matchers, $this->resolver
             );
         }
+
+        $context->objectIsAnInstanceOf($example->getSubject());
+        if ($context instanceof MethodBehavior
+         && 2 == count($parts = explode('::', $example->getSubject()))) {
+            $context->objectIsAnInstanceOf($parts[0]);
+            $context->methodNameIs($parts[1]);
+        }
+
+        return $context;
     }
 
     protected function createMockBehavior($subject = null)

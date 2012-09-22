@@ -13,10 +13,15 @@ class LazyObject implements LazySubjectInterface
     private $arguments;
     private $instance;
 
-    public function __construct($classname, array $arguments = array())
+    public function __construct($classname = null, array $arguments = array())
     {
         $this->classname = $classname;
         $this->arguments = $arguments;
+    }
+
+    public function setClassname($classname)
+    {
+        $this->classname = $classname;
     }
 
     public function setConstructorArguments(array $arguments)
@@ -30,7 +35,7 @@ class LazyObject implements LazySubjectInterface
             return $this->instance;
         }
 
-        if (!is_string($this->classname)) {
+        if (null === $this->classname || !is_string($this->classname)) {
             throw new ProphetException(sprintf(
                 'Instantiator expects class name, "%s" got', gettype($this->classname)
             ));
