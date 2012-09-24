@@ -3,7 +3,6 @@
 namespace spec\PHPSpec2\Formatter\Representer;
 
 use PHPSpec2\ObjectBehavior;
-use PHPSpec2\MethodBehavior;
 
 class BasicRepresenter extends ObjectBehavior
 {
