@@ -125,11 +125,6 @@ class Runner
         }
 
         $context->objectIsAnInstanceOf($example->getSubject());
-        if ($context instanceof MethodBehavior
-         && 2 == count($parts = explode('::', $example->getSubject()))) {
-            $context->objectIsAnInstanceOf($parts[0]);
-            $context->methodNameIs($parts[1]);
-        }
 
         return $context;
     }
