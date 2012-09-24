@@ -83,12 +83,13 @@ class RunCommand extends Command
         // setup statistics collector
         $collector = new StatisticsCollector;
         $runner->getEventDispatcher()->addSubscriber($collector);
-        $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
-        foreach ($locator->getSpecifications($input->getArgument('spec')) as $spec) {
+        $specifications = $locator->getSpecifications($input->getArgument('spec'));
+
+        $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
+        foreach ($specifications as $spec) {
             $runner->runSpecification($spec);
         }
-
         $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
 
         return intval(ExampleEvent::PASSED !== $collector->getGlobalResult());
