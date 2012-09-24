@@ -14,7 +14,6 @@ class SpecificationsClassLoader implements LoaderInterface
         $newClassnames = array_diff(get_declared_classes(), $oldClassnames);
 
         $specifications = array();
-        $methodSpecifications = array();
         foreach ($newClassnames as $classname) {
             $class = new ReflectionClass($classname);
 
@@ -50,27 +49,7 @@ class SpecificationsClassLoader implements LoaderInterface
             }
 
             if (count($specification->getChildren())) {
-                if (false === strpos($specification->getSubject(), '::')) {
-                    $specifications[] = $specification;
-                } else {
-                    $methodSpecifications[] = $specification;
-                }
-            }
-        }
-
-        foreach ($methodSpecifications as $methodSpecification) {
-            list($class, $method) = explode('::', $methodSpecification->getSubject());
-            $parentSpecs = array_filter($specifications, function($specification) use($class) {
-                return $class === $specification->getSubject();
-            });
-
-            if (count($parentSpecs)) {
-                $spec = current($parentSpecs);
-                $spec->addChild($methodSpecification);
-                $methodSpecification->setTitle($method.'()');
-            } else {
-                $methodSpecification->setTitle($methodSpecification->getTitle().'()');
-                $specifications[] = $methodSpecification;
+                $specifications[] = $specification;
             }
         }
 
@@ -80,10 +59,6 @@ class SpecificationsClassLoader implements LoaderInterface
     private function getClassSubject($classname)
     {
         $subject = preg_replace("|^spec\\\|", '', $classname);
-
-        if (2 === count($parts = explode('_', $subject))) {
-            $subject = $parts[0].'::'.$parts[1];
-        }
 
         return $subject;
     }
