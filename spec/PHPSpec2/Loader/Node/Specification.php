@@ -8,7 +8,7 @@ class Specification extends ObjectBehavior
 {
     function described_with()
     {
-        $this->objectIsConstructedWith('test spec');
+        $this->initializedWith('test spec');
     }
 
     function it_should_have_title()

@@ -14,7 +14,8 @@ class MethodNotFoundException extends Exception
 
         parent::__construct(sprintf(
             'Method <value>%s::%s()</value> not found.',
-            get_class($subject), $method
+            is_object($subject) ? get_class($subject) : $subject,
+            $method
         ));
     }
 

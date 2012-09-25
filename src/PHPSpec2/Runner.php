@@ -8,8 +8,6 @@ use ReflectionFunctionAbstract;
 use ReflectionMethod;
 
 use PHPSpec2\ObjectBehavior;
-use PHPSpec2\Mocker\MockBehavior;
-use PHPSpec2\Wrapper\ArgumentsResolver;
 
 use PHPSpec2\Loader\Node\Specification;
 use PHPSpec2\Loader\Node\Example;
@@ -21,7 +19,13 @@ use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
 
 use PHPSpec2\Matcher\MatchersCollection;
+
 use PHPSpec2\Mocker\MockerInterface;
+use PHPSpec2\Mocker\MockBehavior;
+
+use PHPSpec2\Wrapper\Prophet;
+use PHPSpec2\Wrapper\LazyObject;
+use PHPSpec2\Wrapper\ArgumentsResolver;
 
 class Runner
 {
@@ -115,16 +119,14 @@ class Runner
     {
         $function = $example->getFunction();
         if ($function instanceof ReflectionMethod) {
-            $context = $function->getDeclaringClass()->newInstance(
-                null, $this->matchers, $this->resolver
-            );
+            $context = $function->getDeclaringClass()->newInstance();
         } else {
-            $context = new ObjectBehavior(
-                null, $this->matchers, $this->resolver
-            );
+            $context = new ObjectBehavior();
         }
 
-        $context->objectIsAnInstanceOf($example->getSubject());
+        $context->setProphet(new Prophet(
+            new LazyObject($example->getSubject()), $this->matchers, $this->resolver
+        ));
 
         return $context;
     }

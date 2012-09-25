@@ -11,7 +11,7 @@ class ComparisonMatcher extends ObjectBehavior
 {
     function described_with()
     {
-        $this->objectIsConstructedWith(new BasicRepresenter);
+        $this->initializedWith(new BasicRepresenter);
     }
 
     function it_should_support_all_aliases_for_allKindsOfSubjects()

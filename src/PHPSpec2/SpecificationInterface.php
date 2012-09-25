@@ -2,8 +2,9 @@
 
 namespace PHPSpec2;
 
+use PHPSpec2\Wrapper\Prophet;
+
 interface SpecificationInterface
 {
-    public function objectIsAnInstanceOf($class, array $constructorArguments = array());
-    public function objectIsConstructedWith();
+    public function setProphet(Prophet $prophet);
 }
