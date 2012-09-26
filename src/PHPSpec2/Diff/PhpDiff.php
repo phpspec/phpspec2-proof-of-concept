@@ -83,9 +83,10 @@ class Diff_SequenceMatcher
 	 *
 	 * @param string|array $a A string or array containing the lines to compare against.
 	 * @param string|array $b A string or array containing the lines to compare.
+     * @param array $options Options array.
 	 * @param string|array $junkCallback Either an array or string that references a callback function (if there is one) to determine 'junk' characters.
 	 */
-	public function __construct($a, $b, $junkCallback=null, $options)
+	public function __construct($a, $b, $options, $junkCallback=null)
 	{
 		$this->a = null;
 		$this->b = null;
@@ -208,7 +209,8 @@ class Diff_SequenceMatcher
 	 * Checks if a particular character is in the junk dictionary
 	 * for the list of junk characters.
 	 *
-	 * @return boolean $b True if the character is considered junk. False if not.
+     * @param string $b The character.
+	 * @return boolean True if the character is considered junk. False if not.
 	 */
 	private function isBJunk($b)
 	{
@@ -632,7 +634,7 @@ class Diff_SequenceMatcher
 	{
 		if($this->fullBCount === null) {
 			$this->fullBCount = array();
-			$bLength = count ($b);
+			$bLength = count ($this->b);
 			for($i = 0; $i < $bLength; ++$i) {
 				$char = $this->b[$i];
 				$this->fullBCount[$char] = $this->arrayGetDefault($this->fullBCount, $char, 0) + 1;
@@ -730,7 +732,7 @@ class Diff_SequenceMatcher
 			}
 		}
 
-		if(count($a) == $count($b)) {
+		if(count($a) === count($b)) {
 			return 0;
 		}
 		else if(count($a) < count($b)) {
@@ -823,6 +825,7 @@ class Diff
 	 *
 	 * @param array $a Array containing the lines of the first string to compare.
 	 * @param array $b Array containing the lines for the second string to compare.
+     * @param array $options Array of options
 	 */
 	public function __construct($a, $b, $options=array())
 	{
@@ -835,7 +838,7 @@ class Diff
 	/**
 	 * Render a diff using the supplied rendering class and return it.
 	 *
-	 * @param object $renderer An instance of the rendering object to use for generating the diff.
+	 * @param Diff_Renderer_Abstract $renderer An instance of the rendering object to use for generating the diff.
 	 * @return mixed The generated diff. Exact return value depends on the rendered.
 	 */
 	public function render(Diff_Renderer_Abstract $renderer)
@@ -911,7 +914,7 @@ class Diff
 			return $this->groupedCodes;
 		}
 
-		$sequenceMatcher = new Diff_SequenceMatcher($this->a, $this->b, null, $this->options);
+		$sequenceMatcher = new Diff_SequenceMatcher($this->a, $this->b, $this->options);
 		$this->groupedCodes = $sequenceMatcher->getGroupedOpcodes();
 		return $this->groupedCodes;
 	}
