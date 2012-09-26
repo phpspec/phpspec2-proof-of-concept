@@ -11,7 +11,7 @@ class ThrowMatcher extends ObjectBehavior
     {
         $this
             ->supports('throw', new stdClass, array('\Exception'))
-            ->shouldReturnTrue();
+            ->shouldReturn(true);
     }
 
     /**

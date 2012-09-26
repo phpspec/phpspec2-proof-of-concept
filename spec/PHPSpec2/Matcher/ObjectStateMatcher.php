@@ -12,7 +12,7 @@ class ObjectStateMatcher extends ObjectBehavior
     {
         $subject = new \ReflectionClass($this);
 
-        $this->supports('beAbstract', $subject, array())->shouldReturnTrue();
+        $this->supports('beAbstract', $subject, array())->shouldReturn(true);
     }
 
     function it_throws_exception_if_checker_method_not_found()
@@ -46,7 +46,7 @@ class ObjectStateMatcher extends ObjectBehavior
     {
         $subject = new \ReflectionClass($this);
 
-        $this->supports('haveProperty', $subject, array('something'))->shouldReturnTrue();
+        $this->supports('haveProperty', $subject, array('something'))->shouldReturn(true);
     }
 
     function it_throws_exception_if_has_checker_method_not_found()

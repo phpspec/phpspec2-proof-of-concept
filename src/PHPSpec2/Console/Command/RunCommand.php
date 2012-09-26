@@ -54,7 +54,6 @@ class RunCommand extends Command
         $matchers = new Matcher\MatchersCollection();
         $matchers->add(new Matcher\IdentityMatcher($presenter));
         $matchers->add(new Matcher\ComparisonMatcher($presenter));
-        $matchers->add(new Matcher\TrueMatcher($presenter));
         $matchers->add(new Matcher\ThrowMatcher($presenter));
         $matchers->add(new Matcher\CountMatcher($presenter));
         $matchers->add(new Matcher\TypeMatcher($presenter));

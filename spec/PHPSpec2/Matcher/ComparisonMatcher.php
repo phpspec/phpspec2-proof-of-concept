@@ -232,7 +232,7 @@ class ComparisonMatcher extends ObjectBehavior
     private function supportsAliasForAllKinds($alias, $matcher)
     {
         foreach ($this->allKindsOfSubjects() as $kind => $subject) {
-            $matcher->supports($alias, $subject, array(1))->shouldBeTrue();
+            $matcher->supports($alias, $subject, array(1))->shouldBe(true);
         }
     }
 
