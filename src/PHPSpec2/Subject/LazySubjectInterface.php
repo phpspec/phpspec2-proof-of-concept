@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Wrapper;
+namespace PHPSpec2\Subject;
 
 interface LazySubjectInterface
 {

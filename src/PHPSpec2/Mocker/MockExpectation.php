@@ -3,7 +3,7 @@
 namespace PHPSpec2\Mocker;
 
 use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Wrapper\ArgumentsResolver;
+use PHPSpec2\Wrapper\Argumentsunwrapper;
 use PHPSpec2\Exception\MockException;
 
 use ArrayAccess;
@@ -15,15 +15,15 @@ class MockExpectation implements ArrayAccess
     private $arguments;
     private $mocker;
     private $expectation;
-    private $resolver;
+    private $unwrapper;
 
     public function __construct($mock, $method, MockerInterface $mocker,
-                                ArgumentsResolver $resolver)
+                                Argumentsunwrapper $unwrapper)
     {
         $this->mock     = $mock;
         $this->method   = $method;
         $this->mocker   = $mocker;
-        $this->resolver = $resolver;
+        $this->unwrapper = $unwrapper;
     }
 
     public function byDefault()
@@ -50,7 +50,7 @@ class MockExpectation implements ArrayAccess
     public function willReturn($value)
     {
         $this->mocker->willReturn(
-            $this->getExpectation(), $this->resolver->resolveSingle($value)
+            $this->getExpectation(), $this->unwrapper->unwrapOne($value)
         );
 
         return $this;
@@ -102,7 +102,7 @@ class MockExpectation implements ArrayAccess
 
     public function __invoke()
     {
-        $this->arguments = $this->resolver->resolveAll(func_get_args());
+        $this->arguments = $this->unwrapper->unwrapAll(func_get_args());
         if (null !== $this->expectation) {
             $this->mocker->withArguments($this->expectation, $this->arguments);
         }

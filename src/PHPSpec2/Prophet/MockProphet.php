@@ -1,22 +1,24 @@
 <?php
 
-namespace PHPSpec2\Mocker;
+namespace PHPSpec2\Prophet;
 
-use PHPSpec2\Wrapper\SubjectWrapperInterface;
-use PHPSpec2\Wrapper\ArgumentsResolver;
+use PHPSpec2\Mocker\MockerInterface;
+use PHPSpec2\Mocker\MockExpectation;
 
-class MockBehavior implements SubjectWrapperInterface
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+
+class MockProphet implements ProphetInterface
 {
     private $subject;
     private $mocker;
-    private $resolver;
+    private $unwrapper;
 
     public function __construct($subject = null, MockerInterface $mocker,
-                                ArgumentsResolver $resolver)
+                                ArgumentsUnwrapper $unwrapper)
     {
-        $this->subject  = $subject;
-        $this->mocker   = $mocker;
-        $this->resolver = $resolver;
+        $this->subject   = $subject;
+        $this->mocker    = $mocker;
+        $this->unwrapper = $unwrapper;
     }
 
     public function isAMockOf($classOrInterface)
@@ -26,7 +28,7 @@ class MockBehavior implements SubjectWrapperInterface
 
     public function __get($method)
     {
-        return new MockExpectation($this->subject, $method, $this->mocker, $this->resolver);
+        return new MockExpectation($this->subject, $method, $this->mocker, $this->unwrapper);
     }
 
     public function __call($method, array $arguments)

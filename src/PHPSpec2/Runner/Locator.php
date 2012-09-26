@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2;
+namespace PHPSpec2\Runner;
 
 use Symfony\Component\Finder\Finder;
 

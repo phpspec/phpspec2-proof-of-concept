@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2;
+namespace PHPSpec2\Listener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

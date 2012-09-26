@@ -1,29 +1,35 @@
 <?php
 
-namespace PHPSpec2\Wrapper;
+namespace PHPSpec2\Prophet;
 
 use ReflectionMethod;
 use ReflectionProperty;
 
 use PHPSpec2\Matcher\MatchersCollection;
+
 use PHPSpec2\Looper\Looper;
+
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+
+use PHPSpec2\Subject\LazySubjectInterface;
+use PHPSpec2\Subject\LazyObject;
 
 use PHPSpec2\Exception\BehaviorException;
 use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\PropertyNotFoundException;
 
-class Prophet implements SubjectWrapperInterface
+class ObjectProphet implements ProphetInterface
 {
     private $subject;
     private $matchers;
-    private $resolver;
+    private $unwrapper;
 
     public function __construct($subject = null, MatchersCollection $matchers,
-                                ArgumentsResolver $resolver)
+                                ArgumentsUnwrapper $unwrapper)
     {
         $this->subject  = $subject;
         $this->matchers = $matchers;
-        $this->resolver = $resolver;
+        $this->unwrapper = $unwrapper;
     }
 
     public function isAnInstanceOf($classname, array $constructorArguments = array())
@@ -40,7 +46,7 @@ class Prophet implements SubjectWrapperInterface
         }
 
         $this->subject->setClassname($classname);
-        $this->subject->setConstructorArguments($this->resolver->resolveAll($constructorArguments));
+        $this->subject->setConstructorArguments($this->unwrapper->unwrapAll($constructorArguments));
     }
 
     public function initializedWith()
@@ -57,7 +63,7 @@ class Prophet implements SubjectWrapperInterface
             );
         }
 
-        $this->subject->setConstructorArguments($this->resolver->resolveAll(func_get_args()));
+        $this->subject->setConstructorArguments($this->unwrapper->unwrapAll(func_get_args()));
     }
 
     public function should($name = null, array $arguments = array())
@@ -66,8 +72,8 @@ class Prophet implements SubjectWrapperInterface
             return new Looper(array($this, __METHOD__));
         }
 
-        $subject   = $this->resolver->resolveSingle($this);
-        $arguments = $this->resolver->resolveAll($arguments);
+        $subject   = $this->unwrapper->unwrapOne($this);
+        $arguments = $this->unwrapper->unwrapAll($arguments);
         $matcher   = $this->matchers->find($name, $subject, $arguments);
 
         return $matcher->positiveMatch($name, $subject, $arguments);
@@ -79,8 +85,8 @@ class Prophet implements SubjectWrapperInterface
             return new Looper(array($this, __METHOD__));
         }
 
-        $subject   = $this->resolver->resolveSingle($this);
-        $arguments = $this->resolver->resolveAll($arguments);
+        $subject   = $this->unwrapper->unwrapOne($this);
+        $arguments = $this->unwrapper->unwrapAll($arguments);
         $matcher   = $this->matchers->find($name, $subject, $arguments);
 
         return $matcher->negativeMatch($name, $subject, $arguments);
@@ -96,13 +102,13 @@ class Prophet implements SubjectWrapperInterface
         }
 
         // resolve arguments
-        $arguments = $this->resolver->resolveAll($arguments);
+        $arguments = $this->unwrapper->unwrapAll($arguments);
 
         // if subject is an instance with provided method - call it and stub the result
         if ($this->isSubjectMethodAccessible($method)) {
             $returnValue = call_user_func_array(array($this->getWrappedSubject(), $method), $arguments);
 
-            return new static($returnValue, $this->matchers, $this->resolver);
+            return new static($returnValue, $this->matchers, $this->unwrapper);
         }
 
         throw new MethodNotFoundException($this->getWrappedSubject(), $method);
@@ -110,7 +116,7 @@ class Prophet implements SubjectWrapperInterface
 
     public function setToProphetSubject($property, $value = null)
     {
-        $value = $this->resolver->resolveAll($value);
+        $value = $this->unwrapper->unwrapAll($value);
 
         if ($this->isSubjectPropertyAccessible($property, true)) {
             return $this->getWrappedSubject()->$property = $value;
@@ -124,7 +130,7 @@ class Prophet implements SubjectWrapperInterface
         if ($this->isSubjectPropertyAccessible($property)) {
             $returnValue = $this->getWrappedSubject()->$property;
 
-            return new static($returnValue, $this->matchers, $this->resolver);
+            return new static($returnValue, $this->matchers, $this->unwrapper);
         }
 
         throw new PropertyNotFoundException($this->getWrappedSubject(), $property);

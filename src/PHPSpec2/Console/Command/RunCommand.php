@@ -10,10 +10,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use PHPSpec2\Console\IO;
-use PHPSpec2\Locator;
-use PHPSpec2\Runner;
+use PHPSpec2\Runner\Locator;
+use PHPSpec2\Runner\Runner;
 use PHPSpec2\Matcher;
-use PHPSpec2\StatisticsCollector;
+use PHPSpec2\Listener\StatisticsCollector;
 use PHPSpec2\Formatter;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
@@ -21,7 +21,7 @@ use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Listener\MethodNotFoundListener;
 use PHPSpec2\Mocker\MockeryMocker;
-use PHPSpec2\Wrapper\ArgumentsResolver;
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Loader\SpecificationsClassLoader;
 use PHPSpec2\Diff;
 
@@ -60,12 +60,12 @@ class RunCommand extends Command
         $matchers->add(new Matcher\TypeMatcher($representer));
         $matchers->add(new Matcher\ObjectStateMatcher($representer));
 
-        $mocker   = new MockeryMocker;
-        $resolver = new ArgumentsResolver;
+        $mocker    = new MockeryMocker;
+        $unwrapper = new ArgumentsUnwrapper;
 
         // setup specs locator and runner
         $locator = new Locator(new SpecificationsClassLoader);
-        $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $resolver, $input->getOptions());
+        $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $unwrapper, $input->getOptions());
 
         // setup differ
         $differ = new Diff\Diff;

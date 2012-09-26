@@ -2,9 +2,9 @@
 
 namespace PHPSpec2;
 
-use PHPSpec2\Wrapper\Prophet;
+use PHPSpec2\Prophet\ProphetInterface;
 
 interface SpecificationInterface
 {
-    public function setProphet(Prophet $prophet);
+    public function setProphet(ProphetInterface $prophet);
 }

@@ -4,18 +4,18 @@ namespace PHPSpec2\Wrapper;
 
 use PHPSpec2\Wrapper\MockProxyInterface;
 
-class ArgumentsResolver
+class ArgumentsUnwrapper
 {
-    public function resolveAll(array $arguments)
+    public function unwrapAll(array $arguments)
     {
         if (null === $arguments) {
             return array();
         }
 
-        return array_map(array($this, 'resolveSingle'), $arguments);
+        return array_map(array($this, 'unwrapOne'), $arguments);
     }
 
-    public function resolveSingle($argument)
+    public function unwrapOne($argument)
     {
         if (!is_object($argument)) {
             return $argument;

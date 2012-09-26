@@ -2,14 +2,14 @@
 
 namespace PHPSpec2;
 
-use PHPSpec2\Wrapper\Prophet;
+use PHPSpec2\Prophet\ProphetInterface;
 use PHPSpec2\Wrapper\SubjectWrapperInterface;
 
 class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 {
     protected $object;
 
-    public function setProphet(Prophet $prophet)
+    public function setProphet(ProphetInterface $prophet)
     {
         $this->object = $prophet;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2;
+namespace PHPSpec2\Runner;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -23,25 +23,28 @@ use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Mocker\MockBehavior;
 
-use PHPSpec2\Wrapper\Prophet;
-use PHPSpec2\Wrapper\LazyObject;
-use PHPSpec2\Wrapper\ArgumentsResolver;
+use PHPSpec2\Prophet\ObjectProphet;
+use PHPSpec2\Prophet\MockProphet;
+
+use PHPSpec2\Subject\LazyObject;
+
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
 class Runner
 {
     private $eventDispatcher;
     private $matchers;
     private $mocker;
-    private $resolver;
+    private $unwrapper;
 
     public function __construct(EventDispatcherInterface $dispatcher,
                                 MatchersCollection $matchers, MockerInterface $mocker,
-                                ArgumentsResolver $resolver)
+                                ArgumentsUnwrapper $unwrapper)
     {
         $this->eventDispatcher = $dispatcher;
         $this->matchers        = $matchers;
         $this->mocker          = $mocker;
-        $this->resolver        = $resolver;
+        $this->unwrapper       = $unwrapper;
     }
 
     public function getEventDispatcher()
@@ -124,8 +127,8 @@ class Runner
             $context = new ObjectBehavior();
         }
 
-        $context->setProphet(new Prophet(
-            new LazyObject($example->getSubject()), $this->matchers, $this->resolver
+        $context->setProphet(new ObjectProphet(
+            new LazyObject($example->getSubject()), $this->matchers, $this->unwrapper
         ));
 
         return $context;
@@ -133,7 +136,7 @@ class Runner
 
     protected function createMockBehavior($subject = null)
     {
-        return new MockBehavior($subject, $this->mocker, $this->resolver);
+        return new MockProphet($subject, $this->mocker, $this->unwrapper);
     }
 
     protected function getExampleDependencies(Example $example, $context)
