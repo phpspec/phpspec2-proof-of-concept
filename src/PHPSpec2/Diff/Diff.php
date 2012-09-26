@@ -18,7 +18,5 @@ class Diff
                 return rtrim($engine->compare($expected, $actual));
             }
         }
-
-        return null;
     }
 }
