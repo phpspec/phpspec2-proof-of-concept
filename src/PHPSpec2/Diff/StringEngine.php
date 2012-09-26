@@ -2,8 +2,6 @@
 
 namespace PHPSpec2\Diff;
 
-require_once __DIR__.'/PhpDiff.php';
-
 class StringEngine implements EngineInterface
 {
     public function supports($expected, $actual)
