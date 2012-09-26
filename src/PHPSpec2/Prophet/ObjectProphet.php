@@ -41,7 +41,7 @@ class ObjectProphet implements ProphetInterface
         if (!is_string($classname)) {
             throw new BehaviorException(sprintf(
                 'Behavior subject classname should be string, <value>%s</value> given.',
-                $this->representer->representValue($classname)
+                $this->presenter->representValue($classname)
             ));
         }
 

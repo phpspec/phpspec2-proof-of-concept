@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 use PHPSpec2\Console\IO;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
@@ -26,12 +26,12 @@ use PHPSpec2\Loader\Node\Example;
 class PrettyFormatter implements FormatterInterface
 {
     private $io;
-    private $representer;
+    private $presenter;
     private $differ;
 
-    public function __construct(RepresenterInterface $representer, Diff $differ)
+    public function __construct(PresenterInterface $presenter, Diff $differ)
     {
-        $this->representer = $representer;
+        $this->presenter = $presenter;
         $this->differ      = $differ;
     }
 
@@ -207,12 +207,12 @@ class PrettyFormatter implements FormatterInterface
 
         $text = '';
         $offset = 0;
-        $representer = $this->representer;
+        $presenter = $this->presenter;
         foreach ($trace = $exception->getTrace() as $call) {
             if (isset($call['class']) && isset($call['function'])) {
 
-                $args = array_map(function($item) use($representer) {
-                    return $representer->representValue($item);
+                $args = array_map(function($item) use($presenter) {
+                    return $presenter->presentValue($item);
                 }, $call['args']);
                 $text .= sprintf("<lineno>%4d</lineno> %s%s%s(%s)\n",
                     $offset++,
@@ -229,8 +229,8 @@ class PrettyFormatter implements FormatterInterface
                     break;
                 }
             } elseif (isset($call['function'])) {
-                $args = array_map(function($item) use($representer) {
-                    return $representer->representValue($item);
+                $args = array_map(function($item) use($presenter) {
+                    return $presenter->presentValue($item);
                 }, $call['args']);
                 $text .= sprintf("<lineno>%4d</lineno> %s(%s)\n",
                     $offset++,

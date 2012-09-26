@@ -17,7 +17,7 @@ use PHPSpec2\Listener\StatisticsCollector;
 use PHPSpec2\Formatter;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\TaggedPresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Listener\MethodNotFoundListener;
 use PHPSpec2\Mocker\MockeryMocker;
@@ -49,16 +49,16 @@ class RunCommand extends Command
         // setup IO
         $io = new IO($input, $output);
 
-        $representer = new BasicRepresenter();
+        $presenter = new TaggedPresenter();
 
         $matchers = new Matcher\MatchersCollection();
-        $matchers->add(new Matcher\IdentityMatcher($representer));
-        $matchers->add(new Matcher\ComparisonMatcher($representer));
-        $matchers->add(new Matcher\TrueMatcher($representer));
-        $matchers->add(new Matcher\ThrowMatcher($representer));
-        $matchers->add(new Matcher\CountMatcher($representer));
-        $matchers->add(new Matcher\TypeMatcher($representer));
-        $matchers->add(new Matcher\ObjectStateMatcher($representer));
+        $matchers->add(new Matcher\IdentityMatcher($presenter));
+        $matchers->add(new Matcher\ComparisonMatcher($presenter));
+        $matchers->add(new Matcher\TrueMatcher($presenter));
+        $matchers->add(new Matcher\ThrowMatcher($presenter));
+        $matchers->add(new Matcher\CountMatcher($presenter));
+        $matchers->add(new Matcher\TypeMatcher($presenter));
+        $matchers->add(new Matcher\ObjectStateMatcher($presenter));
 
         $mocker    = new MockeryMocker;
         $unwrapper = new ArgumentsUnwrapper;
@@ -72,7 +72,7 @@ class RunCommand extends Command
         $differ->addEngine(new Diff\StringEngine);
 
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter($representer, $differ);
+        $formatter = new Formatter\PrettyFormatter($presenter, $differ);
         $formatter->setIO($io);
         $runner->getEventDispatcher()->addSubscriber($formatter);
 

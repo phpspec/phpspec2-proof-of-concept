@@ -3,15 +3,17 @@
 namespace spec\PHPSpec2\Matcher;
 
 use PHPSpec2\ObjectBehavior;
-use stdClass;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
 use PHPSpec2\Exception\Example\FailureException;
 
 class ComparisonMatcher extends ObjectBehavior
 {
-    function described_with()
+    /**
+     * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
+     */
+    function described_with($presenter)
     {
-        $this->initializedWith(new BasicRepresenter);
+        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('');
+        $this->initializedWith($presenter);
     }
 
     function it_should_support_all_aliases_for_allKindsOfSubjects()
@@ -239,7 +241,7 @@ class ComparisonMatcher extends ObjectBehavior
         return array(
             'string' => 'some_string',
             'integer' => 42,
-            'object' => new stdClass,
+            'object' => new \stdClass,
             'array'  => array(),
             'boolean' => true,
             'resource' => STDIN

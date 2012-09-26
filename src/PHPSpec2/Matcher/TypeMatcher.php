@@ -3,16 +3,16 @@
 namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Example\FailureException;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\StringPresenter;
 
 class TypeMatcher extends BasicMatcher
 {
-    private $representer;
+    private $presenter;
 
-    public function __construct(RepresenterInterface $representer = null)
+    public function __construct(PresenterInterface $presenter = null)
     {
-        $this->representer = $representer ?: new BasicRepresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -30,18 +30,18 @@ class TypeMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Expected an instance of <value>%s</value>, but got <value>%s</value>.',
-            $arguments[0],
-            $this->representer->representValue($subject)
+            'Expected an instance of %s, but got %s.',
+            $this->presenter->presentString($arguments[0]),
+            $this->presenter->presentValue($subject)
         ));
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Not expected instance of <value>%s</value>, but got <value>%s</value>.',
-            $arguments[0],
-            $this->representer->representValue($subject)
+            'Not expected instance of %s, but got %s.',
+            $this->presenter->presentString($arguments[0]),
+            $this->presenter->presentValue($subject)
         ));
     }
 }

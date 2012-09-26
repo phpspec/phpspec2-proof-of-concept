@@ -3,16 +3,16 @@
 namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Looper\Looper;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\StringPresenter;
 
 class ThrowMatcher implements MatcherInterface
 {
-    private $representer;
+    private $presenter;
 
-    public function __construct(RepresenterInterface $representer = null)
+    public function __construct(PresenterInterface $presenter = null)
     {
-        $this->representer = $representer ?: new BasicRepresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -23,7 +23,7 @@ class ThrowMatcher implements MatcherInterface
     public function positiveMatch($name, $subject, array $arguments)
     {
         $verification = new Verification\PositiveThrowVerification(
-            $subject, $arguments, $this->representer
+            $subject, $arguments, $this->presenter
         );
 
         return $verification;
@@ -32,7 +32,7 @@ class ThrowMatcher implements MatcherInterface
     public function negativeMatch($name, $subject, array $arguments)
     {
         $verification = new Verification\NegativeThrowVerification(
-            $subject, $arguments, $this->representer
+            $subject, $arguments, $this->presenter
         );
 
         return $verification;

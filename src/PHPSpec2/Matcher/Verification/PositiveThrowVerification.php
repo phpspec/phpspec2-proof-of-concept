@@ -5,19 +5,19 @@ namespace PHPSpec2\Matcher\Verification;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Exception\Example\NotEqualException;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class PositiveThrowVerification
 {
     private $subject;
     private $class;
     private $message;
-    private $representer;
+    private $presenter;
 
-    public function __construct($subject, $arguments, RepresenterInterface $representer)
+    public function __construct($subject, $arguments, PresenterInterface $presenter)
     {
         $this->subject     = $subject;
-        $this->representer = $representer;
+        $this->presenter = $presenter;
 
         if (0 == count($arguments)) {
             return;
@@ -33,8 +33,8 @@ class PositiveThrowVerification
             throw new MatcherException(sprintf(
                 "Wrong argument provided in throw matcher.\n".
                 "Fully qualified classname or exception instance expected,\n".
-                "Got <value>%s</value>.",
-                $this->representer->representValue($arguments[0])
+                "Got %s.",
+                $this->presenter->presentValue($arguments[0])
             ));
         }
     }
@@ -54,17 +54,17 @@ class PositiveThrowVerification
 
             if (!$e instanceof $this->class) {
                 throw new FailureException(sprintf(
-                    'Expected exception of class <value>%s</value>, but got <value>%s</value>.',
-                    $this->class,
-                    $this->representer->representValue($e)
+                    'Expected exception of class %s, but got %s.',
+                    $this->presenter->presentString($this->class),
+                    $this->presenter->presentValue($e)
                 ));
             }
 
             if (null !== $this->message && $e->getMessage() !== $this->message) {
                 throw new NotEqualException(sprintf(
-                    'Expected exception message <value>%s</value>, but got <value>%s</value>.',
-                    $this->representer->representValue($this->message),
-                    $this->representer->representValue($e->getMessage())
+                    'Expected exception message %s, but got %s.',
+                    $this->presenter->presentValue($this->message),
+                    $this->presenter->presentValue($e->getMessage())
                 ), $this->message, $e->getMessage());
             }
 

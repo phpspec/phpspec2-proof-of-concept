@@ -3,16 +3,16 @@
 namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\Example\FailureException;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\StringPresenter;
 
 class TrueMatcher extends BasicMatcher
 {
-    private $representer;
+    private $presenter;
 
-    public function __construct(RepresenterInterface $representer = null)
+    public function __construct(PresenterInterface $presenter = null)
     {
-        $this->representer = $representer ?: new BasicRepresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -28,13 +28,13 @@ class TrueMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Expected <value>true</value>, but got <value>%s</value>.',
-            $this->representer->representValue($subject)
+            'Expected true, but got %s.',
+            $this->presenter->presentValue($subject)
         ));
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
-        return new FailureException('Not expected <value>true</value>, but got it.');
+        return new FailureException('Not expected true, but got it.');
     }
 }

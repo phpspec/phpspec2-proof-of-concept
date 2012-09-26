@@ -2,18 +2,18 @@
 
 namespace PHPSpec2\Matcher;
 
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\StringPresenter;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Exception\Example\NotEqualException;
 
 class IdentityMatcher extends BasicMatcher
 {
-    private $representer;
+    private $presenter;
 
-    public function __construct(RepresenterInterface $representer = null)
+    public function __construct(PresenterInterface $presenter = null)
     {
-        $this->representer = $representer ?: new BasicRepresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -31,17 +31,17 @@ class IdentityMatcher extends BasicMatcher
     protected function getFailureException($name, $subject, array $arguments)
     {
         return new NotEqualException(sprintf(
-            'Expected <value>%s</value>, but got <value>%s</value>.',
-            $this->representer->representValue($arguments[0]),
-            $this->representer->representValue($subject)
+            'Expected %s, but got %s.',
+            $this->presenter->presentValue($arguments[0]),
+            $this->presenter->presentValue($subject)
         ), $arguments[0], $subject);
     }
 
     protected function getNegativeFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
-            'Not expected <value>%s</value>, but got one.',
-            $this->representer->representValue($subject)
+            'Not expected %s, but got one.',
+            $this->presenter->presentValue($subject)
         ));
     }
 }

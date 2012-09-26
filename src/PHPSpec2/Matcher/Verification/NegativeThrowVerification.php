@@ -4,19 +4,19 @@ namespace PHPSpec2\Matcher\Verification;
 
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\FailureException;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class NegativeThrowVerification
 {
     private $subject;
     private $class;
     private $message;
-    private $representer;
+    private $presenter;
 
-    public function __construct($subject, $arguments, RepresenterInterface $representer)
+    public function __construct($subject, $arguments, PresenterInterface $presenter)
     {
         $this->subject     = $subject;
-        $this->representer = $representer;
+        $this->presenter = $presenter;
 
         if (0 == count($arguments)) {
             return;
@@ -32,8 +32,8 @@ class NegativeThrowVerification
             throw new MatcherException(sprintf(
                 "Wrong argument provided in throw matcher.\n".
                 "Fully qualified classname or exception instance expected,\n".
-                "Got <value>%s</value>.",
-                $this->representer->representValue($arguments[0])
+                "Got %s.",
+                $this->presenter->presentValue($arguments[0])
             ));
         }
     }
@@ -49,24 +49,24 @@ class NegativeThrowVerification
         } catch (\Exception $e) {
             if (null === $this->class) {
                 throw new FailureException(sprintf(
-                    'Expected to not throw any exceptions, but got <value>%s</value>.',
-                    $this->representer->representValue($e)
+                    'Expected to not throw any exceptions, but got %s.',
+                    $this->presenter->presentValue($e)
                 ));
             }
 
             if ($e instanceof $this->class && null === $this->message) {
                 throw new FailureException(sprintf(
-                    'Expected to not throw <value>%s</value> exception, but got it.',
-                    $this->class
+                    'Expected to not throw %s exception, but got it.',
+                    $this->presenter->presentString($this->class)
                 ));
             }
 
             if ($e instanceof $this->class && $e->getMessage() === $this->message) {
                 throw new FailureException(sprintf(
-                    "Expected to not throw <value>%s</value> exception\n".
-                    "with <value>%s</value> message,\nbut got it.",
-                    $this->class,
-                    $this->representer->representValue($this->message)
+                    "Expected to not throw %s exception\n".
+                    "with %s message,\nbut got it.",
+                    $this->presenter->presentString($this->class),
+                    $this->presenter->presentValue($this->message)
                 ));
             }
         }
