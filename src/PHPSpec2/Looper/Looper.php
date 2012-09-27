@@ -1,6 +1,6 @@
 <?php
 
-namespace src\PHPSpec2\Looper\Looper.php;
+namespace src\PHPSpec2\Looper\Looper;
 
 class Looper
 {
