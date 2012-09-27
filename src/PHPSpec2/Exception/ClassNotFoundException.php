@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Exception;
 
-class ClassDoesNotExistsException extends Exception
+class ClassNotFoundException extends Exception
 {
     private $classname;
 

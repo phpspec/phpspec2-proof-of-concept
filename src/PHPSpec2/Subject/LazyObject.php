@@ -5,7 +5,7 @@ namespace PHPSpec2\Subject;
 use ReflectionClass;
 
 use PHPSpec2\Exception\Exception;
-use PHPSpec2\Exception\ClassDoesNotExistsException;
+use PHPSpec2\Exception\ClassNotFoundException;
 
 class LazyObject implements LazySubjectInterface
 {
@@ -42,7 +42,7 @@ class LazyObject implements LazySubjectInterface
         }
 
         if (!class_exists($this->classname)) {
-            throw new ClassDoesNotExistsException($this->classname);
+            throw new ClassNotFoundException($this->classname);
         }
 
         $reflection = new ReflectionClass($this->classname);
