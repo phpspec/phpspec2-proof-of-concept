@@ -16,7 +16,7 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
 
     public function getWrappedSubject()
     {
-        return $this->object->getWrappedSubject();
+        return $this->object;
     }
 
     public function __call($method, array $arguments = array())

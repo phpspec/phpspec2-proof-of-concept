@@ -21,7 +21,7 @@ class ArgumentsUnwrapper
             return $argument;
         }
 
-        if ($argument instanceof SubjectWrapperInterface) {
+        while ($argument instanceof SubjectWrapperInterface) {
             $argument = $argument->getWrappedSubject();
         }
 
