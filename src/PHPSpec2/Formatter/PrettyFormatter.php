@@ -51,7 +51,7 @@ class PrettyFormatter implements FormatterInterface
 
     public function beforeSpecification(SpecificationEvent $event)
     {
-        $this->writeln($this->padText(
+        $this->io->writeln($this->padText(
             sprintf("\n%s%s\n",
                 $event->getSpecification()->getParent() ? '::' : '> ',
                 $event->getSpecification()->getTitle()
@@ -64,26 +64,26 @@ class PrettyFormatter implements FormatterInterface
     {
         switch ($event->getResult()) {
             case ExampleEvent::PASSED:
-                $this->write(sprintf(
+                $this->io->write(sprintf(
                     $this->padText('<passed>✔ %s</passed>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
 
                 $ms = $event->getTime() * 1000;
                 if ($ms > 100) {
-                    $this->write(sprintf(' <failed>(%sms)</failed>', round($ms)));
+                    $this->io->write(sprintf(' <failed>(%sms)</failed>', round($ms)));
                 } elseif ($ms > 50) {
-                    $this->write(sprintf(' <pending>(%sms)</pending>', round($ms)));
+                    $this->io->write(sprintf(' <pending>(%sms)</pending>', round($ms)));
                 }
-                $this->writeln('');
+                $this->io->writeln('');
 
                 break;
             case ExampleEvent::PENDING:
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     $this->padText('<pending>- %s</pending>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "<pending>%s</pending>\n",
                     $this->formatExampleException(
                         $event->getExample(), $event->getException(), false
@@ -91,14 +91,14 @@ class PrettyFormatter implements FormatterInterface
                 ));
                 break;
             case ExampleEvent::FAILED:
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     $this->padText('<failed>✘ %s</failed>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "<failed>%s</failed>\n",
                     $this->formatExampleException(
-                        $event->getExample(), $event->getException(), $this->isVerbose()
+                        $event->getExample(), $event->getException(), $this->io->isVerbose()
                     )
                 ));
                 break;
@@ -120,16 +120,16 @@ class PrettyFormatter implements FormatterInterface
             $counts[] = sprintf('<failed>%d failed</failed>', $count);
         }
 
-        $this->write(sprintf(
+        $this->io->write(sprintf(
             "\n%d examples ", count($stats->getAllEvents())
         ));
         if (count($counts)) {
-            $this->write(sprintf(
+            $this->io->write(sprintf(
                 "(%s)", implode(', ', $counts)
             ));
         }
 
-        $this->writeln(sprintf(
+        $this->io->writeln(sprintf(
             "\n%s", round($stats->getTotalTime() * 1000) . 'ms'
         ));
     }
@@ -265,20 +265,5 @@ class PrettyFormatter implements FormatterInterface
         return implode("\n", array_map(function($line) use($indent) {
             return str_repeat(' ', $indent).$line;
         }, explode("\n", $text)));
-    }
-
-    private function write($text)
-    {
-        $this->io->getOutput()->write($text);
-    }
-
-    private function writeln($text)
-    {
-        $this->io->getOutput()->writeln($text);
-    }
-
-    private function isVerbose()
-    {
-        return $this->io->getOutput()->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE;
     }
 }

@@ -15,6 +15,7 @@ use PHPSpec2\Runner\Runner;
 use PHPSpec2\Matcher;
 use PHPSpec2\Listener\StatisticsCollector;
 use PHPSpec2\Formatter;
+use PHPSpec2\Console\Formatter as CliOutputFormatter;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Formatter\Presenter\TaggedPresenter;
@@ -47,7 +48,8 @@ class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // setup IO
-        $io = new IO($input, $output);
+        $io = new IO($input, $output, $this->getHelperSet());
+        $output->setFormatter(new CliOutputFormatter($io->isDecorated()));
 
         $presenter = new TaggedPresenter();
 

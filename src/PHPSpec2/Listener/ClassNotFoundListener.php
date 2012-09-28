@@ -31,10 +31,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
     {
         $exception = $event->getException();
         if (null !== $exception && $exception instanceof ClassNotFoundException) {
-            $output = $this->io->getOutput();
-            $dialog = new DialogHelper;
-
-            if ($dialog->askConfirmation($output, sprintf(
+            if ($this->io->askConfirmation(sprintf(
                 "         <info>You want me to create it for you?</info> <value>[Y/n]</value> "
             ))) {
                 $classname = $exception->getClassname();
@@ -47,7 +44,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
                 }
                 file_put_contents($filepath, $this->getClassContentFor($classname));
 
-                $output->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "         <info>Class <value>%s</value> has been created.</info>\n",
                     $classname
                 ));
