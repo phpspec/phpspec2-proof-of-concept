@@ -46,7 +46,7 @@ class IO
         $this->lastMessage = join($newline ? "\n" : '', (array) $messages);
     }
 
-    public function overwrite($messages, $newline = true, $size = null)
+    public function overwrite($messages, $newline = false, $size = null)
     {
         // messages can be an array, let's convert it to string anyway
         $messages = join($newline ? "\n" : '', (array) $messages);
