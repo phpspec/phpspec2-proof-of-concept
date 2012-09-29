@@ -1,14 +1,14 @@
 <?php
 
-namespace spec\PHPSpec2\Diff;
+namespace spec\PHPSpec2\Formatter\Diff;
 
 use PHPSpec2\ObjectBehavior;
 
 class Diff extends ObjectBehavior
 {
     /**
-     * @param PHPSpec2\Diff\EngineInterface $engine1
-     * @param PHPSpec2\Diff\EngineInterface $engine2
+     * @param PHPSpec2\Formatter\Diff\EngineInterface $engine1
+     * @param PHPSpec2\Formatter\Diff\EngineInterface $engine2
      */
     function it_should_choose_proper_engine($engine1, $engine2)
     {

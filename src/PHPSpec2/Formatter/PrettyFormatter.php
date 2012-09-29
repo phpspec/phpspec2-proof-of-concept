@@ -10,7 +10,7 @@ use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Diff\Diff;
+use PHPSpec2\Formatter\Diff\Diff;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Exception as PHPSpec2Exception;

@@ -24,7 +24,7 @@ use PHPSpec2\Listener\MethodNotFoundListener;
 use PHPSpec2\Mocker\MockeryMocker;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Loader\SpecificationsClassLoader;
-use PHPSpec2\Diff;
+use PHPSpec2\Formatter\Diff;
 
 class RunCommand extends Command
 {

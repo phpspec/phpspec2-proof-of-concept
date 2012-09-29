@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\PHPSpec2\Diff;
+namespace spec\PHPSpec2\Formatter\Diff;
 
 use PHPSpec2\ObjectBehavior;
 
