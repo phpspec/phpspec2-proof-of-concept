@@ -18,6 +18,12 @@ class StringPresenter implements PresenterInterface
             }
         }
 
+        if (is_object($value) && $value instanceof \Exception) {
+            return $this->presentString(sprintf(
+                '[obj:%s("%s")]', get_class($value), $value->getMessage()
+            ));
+        }
+
         switch ($type = strtolower(gettype($value))) {
             case 'null':
                 return $this->presentString('[null]');
@@ -26,7 +32,7 @@ class StringPresenter implements PresenterInterface
                     '[bool:%s]', true === $value ? 'true' : 'false'
                 ));
             case 'object':
-                return $this->presentString(sprintf('[%s]', get_class($value)));
+                return $this->presentString(sprintf('[obj:%s]', get_class($value)));
             case 'array':
                 return $this->presentString(sprintf('[array:%d]', count($value)));
             case 'string':

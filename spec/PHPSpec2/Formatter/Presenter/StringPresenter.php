@@ -23,7 +23,7 @@ class StringPresenter extends ObjectBehavior
 
     function it_should_represent_object_as_classname()
     {
-        $this->presentValue(new \stdClass)->shouldReturn('[stdClass]');
+        $this->presentValue(new \stdClass)->shouldReturn('[obj:stdClass]');
     }
 
     function it_should_represent_array_as_elements_count()
@@ -39,6 +39,12 @@ class StringPresenter extends ObjectBehavior
     function it_should_represent_closure_as_type()
     {
         $this->presentValue(function(){})->shouldReturn('[closure]');
+    }
+
+    function it_should_represent_exception()
+    {
+        $this->presentValue(new \RuntimeException('message'))
+            ->shouldReturn('[obj:RuntimeException("message")]');
     }
 
     function it_should_represent_string_as_string()
