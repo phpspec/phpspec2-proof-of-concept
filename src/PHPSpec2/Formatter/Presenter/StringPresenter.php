@@ -26,20 +26,20 @@ class StringPresenter implements PresenterInterface
 
         switch ($type = strtolower(gettype($value))) {
             case 'null':
-                return $this->presentString('[null]');
+                return $this->presentString('null');
             case 'boolean':
-                return $this->presentString(sprintf(
-                    '[bool:%s]', true === $value ? 'true' : 'false'
-                ));
+                return $this->presentString(sprintf('%s', true === $value ? 'true' : 'false'));
             case 'object':
                 return $this->presentString(sprintf('[obj:%s]', get_class($value)));
             case 'array':
                 return $this->presentString(sprintf('[array:%d]', count($value)));
             case 'string':
-                if (30 > strlen($value) && false === strpos($value, "\n")) {
-                    return $this->presentString(sprintf('[string:"%s"]', $value));
+                if (25 > strlen($value) && false === strpos($value, "\n")) {
+                    return $this->presentString(sprintf('"%s"', $value));
                 }
-                return $this->presentString('[string:...]');
+
+                $lines = explode("\n", $value);
+                return $this->presentString(sprintf('"%s..."', substr($lines[0], 0, 25)));
             default:
                 return $this->presentString(sprintf('[%s:%s]', $type, $value));
         }
