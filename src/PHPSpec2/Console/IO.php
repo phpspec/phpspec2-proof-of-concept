@@ -35,45 +35,40 @@ class IO
         return (bool) $this->input->getOption('verbose');
     }
 
-    public function writeln($messages = '')
+    public function writeln($message = '')
     {
-        $this->write($messages, true);
+        $this->write($message, true);
     }
 
-    public function write($messages = '', $newline = false)
+    public function write($message, $newline = false)
     {
-        $this->output->write($messages, $newline);
-        $this->lastMessage = join($newline ? "\n" : '', (array) $messages);
+        $this->output->write($message, $newline);
+        $this->lastMessage = $message.($newline ? "\n" : '');
     }
 
-    public function overwrite($messages, $newline = false, $size = null)
+    public function overwriteln($message = '')
     {
-        // messages can be an array, let's convert it to string anyway
-        $messages = join($newline ? "\n" : '', (array) $messages);
+        $this->overwrite($message, true);
+    }
 
-        // since overwrite is supposed to overwrite last message...
-        if (!isset($size)) {
-            // removing possible formatting of lastMessage with strip_tags
-            $size = strlen(strip_tags($this->lastMessage));
-        }
-        // ...let's fill its length with backspaces
-        $this->write(str_repeat("\x08", $size), false);
+    public function overwrite($message, $newline = false)
+    {
+        $size = strlen(strip_tags($this->lastMessage));
 
-        // write the new message
-        $this->write($messages, false);
+        $this->write(str_repeat("\x08", $size));
+        $this->write($message);
 
-        $fill = $size - strlen(strip_tags($messages));
+        $fill = $size - strlen(strip_tags($message));
         if ($fill > 0) {
-            // whitespace whatever has left
-            $this->write(str_repeat(' ', $fill), false);
-            // move the cursor back
-            $this->write(str_repeat("\x08", $fill), false);
+            $this->write(str_repeat(' ', $fill));
+            $this->write(str_repeat("\x08", $fill));
         }
 
         if ($newline) {
-            $this->write('');
+            $this->writeln();
         }
-        $this->lastMessage = $messages;
+
+        $this->lastMessage = $message.($newline ? "\n" : '');
     }
 
     public function ask($question, $default = null)
