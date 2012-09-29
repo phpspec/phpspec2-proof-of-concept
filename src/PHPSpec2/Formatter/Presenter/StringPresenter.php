@@ -20,7 +20,7 @@ class StringPresenter implements PresenterInterface
 
         if (is_object($value) && $value instanceof \Exception) {
             return $this->presentString(sprintf(
-                '[obj:%s("%s")]', get_class($value), $value->getMessage()
+                '[exc:%s("%s")]', get_class($value), $value->getMessage()
             ));
         }
 

@@ -44,7 +44,7 @@ class StringPresenter extends ObjectBehavior
     function it_should_represent_exception()
     {
         $this->presentValue(new \RuntimeException('message'))
-            ->shouldReturn('[obj:RuntimeException("message")]');
+            ->shouldReturn('[exc:RuntimeException("message")]');
     }
 
     function it_should_represent_string_as_string()
