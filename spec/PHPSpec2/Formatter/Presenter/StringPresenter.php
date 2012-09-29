@@ -14,12 +14,12 @@ class StringPresenter extends ObjectBehavior
     function it_should_present_long_string_in_quotes_but_trimmed()
     {
         $this->presentValue('some_string_longer_than_twenty_five_chars')
-            ->shouldReturn('"some_string_longer_than_t..."');
+            ->shouldReturn('"some_string_longer_than_t"...');
     }
 
     function it_should_present_only_first_line_of_multiline_string()
     {
-        $this->presentValue("some\nmultiline\nvalue")->shouldReturn('"some..."');
+        $this->presentValue("some\nmultiline\nvalue")->shouldReturn('"some"...');
     }
 
     function it_should_present_simple_type_as_typed_value()
