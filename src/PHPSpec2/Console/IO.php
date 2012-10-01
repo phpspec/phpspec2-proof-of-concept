@@ -73,16 +73,16 @@ class IO
 
     public function ask($question, $default = null)
     {
-        return $this->helperSet->get('dialog')->ask($this->output, $question, $default);
+        return $this->helpers->get('dialog')->ask($this->output, $question, $default);
     }
 
     public function askConfirmation($question, $default = true)
     {
-        return $this->helperSet->get('dialog')->askConfirmation($this->output, $question, $default);
+        return $this->helpers->get('dialog')->askConfirmation($this->output, $question, $default);
     }
 
     public function askAndValidate($question, $validator, $attempts = false, $default = null)
     {
-        return $this->helperSet->get('dialog')->askAndValidate($this->output, $question, $validator, $attempts, $default);
+        return $this->helpers->get('dialog')->askAndValidate($this->output, $question, $validator, $attempts, $default);
     }
 }
