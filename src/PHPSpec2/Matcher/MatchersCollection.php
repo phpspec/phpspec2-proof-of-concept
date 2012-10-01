@@ -2,7 +2,7 @@
 
 namespace PHPSpec2\Matcher;
 
-use PHPSpec2\Exception\Example\MatcherNotFoundException;
+use PHPSpec2\Exception\MatcherNotFoundException;
 
 class MatchersCollection
 {

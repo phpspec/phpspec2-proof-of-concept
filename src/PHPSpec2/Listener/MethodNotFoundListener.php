@@ -6,8 +6,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Console\IO;
-use Symfony\Component\Console\Helper\DialogHelper;
-use PHPSpec2\Exception\Prophet\MethodNotFoundException;
+use PHPSpec2\Exception\MethodNotFoundException;
 
 class MethodNotFoundListener implements EventSubscriberInterface
 {
@@ -29,10 +28,7 @@ class MethodNotFoundListener implements EventSubscriberInterface
     {
         $exception = $event->getException();
         if (null !== $exception && $exception instanceof MethodNotFoundException) {
-            $output = $this->io->getOutput();
-            $dialog = new DialogHelper;
-
-            if ($dialog->askConfirmation($output, sprintf(
+            if ($this->io->askConfirmation(sprintf(
                 "         <info>You want me to create it for you?</info> <value>[Y/n]</value> "
             ))) {
                 $class  = new \ReflectionClass($exception->getSubject());
@@ -50,7 +46,7 @@ METHOD
 
                 file_put_contents($class->getFileName(), $content);
 
-                $output->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "         <info>Method <value>%s::%s</value> has been created.</info>\n",
                     $class->getName(), $method
                 ));

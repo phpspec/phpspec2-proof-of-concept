@@ -2,24 +2,24 @@
 
 namespace spec\PHPSpec2\Matcher;
 
-use PHPSpec2\Specification;
-use stdClass;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\ObjectBehavior;
 use PHPSpec2\Exception\Example\FailureException;
 
-class ComparisonMatcher implements Specification
+class ComparisonMatcher extends ObjectBehavior
 {
-    function described_with()
+    /**
+     * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
+     */
+    function described_with($presenter)
     {
-        $this->object->isAnInstanceOf('PHPSpec2\Matcher\ComparisonMatcher', array(
-            new BasicRepresenter
-        ));
+        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('');
+        $this->initializedWith($presenter);
     }
 
     function it_should_support_all_aliases_for_allKindsOfSubjects()
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
-            $this->supportsAliasForAllKinds($alias, $this->object);
+            $this->supportsAliasForAllKinds($alias, $this);
         }
     }
 
@@ -29,7 +29,7 @@ class ComparisonMatcher implements Specification
     function it_matches_empty_string_using_comparison_operator()
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
-            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                 ->during('positiveMatch', array($alias, '', array('')));
         }
     }
@@ -40,7 +40,7 @@ class ComparisonMatcher implements Specification
     function it_matches_not_empty_string_using_comparison_operator()
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
-            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                 ->during('positiveMatch', array($alias, 'chuck', array('chuck')));
         }
     }
@@ -52,7 +52,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('positiveMatch', array($alias, '', array($empty)));
             }
         }
@@ -65,7 +65,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('positiveMatch', array($alias, 0, array($empty)));
             }
         }
@@ -78,7 +78,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('positiveMatch', array($alias, null, array($empty)));
             }
         }
@@ -91,7 +91,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, false, array($empty)));
             }
         }
@@ -108,7 +108,7 @@ class ComparisonMatcher implements Specification
                 // skip true
                 if ($value === true) continue;
 
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, 'different_value',array($value)));
             }
         }
@@ -120,7 +120,7 @@ class ComparisonMatcher implements Specification
     function it_mismatches_empty_string_using_comparison_operator()
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
-            $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('negativeMatch', array($alias, '', array('')));
         }
     }
@@ -131,7 +131,7 @@ class ComparisonMatcher implements Specification
     function it_mismatches_not_empty_string_using_comparison_operator($matcher)
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
-            $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('negativeMatch', array($alias, 'chuck', array('chuck')));
         }
     }
@@ -143,7 +143,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, '', array($empty)));
             }
         }
@@ -156,7 +156,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, 0, array($empty)));
             }
         }
@@ -169,7 +169,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, null, array($empty)));
             }
         }
@@ -182,7 +182,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, false, array($empty)));
             }
         }
@@ -199,7 +199,7 @@ class ComparisonMatcher implements Specification
                 // skip true
                 if ($value === true) continue;
 
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, 'different_value',array($value)));
             }
         }
@@ -213,7 +213,7 @@ class ComparisonMatcher implements Specification
                 // we need a booleans not equal exception
                 if ($value === true) $value = false;
 
-                $this->object->shouldThrow($this->failureExceptionFor($type))
+                $this->shouldThrow($this->failureExceptionFor($type))
                     ->during('positiveMatch', array($alias, $value, array('different_value')));
             }
         }
@@ -223,7 +223,7 @@ class ComparisonMatcher implements Specification
     {
         foreach ($this->allComparisonMatcherAliases() as $alias) {
             foreach ($this->allKindsOfSubjects() as $type => $value) {
-                $this->object->shouldThrow()
+                $this->shouldThrow()
                     ->during('negativeMatch', array($alias, $value, array($value)));
             }
         }
@@ -232,7 +232,7 @@ class ComparisonMatcher implements Specification
     private function supportsAliasForAllKinds($alias, $matcher)
     {
         foreach ($this->allKindsOfSubjects() as $kind => $subject) {
-            $matcher->supports($alias, $subject, array(1))->shouldBeTrue();
+            $matcher->supports($alias, $subject, array(1))->shouldBe(true);
         }
     }
 
@@ -241,7 +241,7 @@ class ComparisonMatcher implements Specification
         return array(
             'string' => 'some_string',
             'integer' => 42,
-            'object' => new stdClass,
+            'object' => new \stdClass,
             'array'  => array(),
             'boolean' => true,
             'resource' => STDIN

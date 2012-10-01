@@ -10,20 +10,21 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use PHPSpec2\Console\IO;
-use PHPSpec2\Locator;
-use PHPSpec2\Runner;
+use PHPSpec2\Runner\Locator;
+use PHPSpec2\Runner\Runner;
 use PHPSpec2\Matcher;
-use PHPSpec2\StatisticsCollector;
+use PHPSpec2\Listener\StatisticsCollector;
 use PHPSpec2\Formatter;
+use PHPSpec2\Console\Formatter as CliOutputFormatter;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\TaggedPresenter;
 use PHPSpec2\Listener\ClassNotFoundListener;
 use PHPSpec2\Listener\MethodNotFoundListener;
-use PHPSpec2\Mocker\Mockery\Mocker;
-use PHPSpec2\Prophet\ArgumentsResolver;
+use PHPSpec2\Mocker\MockeryMocker;
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Loader\SpecificationsClassLoader;
-use PHPSpec2\Diff;
+use PHPSpec2\Formatter\Diff;
 
 class RunCommand extends Command
 {
@@ -47,32 +48,32 @@ class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // setup IO
-        $io = new IO($input, $output);
+        $io = new IO($input, $output, $this->getHelperSet());
+        $output->setFormatter(new CliOutputFormatter($io->isDecorated()));
 
-        $representer = new BasicRepresenter();
+        $presenter = new TaggedPresenter();
 
         $matchers = new Matcher\MatchersCollection();
-        $matchers->add(new Matcher\IdentityMatcher($representer));
-        $matchers->add(new Matcher\ComparisonMatcher($representer));
-        $matchers->add(new Matcher\TrueMatcher($representer));
-        $matchers->add(new Matcher\ThrowMatcher($representer));
-        $matchers->add(new Matcher\CountMatcher($representer));
-        $matchers->add(new Matcher\TypeMatcher($representer));
-        $matchers->add(new Matcher\ObjectStateMatcher($representer));
+        $matchers->add(new Matcher\IdentityMatcher($presenter));
+        $matchers->add(new Matcher\ComparisonMatcher($presenter));
+        $matchers->add(new Matcher\ThrowMatcher($presenter));
+        $matchers->add(new Matcher\CountMatcher($presenter));
+        $matchers->add(new Matcher\TypeMatcher($presenter));
+        $matchers->add(new Matcher\ObjectStateMatcher($presenter));
 
-        $mocker = new Mocker;
-        $resolver = new ArgumentsResolver;
+        $mocker    = new MockeryMocker;
+        $unwrapper = new ArgumentsUnwrapper;
 
         // setup specs locator and runner
         $locator = new Locator(new SpecificationsClassLoader);
-        $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $resolver, $input->getOptions());
+        $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $unwrapper, $input->getOptions());
 
         // setup differ
         $differ = new Diff\Diff;
         $differ->addEngine(new Diff\StringEngine);
 
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter($representer, $differ);
+        $formatter = new Formatter\PrettyFormatter($presenter, $differ);
         $formatter->setIO($io);
         $runner->getEventDispatcher()->addSubscriber($formatter);
 
@@ -83,12 +84,13 @@ class RunCommand extends Command
         // setup statistics collector
         $collector = new StatisticsCollector;
         $runner->getEventDispatcher()->addSubscriber($collector);
-        $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
 
-        foreach ($locator->getSpecifications($input->getArgument('spec')) as $spec) {
+        $specifications = $locator->getSpecifications($input->getArgument('spec'));
+
+        $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
+        foreach ($specifications as $spec) {
             $runner->runSpecification($spec);
         }
-
         $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
 
         return intval(ExampleEvent::PASSED !== $collector->getGlobalResult());

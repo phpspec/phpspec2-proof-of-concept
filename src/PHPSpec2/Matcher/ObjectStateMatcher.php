@@ -2,19 +2,19 @@
 
 namespace PHPSpec2\Matcher;
 
-use PHPSpec2\Exception\Prophet\MethodNotFoundException;
+use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\Example\FailureException;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
-use PHPSpec2\Formatter\Representer\BasicRepresenter;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\StringPresenter;
 
 class ObjectStateMatcher implements MatcherInterface
 {
     private $regex = '/(be|have)(.+)/';
-    private $representer;
+    private $presenter;
 
-    public function __construct(RepresenterInterface $representer = null)
+    public function __construct(PresenterInterface $presenter = null)
     {
-        $this->representer = $representer ?: new BasicRepresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -62,10 +62,10 @@ class ObjectStateMatcher implements MatcherInterface
     private function getFailureExceptionFor($callable, $expectedBool, $result)
     {
         return new FailureException(sprintf(
-            "Expected <value>%s</value> to return <value>%s</value>, but got <value>%s</value>.",
-            $this->representer->representValue($callable),
-            $this->representer->representValue($expectedBool),
-            $this->representer->representValue($result)
+            "Expected %s to return %s, but got %s.",
+            $this->presenter->presentValue($callable),
+            $this->presenter->presentValue($expectedBool),
+            $this->presenter->presentValue($result)
         ));
     }
 }

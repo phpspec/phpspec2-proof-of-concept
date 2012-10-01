@@ -22,13 +22,6 @@ class Example extends Node
         return $this->title;
     }
 
-    public function getSubject()
-    {
-        if (null !== $parent = $this->getParent()) {
-            return $parent->getSubject();
-        }
-    }
-
     public function getFunction()
     {
         return $this->function;

@@ -2,15 +2,15 @@
 
 namespace spec\PHPSpec2\Matcher;
 
-use PHPSpec2\Specification;
+use PHPSpec2\ObjectBehavior;
 use stdClass;
 
-class IdentityMatcher implements Specification
+class IdentityMatcher extends ObjectBehavior
 {
     function it_should_support_all_aliases_for_allKindsOfSubjects()
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
-            $this->supportsAliasForAllKinds($alias, $this->object);
+            $this->supportsAliasForAllKinds($alias, $this);
         }
     }
 
@@ -20,7 +20,7 @@ class IdentityMatcher implements Specification
     function it_matches_empty_string_using_identity_operator()
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
-            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                 ->during('positiveMatch', array($alias, '', array('')));
         }
     }
@@ -31,7 +31,7 @@ class IdentityMatcher implements Specification
     function it_matches_not_empty_string_using_identity_operator()
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
-            $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('positiveMatch', array($alias, 'chuck', array('chuck')));
         }
     }
@@ -44,7 +44,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === '') continue;
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, '', array($empty)));
             }
         }
@@ -58,7 +58,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === 0) continue;
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, 0, array($empty)));
             }
         }
@@ -72,7 +72,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === null) continue;
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, null, array($empty)));
             }
         }
@@ -86,7 +86,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === false) continue;
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, false, array($empty)));
             }
         }
@@ -103,7 +103,7 @@ class IdentityMatcher implements Specification
                 // skip true
                 if ($value === true) continue;
 
-                $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('positiveMatch', array($alias, 'different_value',array($value)));
             }
         }
@@ -115,7 +115,7 @@ class IdentityMatcher implements Specification
     function it_mismatches_empty_string_using_identity_operator()
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
-            $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('negativeMatch', array($alias, '', array('')));
         }
     }
@@ -126,7 +126,7 @@ class IdentityMatcher implements Specification
     function it_mismatches_not_empty_string_using_identity_operator($matcher)
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
-            $this->object->shouldThrow('PHPSpec2\Exception\Example\FailureException')
+            $this->shouldThrow('PHPSpec2\Exception\Example\FailureException')
                     ->during('negativeMatch', array($alias, 'chuck', array('chuck')));
         }
     }
@@ -139,7 +139,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === '') continue;
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, '', array($empty)));
             }
         }
@@ -153,7 +153,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === 0) continue;
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, 0, array($empty)));
             }
         }
@@ -167,7 +167,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === null) continue;
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, null, array($empty)));
             }
         }
@@ -181,7 +181,7 @@ class IdentityMatcher implements Specification
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->phpEmptishValues() as $empty) {
                 if ($empty === false) continue;
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, false, array($empty)));
             }
         }
@@ -198,7 +198,7 @@ class IdentityMatcher implements Specification
                 // skip true
                 if ($value === true) continue;
 
-                $this->object->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
+                $this->shouldNotThrow('PHPSpec2\Exception\Example\FailureException')
                         ->during('negativeMatch', array($alias, 'different_value',array($value)));
             }
         }
@@ -212,7 +212,7 @@ class IdentityMatcher implements Specification
                 // we need a booleans not equal exception
                 if ($value === true) $value = false;
 
-                $this->object->shouldThrow(
+                $this->shouldThrow(
                     $this->failureExceptionFor($type)
                 )->during('positiveMatch', array($alias, $value, array('different_value')));
             }
@@ -223,7 +223,7 @@ class IdentityMatcher implements Specification
     {
         foreach ($this->allIdentityMatcherAliases() as $alias) {
             foreach ($this->allKindsOfSubjects() as $type => $value) {
-                $this->object->shouldThrow()
+                $this->shouldThrow()
                     ->during('negativeMatch', array($alias, $value, array($value)));
             }
         }
@@ -232,7 +232,7 @@ class IdentityMatcher implements Specification
     private function supportsAliasForAllKinds($alias, $matcher)
     {
         foreach ($this->allKindsOfSubjects() as $kind => $subject) {
-            $matcher->supports($alias, $subject, array(1))->shouldReturnTrue();
+            $matcher->supports($alias, $subject, array(1))->shouldReturn(true);
         }
     }
 

@@ -6,13 +6,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 use PHPSpec2\Console\IO;
-use PHPSpec2\Formatter\Representer\RepresenterInterface;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Diff\Diff;
+use PHPSpec2\Formatter\Diff\Diff;
 use PHPSpec2\Exception\Example\MatcherException;
-use PHPSpec2\Exception\Example\ExampleException;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Exception as PHPSpec2Exception;
 
@@ -27,18 +26,20 @@ use PHPSpec2\Loader\Node\Example;
 class PrettyFormatter implements FormatterInterface
 {
     private $io;
-    private $representer;
+    private $presenter;
     private $differ;
 
-    public function __construct(RepresenterInterface $representer, Diff $differ)
+    public function __construct(PresenterInterface $presenter, Diff $differ)
     {
-        $this->representer = $representer;
+        $this->presenter = $presenter;
         $this->differ      = $differ;
     }
 
     public static function getSubscribedEvents()
     {
-        $events = array('beforeSpecification', 'afterExample', 'afterSuite');
+        $events = array(
+            'beforeSpecification', 'afterExample', 'afterSuite'
+        );
 
         return array_combine($events, $events);
     }
@@ -50,8 +51,11 @@ class PrettyFormatter implements FormatterInterface
 
     public function beforeSpecification(SpecificationEvent $event)
     {
-        $this->writeln($this->padText(
-            sprintf("\n> %s\n", $event->getSpecification()->getTitle()),
+        $this->io->writeln($this->padText(
+            sprintf("\n%s%s\n",
+                $event->getSpecification()->getParent() ? '::' : '> ',
+                $event->getSpecification()->getTitle()
+            ),
             2 * $event->getSpecification()->getDepth()
         ));
     }
@@ -60,26 +64,26 @@ class PrettyFormatter implements FormatterInterface
     {
         switch ($event->getResult()) {
             case ExampleEvent::PASSED:
-                $this->write(sprintf(
+                $this->io->write(sprintf(
                     $this->padText('<passed>✔ %s</passed>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
 
                 $ms = $event->getTime() * 1000;
                 if ($ms > 100) {
-                    $this->write(sprintf(' <failed>(%sms)</failed>', round($ms)));
+                    $this->io->write(sprintf(' <failed>(%sms)</failed>', round($ms)));
                 } elseif ($ms > 50) {
-                    $this->write(sprintf(' <pending>(%sms)</pending>', round($ms)));
+                    $this->io->write(sprintf(' <pending>(%sms)</pending>', round($ms)));
                 }
-                $this->writeln('');
+                $this->io->writeln('');
 
                 break;
             case ExampleEvent::PENDING:
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     $this->padText('<pending>- %s</pending>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "<pending>%s</pending>\n",
                     $this->formatExampleException(
                         $event->getExample(), $event->getException(), false
@@ -87,14 +91,14 @@ class PrettyFormatter implements FormatterInterface
                 ));
                 break;
             case ExampleEvent::FAILED:
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     $this->padText('<failed>✘ %s</failed>', 2 * $event->getExample()->getDepth()),
                     $event->getExample()->getTitle()
                 ));
-                $this->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "<failed>%s</failed>\n",
                     $this->formatExampleException(
-                        $event->getExample(), $event->getException(), $this->isVerbose()
+                        $event->getExample(), $event->getException(), $this->io->isVerbose()
                     )
                 ));
                 break;
@@ -116,16 +120,16 @@ class PrettyFormatter implements FormatterInterface
             $counts[] = sprintf('<failed>%d failed</failed>', $count);
         }
 
-        $this->write(sprintf(
+        $this->io->write(sprintf(
             "\n%d examples ", count($stats->getAllEvents())
         ));
         if (count($counts)) {
-            $this->write(sprintf(
+            $this->io->write(sprintf(
                 "(%s)", implode(', ', $counts)
             ));
         }
 
-        $this->writeln(sprintf(
+        $this->io->writeln(sprintf(
             "\n%s", round($stats->getTotalTime() * 1000) . 'ms'
         ));
     }
@@ -145,15 +149,11 @@ class PrettyFormatter implements FormatterInterface
 
     private function getExceptionMessage(Exception $exception, $lineno = true)
     {
-        if ($exception instanceof MockeryCountException || $exception instanceof MockeryException) {
-            $message = $exception->getMessage();
-        } elseif (!$exception instanceof PHPSpec2Exception) {
-            $message = sprintf(
-                'Exception <value>%s("%s")</value> has been thrown.',
-                get_class($exception),
-                $exception->getMessage()
-            );
-        } else {
+        $message = sprintf(
+            'Exception %s has been thrown.', $this->presenter->presentValue($exception)
+        );
+
+        if ($exception instanceof PHPSpec2Exception) {
             $message = $exception->getMessage();
         }
 
@@ -203,12 +203,12 @@ class PrettyFormatter implements FormatterInterface
 
         $text = '';
         $offset = 0;
-        $representer = $this->representer;
+        $presenter = $this->presenter;
         foreach ($trace = $exception->getTrace() as $call) {
             if (isset($call['class']) && isset($call['function'])) {
 
-                $args = array_map(function($item) use($representer) {
-                    return $representer->representValue($item);
+                $args = array_map(function($item) use($presenter) {
+                    return $presenter->presentValue($item);
                 }, $call['args']);
                 $text .= sprintf("<lineno>%4d</lineno> %s%s%s(%s)\n",
                     $offset++,
@@ -225,8 +225,8 @@ class PrettyFormatter implements FormatterInterface
                     break;
                 }
             } elseif (isset($call['function'])) {
-                $args = array_map(function($item) use($representer) {
-                    return $representer->representValue($item);
+                $args = array_map(function($item) use($presenter) {
+                    return $presenter->presentValue($item);
                 }, $call['args']);
                 $text .= sprintf("<lineno>%4d</lineno> %s(%s)\n",
                     $offset++,
@@ -261,20 +261,5 @@ class PrettyFormatter implements FormatterInterface
         return implode("\n", array_map(function($line) use($indent) {
             return str_repeat(' ', $indent).$line;
         }, explode("\n", $text)));
-    }
-
-    private function write($text)
-    {
-        $this->io->getOutput()->write($text);
-    }
-
-    private function writeln($text)
-    {
-        $this->io->getOutput()->writeln($text);
-    }
-
-    private function isVerbose()
-    {
-        return $this->io->getOutput()->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE;
     }
 }

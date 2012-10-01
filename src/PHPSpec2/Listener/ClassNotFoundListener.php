@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Console\IO;
 use Symfony\Component\Console\Helper\DialogHelper;
-use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
+use PHPSpec2\Exception\ClassNotFoundException;
 
 class ClassNotFoundListener implements EventSubscriberInterface
 {
@@ -30,11 +30,8 @@ class ClassNotFoundListener implements EventSubscriberInterface
     public function afterExample(ExampleEvent $event)
     {
         $exception = $event->getException();
-        if (null !== $exception && $exception instanceof ClassDoesNotExistsException) {
-            $output = $this->io->getOutput();
-            $dialog = new DialogHelper;
-
-            if ($dialog->askConfirmation($output, sprintf(
+        if (null !== $exception && $exception instanceof ClassNotFoundException) {
+            if ($this->io->askConfirmation(sprintf(
                 "         <info>You want me to create it for you?</info> <value>[Y/n]</value> "
             ))) {
                 $classname = $exception->getClassname();
@@ -47,7 +44,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
                 }
                 file_put_contents($filepath, $this->getClassContentFor($classname));
 
-                $output->writeln(sprintf(
+                $this->io->writeln(sprintf(
                     "         <info>Class <value>%s</value> has been created.</info>\n",
                     $classname
                 ));

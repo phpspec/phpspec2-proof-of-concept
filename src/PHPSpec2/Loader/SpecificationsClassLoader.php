@@ -21,7 +21,7 @@ class SpecificationsClassLoader implements LoaderInterface
                 continue;
             }
 
-            if (!$class->implementsInterface('PHPSpec2\\Specification')) {
+            if (!$class->implementsInterface('PHPSpec2\\SpecificationInterface')) {
                 continue;
             }
 
@@ -30,10 +30,9 @@ class SpecificationsClassLoader implements LoaderInterface
                 $preFunctions[] = $class->getMethod('described_with');
             }
 
-            $specification = new Node\Specification(
-                $class->getName(),
-                preg_replace("|^spec\\\|", '', $class->getName())
-            );
+            $subject = $this->getClassSubject($class->getName());
+            $specification = new Node\Specification($subject, $subject);
+
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it_|its_)/', $method->getName())) {
                     continue;
@@ -49,10 +48,19 @@ class SpecificationsClassLoader implements LoaderInterface
                 $specification->addChild($example);
             }
 
-            $specifications[] = $specification;
+            if (count($specification->getChildren())) {
+                $specifications[] = $specification;
+            }
         }
 
         return $specifications;
+    }
+
+    private function getClassSubject($classname)
+    {
+        $subject = preg_replace("|^spec\\\|", '', $classname);
+
+        return $subject;
     }
 
     private function lineIsInsideMethod($line, ReflectionMethod $method)
