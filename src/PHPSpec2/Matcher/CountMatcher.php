@@ -12,7 +12,7 @@ class CountMatcher extends BasicMatcher
 
     public function __construct(PresenterInterface $presenter = null)
     {
-        $this->presenter = $presenter ?: new StringPresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;
     }
 
     public function supports($name, $subject, array $arguments)
