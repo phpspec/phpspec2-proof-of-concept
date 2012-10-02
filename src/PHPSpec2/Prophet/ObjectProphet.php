@@ -116,6 +116,12 @@ class ObjectProphet implements ProphetInterface
 
     public function setToProphetSubject($property, $value = null)
     {
+        if (null === $this->getWrappedSubject()) {
+            throw new BehaviorException(sprintf(
+                'Setting property <value>%s</value> on a non-object.', $property
+            ));
+        }
+
         $value = $this->unwrapper->unwrapAll($value);
 
         if ($this->isSubjectPropertyAccessible($property, true)) {
@@ -127,6 +133,23 @@ class ObjectProphet implements ProphetInterface
 
     public function getFromProphetSubject($property)
     {
+        // transform camel-cased properties to constant lookups
+        if (null !== $this->subject && $property === strtoupper($property)) {
+            $class = get_class($this->subject);
+            if ($this->subject instanceof LazyObject) {
+                $class = $this->subject->getClassname();
+            }
+            if (defined($class.'::'.$property)) {
+                return constant($class.'::'.$property);
+            }
+        }
+
+        if (null === $this->getWrappedSubject()) {
+            throw new BehaviorException(sprintf(
+                'Getting property <value>%s</value> from a non-object.', $property
+            ));
+        }
+
         if ($this->isSubjectPropertyAccessible($property)) {
             $returnValue = $this->getWrappedSubject()->$property;
 

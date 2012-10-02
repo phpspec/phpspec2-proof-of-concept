@@ -11,12 +11,17 @@ class Example extends ObjectBehavior
      */
     function described_with($function)
     {
-        $this->initializedWith('test example', $function);
+        $this->initializedWith('test example', 'test subject', $function);
     }
 
     function it_should_have_title()
     {
         $this->getTitle()->shouldReturn('test example');
+    }
+
+    function it_should_have_subject()
+    {
+        $this->getSubject()->shouldReturn('test subject');
     }
 
     function it_should_have_mapped_function($function)
@@ -46,22 +51,20 @@ class Example extends ObjectBehavior
         $this->getPostFunctions()->shouldHaveCount(1);
     }
 
-    /**
-     * @param PHPSpec2\Loader\Node\Specification $specification
-     */
-    function its_subject_should_be_calculated_from_parent($specification)
+    function it_should_not_have_specification_by_default()
     {
-        $specification->getSubject()->willReturn('Class');
-        $this->setParent($specification);
-        $this->getSubject()->shouldReturn('Class');
+        $this->getSpecification()->shouldReturn(null);
     }
 
     /**
-     * @param PHPSpec2\Loader\Node\Specification $specification
+     * @param PHPSpec2\Loader\Node\Specification $specification1
+     * @param PHPSpec2\Loader\Node\Specification $specification2
      */
-    function its_subject_should_be_null_if_theres_no_parent($specification)
+    function it_should_return_first_parent_specification($specification1, $specification2)
     {
-        $specification->getSubject()->willReturn(null);
-        $this->getSubject()->shouldReturn(null);
+        $specification1->getParent()->willReturn($specification2);
+        $this->setParent($specification1);
+
+        $this->getSpecification()->shouldReturn($specification1);
     }
 }

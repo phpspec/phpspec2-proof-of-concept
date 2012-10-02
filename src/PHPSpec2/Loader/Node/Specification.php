@@ -7,10 +7,9 @@ class Specification extends Node
     private $title;
     private $children = array();
 
-    public function __construct($title, $subject = null)
+    public function __construct($title)
     {
         $this->title = $title;
-        parent::__construct($subject);
     }
 
     public function setTitle($title)

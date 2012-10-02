@@ -8,9 +8,9 @@ use PHPSpec2\Loader\Node\Example;
 
 class ExampleEvent extends Event implements EventInterface
 {
-    const PASSED    = 0;
-    const PENDING   = 1;
-    const FAILED    = 2;
+    const PASSED  = 0;
+    const PENDING = 1;
+    const FAILED  = 2;
 
     private $example;
     private $time;
@@ -26,14 +26,14 @@ class ExampleEvent extends Event implements EventInterface
         $this->exception = $exception;
     }
 
-    public function getSpecification()
-    {
-        return $this->example->getDeclaringClass();
-    }
-
     public function getExample()
     {
         return $this->example;
+    }
+
+    public function getSpecification()
+    {
+        return $this->example->getSpecification();
     }
 
     public function getTime()

@@ -157,8 +157,10 @@ class Runner
             $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
 
             if (preg_match('#^@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
-                $dependencies[$match[2]] = $this->createMockBehavior();
-                $dependencies[$match[2]]->isAMockOf($match[1]);
+                if (!isset($dependencies[$match[2]])) {
+                    $dependencies[$match[2]] = $this->createMockBehavior();
+                    $dependencies[$match[2]]->isAMockOf($match[1]);
+                }
             }
         }
 

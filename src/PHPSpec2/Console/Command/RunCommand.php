@@ -72,27 +72,32 @@ class RunCommand extends Command
         $differ = new Diff\Diff;
         $differ->addEngine(new Diff\StringEngine);
 
+        // setup statistics collector
+        $collector = new StatisticsCollector;
+        $runner->getEventDispatcher()->addSubscriber($collector);
+
         // setup formatter
         $formatter = new Formatter\PrettyFormatter($presenter, $differ);
         $formatter->setIO($io);
+        $formatter->setStatisticsCollector($collector);
         $runner->getEventDispatcher()->addSubscriber($formatter);
 
         // setup listeners
         $runner->getEventDispatcher()->addSubscriber(new ClassNotFoundListener($io));
         $runner->getEventDispatcher()->addSubscriber(new MethodNotFoundListener($io));
 
-        // setup statistics collector
-        $collector = new StatisticsCollector;
-        $runner->getEventDispatcher()->addSubscriber($collector);
-
         $specifications = $locator->getSpecifications($input->getArgument('spec'));
 
         $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
+        $startTime = microtime(true);
+        $result = 0;
         foreach ($specifications as $spec) {
-            $runner->runSpecification($spec);
+            $result = max($result, $runner->runSpecification($spec));
         }
-        $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent($collector));
+        $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent(
+            microtime(true) - $startTime, $result
+        ));
 
-        return intval(ExampleEvent::PASSED !== $collector->getGlobalResult());
+        return intval(ExampleEvent::PASSED !== $result);
     }
 }

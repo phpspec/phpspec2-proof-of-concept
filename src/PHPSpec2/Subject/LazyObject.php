@@ -24,9 +24,19 @@ class LazyObject implements LazySubjectInterface
         $this->classname = $classname;
     }
 
+    public function getClassname()
+    {
+        return $this->classname;
+    }
+
     public function setConstructorArguments(array $arguments)
     {
         $this->arguments = $arguments;
+    }
+
+    public function getConstructorArguments()
+    {
+        return $this->arguments;
     }
 
     public function getInstance()

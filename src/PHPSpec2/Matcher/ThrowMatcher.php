@@ -7,6 +7,7 @@ use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Formatter\Presenter\StringPresenter;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\FailureException;
+use PHPSpec2\Exception\Example\NotEqualException;
 
 class ThrowMatcher implements MatcherInterface
 {

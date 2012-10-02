@@ -7,13 +7,15 @@ use ReflectionFunctionAbstract;
 class Example extends Node
 {
     private $title;
+    private $subject;
     private $function;
     private $preFunctions  = array();
     private $postFunctions = array();
 
-    public function __construct($title, ReflectionFunctionAbstract $function)
+    public function __construct($title, $subject, ReflectionFunctionAbstract $function)
     {
         $this->title    = $title;
+        $this->subject  = $subject;
         $this->function = $function;
     }
 
@@ -22,9 +24,21 @@ class Example extends Node
         return $this->title;
     }
 
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
     public function getFunction()
     {
         return $this->function;
+    }
+
+    public function getSpecification()
+    {
+        if (null !== $this->getParent() && $this->getParent() instanceof Specification) {
+            return $this->getParent();
+        }
     }
 
     public function addPreFunction(ReflectionFunctionAbstract $preFunction)

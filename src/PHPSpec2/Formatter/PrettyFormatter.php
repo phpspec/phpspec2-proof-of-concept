@@ -22,12 +22,14 @@ use ReflectionClass;
 use ReflectionMethod;
 use Exception;
 use PHPSpec2\Loader\Node\Example;
+use PHPSpec2\Listener\StatisticsCollector;
 
 class PrettyFormatter implements FormatterInterface
 {
     private $io;
     private $presenter;
     private $differ;
+    private $stats;
 
     public function __construct(PresenterInterface $presenter, Diff $differ)
     {
@@ -47,6 +49,11 @@ class PrettyFormatter implements FormatterInterface
     public function setIO(IO $io)
     {
         $this->io = $io;
+    }
+
+    public function setStatisticsCollector(StatisticsCollector $stats)
+    {
+        $this->stats = $stats;
     }
 
     public function beforeSpecification(SpecificationEvent $event)
@@ -107,7 +114,7 @@ class PrettyFormatter implements FormatterInterface
 
     public function afterSuite(SuiteEvent $event)
     {
-        $stats = $event->getStatisticsCollector();
+        $stats = $this->stats;
 
         $counts = array();
         if ($count = count($stats->getPassedEvents())) {

@@ -3,6 +3,7 @@
 namespace PHPSpec2\Wrapper;
 
 use PHPSpec2\Wrapper\MockProxyInterface;
+use Mockery\Undefined;
 
 class ArgumentsUnwrapper
 {
@@ -23,6 +24,10 @@ class ArgumentsUnwrapper
 
         while ($argument instanceof SubjectWrapperInterface) {
             $argument = $argument->getWrappedSubject();
+        }
+
+        if ($argument instanceof Undefined) {
+            return null;
         }
 
         return $argument;

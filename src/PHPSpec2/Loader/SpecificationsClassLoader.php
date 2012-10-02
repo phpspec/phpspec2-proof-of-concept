@@ -31,7 +31,7 @@ class SpecificationsClassLoader implements LoaderInterface
             }
 
             $subject = $this->getClassSubject($class->getName());
-            $specification = new Node\Specification($subject, $subject);
+            $specification = new Node\Specification($subject);
 
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it_|its_)/', $method->getName())) {
@@ -42,7 +42,9 @@ class SpecificationsClassLoader implements LoaderInterface
                     continue;
                 }
 
-                $example = new Node\Example(str_replace('_', ' ', $method->getName()), $method);
+                $example = new Node\Example(
+                    str_replace('_', ' ', $method->getName()), $subject, $method
+                );
                 array_map(array($example, 'addPreFunction'), $preFunctions);
 
                 $specification->addChild($example);

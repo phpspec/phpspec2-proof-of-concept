@@ -74,25 +74,4 @@ class Specification extends ObjectBehavior
 
         $this->getDepth()->shouldReturn(11);
     }
-
-    function its_subject_should_be_null_by_default()
-    {
-        $this->getSubject()->shouldReturn(null);
-    }
-
-    function its_subject_should_be_mutable()
-    {
-        $this->setSubject('Some\Class');
-        $this->getSubject()->shouldReturn('Some\Class');
-    }
-
-    /**
-     * @param PHPSpec2\Loader\Node\Specification $parent
-     */
-    function its_subject_should_be_parent_spec_if_does_not_have_own($parent)
-    {
-        $parent->getSubject()->willReturn('Other\Class');
-        $this->setParent($parent);
-        $this->getSubject()->shouldReturn('Other\Class');
-    }
 }
