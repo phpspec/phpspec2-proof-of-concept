@@ -12,7 +12,7 @@ class TypeMatcher extends BasicMatcher
 
     public function __construct(PresenterInterface $presenter = null)
     {
-        $this->presenter = $presenter ?: new StringPresenter;;
+        $this->presenter = $presenter ?: new StringPresenter;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -24,7 +24,7 @@ class TypeMatcher extends BasicMatcher
 
     protected function matches($subject, array $arguments)
     {
-        return null !== $subject && $subject instanceof $arguments[0];
+        return (null !== $subject) && ($subject instanceof $arguments[0]);
     }
 
     protected function getFailureException($name, $subject, array $arguments)
