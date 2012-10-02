@@ -53,16 +53,16 @@ class RunCommand extends Command
 
         $presenter = new TaggedPresenter();
 
+        $mocker    = new MockeryMocker;
+        $unwrapper = new ArgumentsUnwrapper;
+
         $matchers = new Matcher\MatchersCollection();
         $matchers->add(new Matcher\IdentityMatcher($presenter));
         $matchers->add(new Matcher\ComparisonMatcher($presenter));
-        $matchers->add(new Matcher\ThrowMatcher($presenter));
+        $matchers->add(new Matcher\ThrowMatcher($unwrapper, $presenter));
         $matchers->add(new Matcher\CountMatcher($presenter));
         $matchers->add(new Matcher\TypeMatcher($presenter));
         $matchers->add(new Matcher\ObjectStateMatcher($presenter));
-
-        $mocker    = new MockeryMocker;
-        $unwrapper = new ArgumentsUnwrapper;
 
         // setup specs locator and runner
         $locator = new Locator(new SpecificationsClassLoader);

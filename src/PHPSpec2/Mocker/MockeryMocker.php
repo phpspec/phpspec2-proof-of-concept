@@ -110,11 +110,12 @@ class MockeryMocker implements MockerInterface
 
     public function willReturn($expectation, $return)
     {
-        if (is_callable($return)) {
-            $expectation->andReturnUsing($return);
-        } else {
-            $expectation->andReturn($return);
-        }
+        $expectation->andReturn($return);
+    }
+
+    public function willReturnUsing($expectation, $callback)
+    {
+        $expectation->andReturnUsing($callback);
     }
 
     public function willThrow($expectation, $exception, $message = '')

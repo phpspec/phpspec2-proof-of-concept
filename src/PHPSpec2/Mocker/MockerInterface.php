@@ -18,6 +18,7 @@ interface MockerInterface
 
     public function withArguments($expectation, array $arguments = null);
     public function willReturn($expectation, $return);
+    public function willReturnUsing($expectation, $callback);
     public function willThrow($expectation, $exception, $message = '');
 
     public function verify();

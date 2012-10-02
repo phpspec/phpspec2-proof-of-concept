@@ -102,16 +102,17 @@ class ObjectProphet implements ProphetInterface
         }
 
         // resolve arguments
+        $subject   = $this->unwrapper->unwrapOne($this);
         $arguments = $this->unwrapper->unwrapAll($arguments);
 
         // if subject is an instance with provided method - call it and stub the result
         if ($this->isSubjectMethodAccessible($method)) {
-            $returnValue = call_user_func_array(array($this->getWrappedSubject(), $method), $arguments);
+            $returnValue = call_user_func_array(array($subject, $method), $arguments);
 
             return new static($returnValue, $this->matchers, $this->unwrapper);
         }
 
-        throw new MethodNotFoundException($this->getWrappedSubject(), $method);
+        throw new MethodNotFoundException($subject, $method);
     }
 
     public function setToProphetSubject($property, $value = null)

@@ -8,13 +8,16 @@ use PHPSpec2\Formatter\Presenter\StringPresenter;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Exception\Example\NotEqualException;
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
 class ThrowMatcher implements MatcherInterface
 {
+    private $unwrapper;
     private $presenter;
 
-    public function __construct(PresenterInterface $presenter = null)
+    public function __construct(ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter = null)
     {
+        $this->unwrapper = $unwrapper;
         $this->presenter = $presenter ?: new StringPresenter;
     }
 
@@ -97,21 +100,26 @@ class ThrowMatcher implements MatcherInterface
     private function getLooper($check, $subject, array $arguments)
     {
         list($class, $message) = $this->getExceptionInformation($arguments);
+        $unwrapper = $this->unwrapper;
 
-        return new Looper(function($method, $arguments) use($check, $subject, $class, $message) {
-            if (preg_match('/^during(.+)$/', $method, $matches)) {
-                $callable = lcfirst($matches[1]);
-            } elseif (isset($arguments[0])) {
-                $callable  = $arguments[0];
-                $arguments = $arguments[1];
-            } else {
-                throw new MatcherException('Provide callable to be checked for throwing.');
+        return new Looper(
+            function($method, $arguments) use($check, $subject, $class, $message, $unwrapper) {
+                $arguments = $unwrapper->unwrapAll($arguments);
+
+                if (preg_match('/^during(.+)$/', $method, $matches)) {
+                    $callable = lcfirst($matches[1]);
+                } elseif (isset($arguments[0])) {
+                    $callable  = $arguments[0];
+                    $arguments = $arguments[1];
+                } else {
+                    throw new MatcherException('Provide callable to be checked for throwing.');
+                }
+
+                $callable = is_string($callable) ? array($subject, $callable) : $callable;
+
+                return call_user_func($check, $callable, $arguments, $class, $message);
             }
-
-            $callable = is_string($callable) ? array($subject, $callable) : $callable;
-
-            return call_user_func($check, $callable, $arguments, $class, $message);
-        });
+        );
     }
 
     private function getExceptionInformation(array $arguments)

@@ -12,7 +12,7 @@ class TypeMatcher extends ObjectBehavior
      */
     function described_with($presenter)
     {
-        $presenter->presentString(ANY_ARGUMENTS)->willReturn('class');
+        $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('object');
 
         $this->initializedWith($presenter);
@@ -25,39 +25,50 @@ class TypeMatcher extends ObjectBehavior
         $this->supports('haveType', '', array(''))->shouldReturn(true);
     }
 
-    function it_matches_class_instance()
+    /**
+     * @param ArrayObject $object
+     */
+    function it_matches_subclass_instance($object)
     {
         $this->shouldNotThrow()
-            ->duringPositiveMatch('haveType', $this, array('spec\PHPSpec2\Matcher\TypeMatcher'));
+            ->duringPositiveMatch('haveType', $object, array('ArrayObject'));
     }
 
-    function it_matches_subclass_instance()
+    /**
+     * @param ArrayObject $object
+     */
+    function it_matches_interface_instance($object)
     {
         $this->shouldNotThrow()
-            ->duringPositiveMatch('haveType', $this, array('PHPSpec2\ObjectBehavior'));
+            ->duringPositiveMatch('haveType', $object, array('ArrayAccess'));
     }
 
-    function it_matches_interface_instance()
+    /**
+     * @param ArrayObject $object
+     */
+    function it_does_not_matches_wrong_class($object)
     {
-        $this->shouldNotThrow()
-            ->duringPositiveMatch('haveType', $this, array('PHPSpec2\SpecificationInterface'));
+        $this->shouldThrow(new FailureException(
+            'Expected an instance of stdClass, but got object.'
+        ))->duringPositiveMatch('haveType', $object, array('stdClass'));
     }
 
-    function it_does_not_matches_wrong_class()
+    /**
+     * @param ArrayObject $object
+     */
+    function it_does_not_matches_wrong_interface($object)
     {
-        $this->shouldThrow(new FailureException('Expected an instance of class, but got object.'))
-            ->duringPositiveMatch('haveType', $this, array('stdClass'));
+        $this->shouldThrow(new FailureException(
+            'Expected an instance of SessionHandlerInterface, but got object.'
+        ))->duringPositiveMatch('haveType', $object, array('SessionHandlerInterface'));
     }
 
-    function it_does_not_matches_wrong_interface()
+    /**
+     * @param ArrayObject $object
+     */
+    function it_mismatches_matches_wrong_class($object)
     {
-        $this->shouldThrow(new FailureException('Expected an instance of class, but got object.'))
-            ->duringPositiveMatch('haveType', $this, array('SessionHandlerInterface'));
-    }
-
-    function it_mismatches_matches_wrong_class()
-    {
-        $this->shouldNotThrow()->duringNegativeMatch('haveType', $this, array('stdClass'));
+        $this->shouldNotThrow()->duringNegativeMatch('haveType', $object, array('stdClass'));
     }
 
     function it_mismatches_matches_wrong_interface()

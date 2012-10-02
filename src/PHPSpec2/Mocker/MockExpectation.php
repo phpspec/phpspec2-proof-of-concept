@@ -56,6 +56,20 @@ class MockExpectation implements ArrayAccess
         return $this;
     }
 
+    public function willReturnUsing($callback)
+    {
+        $this->mocker->willReturnUsing($this->getExpectation(), $callback);
+
+        return $this;
+    }
+
+    public function willReturnArgument()
+    {
+        $this->willReturnUsing(function($argument) { return $argument; });
+
+        return $this;
+    }
+
     public function willThrow($exception, $message = '')
     {
         if ($exception instanceof \Exception) {
