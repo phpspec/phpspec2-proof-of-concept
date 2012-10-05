@@ -32,7 +32,7 @@ class ObjectProphet implements ProphetInterface
         $this->unwrapper = $unwrapper;
     }
 
-    public function isAnInstanceOf($classname, array $constructorArguments = array())
+    public function beAnInstanceOf($classname, array $constructorArguments = array())
     {
         if (!$this->subject instanceof LazySubjectInterface) {
             $this->subject = $this->createLazySubject();
@@ -49,7 +49,7 @@ class ObjectProphet implements ProphetInterface
         $this->subject->setConstructorArguments($this->unwrapper->unwrapAll($constructorArguments));
     }
 
-    public function initializedWith()
+    public function beConstructedWith()
     {
         if (null === $this->subject) {
             throw new BehaviorException(

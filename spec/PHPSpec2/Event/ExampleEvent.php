@@ -11,7 +11,7 @@ class ExampleEvent extends ObjectBehavior
      */
     function let($example)
     {
-        $this->initializedWith($example);
+        $this->beConstructedWith($example);
     }
 
     /**
@@ -37,7 +37,7 @@ class ExampleEvent extends ObjectBehavior
      */
     function it_should_provide_time_if_set($example)
     {
-        $this->initializedWith($example, $time = time());
+        $this->beConstructedWith($example, $time = time());
         $this->getTime()->shouldReturn($time);
     }
 
@@ -46,7 +46,7 @@ class ExampleEvent extends ObjectBehavior
      */
     function it_should_provide_result_if_set($example)
     {
-        $this->initializedWith($example, null, $this->PENDING);
+        $this->beConstructedWith($example, null, $this->PENDING);
         $this->getResult()->shouldReturn($this->PENDING);
     }
 
@@ -55,7 +55,7 @@ class ExampleEvent extends ObjectBehavior
      */
     function it_should_provide_exception_if_set($example)
     {
-        $this->initializedWith($example, null, null, $exception = new \Exception);
+        $this->beConstructedWith($example, null, null, $exception = new \Exception);
         $this->getException()->shouldReturn($exception);
     }
 }

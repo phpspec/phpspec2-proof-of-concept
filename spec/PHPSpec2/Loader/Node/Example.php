@@ -11,7 +11,7 @@ class Example extends ObjectBehavior
      */
     function let($function)
     {
-        $this->initializedWith('test example', 'test subject', $function);
+        $this->beConstructedWith('test example', 'test subject', $function);
     }
 
     function it_should_have_title()

@@ -14,7 +14,7 @@ class ObjectStateMatcher extends ObjectBehavior
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');
 
-        $this->initializedWith($presenter);
+        $this->beConstructedWith($presenter);
     }
 
     function it_infers_matcher_alias_name_from_methods_prefixed_with_is()

@@ -11,7 +11,7 @@ class SpecificationEvent extends ObjectBehavior
      */
     function let($specification)
     {
-        $this->initializedWith($specification);
+        $this->beConstructedWith($specification);
     }
 
     /**
@@ -27,7 +27,7 @@ class SpecificationEvent extends ObjectBehavior
      */
     function it_should_provide_time_if_set($specification)
     {
-        $this->initializedWith($specification, $time = time());
+        $this->beConstructedWith($specification, $time = time());
         $this->getTime()->shouldReturn($time);
     }
 
@@ -36,7 +36,7 @@ class SpecificationEvent extends ObjectBehavior
      */
     function it_should_provide_result_if_set($specification)
     {
-        $this->initializedWith($specification, null, 2);
+        $this->beConstructedWith($specification, null, 2);
         $this->getResult()->shouldReturn(2);
     }
 }

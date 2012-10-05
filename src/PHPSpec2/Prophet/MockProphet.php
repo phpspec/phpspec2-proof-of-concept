@@ -21,7 +21,7 @@ class MockProphet implements ProphetInterface
         $this->unwrapper = $unwrapper;
     }
 
-    public function isAMockOf($classOrInterface)
+    public function beAMockOf($classOrInterface)
     {
         $this->subject = $this->mocker->mock($classOrInterface);
     }

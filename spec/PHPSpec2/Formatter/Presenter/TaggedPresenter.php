@@ -11,7 +11,7 @@ class TaggedPresenter extends ObjectBehavior
      */
     function let($differ)
     {
-        $this->initializedWith($differ);
+        $this->beConstructedWith($differ);
     }
 
     function it_should_wrap_value_into_tags()

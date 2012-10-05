@@ -15,7 +15,7 @@ class ComparisonMatcher extends ObjectBehavior
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');
 
-        $this->initializedWith($presenter);
+        $this->beConstructedWith($presenter);
     }
 
     function it_should_support_all_aliases()

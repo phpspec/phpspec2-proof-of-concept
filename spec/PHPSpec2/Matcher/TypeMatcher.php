@@ -15,7 +15,7 @@ class TypeMatcher extends ObjectBehavior
         $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('object');
 
-        $this->initializedWith($presenter);
+        $this->beConstructedWith($presenter);
     }
 
     function it_should_support_all_aliases()

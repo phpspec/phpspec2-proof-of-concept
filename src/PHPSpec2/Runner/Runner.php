@@ -164,7 +164,7 @@ class Runner
             if (preg_match('#^@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
                 if (!isset($dependencies[$match[2]])) {
                     $dependencies[$match[2]] = $this->createMockBehavior();
-                    $dependencies[$match[2]]->isAMockOf($match[1]);
+                    $dependencies[$match[2]]->beAMockOf($match[1]);
                 }
             }
         }

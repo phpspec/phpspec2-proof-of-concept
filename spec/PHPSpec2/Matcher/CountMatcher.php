@@ -16,7 +16,7 @@ class CountMatcher extends ObjectBehavior
         $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
         $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
 
-        $this->initializedWith($presenter);
+        $this->beConstructedWith($presenter);
     }
 
     function it_should_support_all_aliases()

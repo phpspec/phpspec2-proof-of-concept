@@ -23,7 +23,7 @@ class ThrowMatcher extends ObjectBehavior
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');
 
-        $this->initializedWith($unwrapper, $presenter);
+        $this->beConstructedWith($unwrapper, $presenter);
     }
 
     function it_supports_the_throw_alias_for_object_and_exception_name()

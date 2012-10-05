@@ -11,7 +11,7 @@ class StringPresenter extends ObjectBehavior
      */
     function let($differ)
     {
-        $this->initializedWith($differ);
+        $this->beConstructedWith($differ);
     }
 
     function it_should_present_short_string_in_quotes()

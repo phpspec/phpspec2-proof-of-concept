@@ -8,13 +8,13 @@ class SuiteEvent extends ObjectBehavior
 {
     function it_should_provide_time_if_set()
     {
-        $this->initializedWith($time = time());
+        $this->beConstructedWith($time = time());
         $this->getTime()->shouldReturn($time);
     }
 
     function it_should_provide_result_if_set()
     {
-        $this->initializedWith(null, 2);
+        $this->beConstructedWith(null, 2);
         $this->getResult()->shouldReturn(2);
     }
 }
