@@ -17,6 +17,7 @@ use PHPSpec2\Event\ExampleEvent;
 
 use PHPSpec2\Exception\Example\ErrorException;
 use PHPSpec2\Exception\Example\PendingException;
+use PHPSpec2\Exception\Example\FailureException;
 
 use PHPSpec2\Matcher\MatchersCollection;
 
@@ -103,9 +104,13 @@ class Runner
             $event = new ExampleEvent(
                 $example, microtime(true) - $startTime, ExampleEvent::PENDING, $e
             );
-        } catch (\Exception $e) {
+        } catch (FailureException $e) {
             $event = new ExampleEvent(
                 $example, microtime(true) - $startTime, ExampleEvent::FAILED, $e
+            );
+        } catch (\Exception $e) {
+            $event = new ExampleEvent(
+                $example, microtime(true) - $startTime, ExampleEvent::BROKEN, $e
             );
         }
 

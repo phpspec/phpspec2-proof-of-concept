@@ -84,6 +84,9 @@ class PrettyFormatter implements FormatterInterface
             case ExampleEvent::FAILED:
                 $this->io->write(sprintf('<failed>✘ %s</failed>', $title), $depth - 1);
                 break;
+            case ExampleEvent::BROKEN:
+                $this->io->write(sprintf('<broken>! %s</broken>', $title), $depth - 1);
+                break;
         }
 
         $this->printSlowTime($event);
@@ -104,6 +107,9 @@ class PrettyFormatter implements FormatterInterface
         }
         if ($count = count($stats->getFailedEvents())) {
             $counts[] = sprintf('<failed>%d failed</failed>', $count);
+        }
+        if ($count = count($stats->getBrokenEvents())) {
+            $counts[] = sprintf('<broken>%d broken</broken>', $count);
         }
 
         $this->io->write(sprintf(
@@ -141,6 +147,10 @@ class PrettyFormatter implements FormatterInterface
         $depth = ($event->getExample()->getDepth() * 2) + 6;
         $message = $this->presenter->presentException($exception, $this->io->isVerbose());
 
-        $this->io->writeln(sprintf('<failed>%s</failed>', lcfirst($message)), $depth);
+        if (ExampleEvent::FAILED === $event->getResult()) {
+            $this->io->writeln(sprintf('<failed>%s</failed>', lcfirst($message)), $depth);
+        } else {
+            $this->io->writeln(sprintf('<broken>%s</broken>', lcfirst($message)), $depth);
+        }
     }
 }
