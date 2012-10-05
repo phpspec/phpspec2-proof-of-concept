@@ -14,7 +14,7 @@ class Formatter extends OutputFormatter
         parent::__construct($decorated, $styles);
 
         $this->setStyle('pending', new OutputFormatterStyle('yellow'));
-        $this->setStyle('failed', new OutputFormatterStyle('magenta'));
+        $this->setStyle('failed', new OutputFormatterStyle('red'));
         $this->setStyle('broken', new OutputFormatterStyle('red'));
         $this->setStyle('passed', new OutputFormatterStyle('green'));
         $this->setStyle('value', new OutputFormatterStyle('yellow'));
@@ -24,8 +24,8 @@ class Formatter extends OutputFormatter
         $this->setStyle('hl', new OutputFormatterStyle('black', 'yellow', array('bold')));
 
         $this->setStyle('trace', new OutputFormatterStyle());
-        $this->setStyle('trace-class', new OutputFormatterStyle('blue'));
-        $this->setStyle('trace-func', new OutputFormatterStyle('blue'));
+        $this->setStyle('trace-class', new OutputFormatterStyle('cyan'));
+        $this->setStyle('trace-func', new OutputFormatterStyle('cyan'));
         $this->setStyle('trace-type', new OutputFormatterStyle());
         $this->setStyle('trace-args', new OutputFormatterStyle());
 
