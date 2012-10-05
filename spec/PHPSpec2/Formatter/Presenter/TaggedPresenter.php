@@ -6,6 +6,14 @@ use PHPSpec2\ObjectBehavior;
 
 class TaggedPresenter extends ObjectBehavior
 {
+    /**
+     * @param PHPSpec2\Formatter\Presenter\Differ\Differ $differ
+     */
+    function described_with($differ)
+    {
+        $this->initializedWith($differ);
+    }
+
     function it_should_wrap_value_into_tags()
     {
         $this->presentValue('string')->shouldReturn('<value>"string"</value>');

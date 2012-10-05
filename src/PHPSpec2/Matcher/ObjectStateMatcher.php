@@ -5,16 +5,15 @@ namespace PHPSpec2\Matcher;
 use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
-use PHPSpec2\Formatter\Presenter\StringPresenter;
 
 class ObjectStateMatcher implements MatcherInterface
 {
     private $regex = '/(be|have)(.+)/';
     private $presenter;
 
-    public function __construct(PresenterInterface $presenter = null)
+    public function __construct(PresenterInterface $presenter)
     {
-        $this->presenter = $presenter ?: new StringPresenter;
+        $this->presenter = $presenter;
     }
 
     public function supports($name, $subject, array $arguments)

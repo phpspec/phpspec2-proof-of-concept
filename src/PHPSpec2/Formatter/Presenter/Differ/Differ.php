@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSpec2\Formatter\Diff;
+namespace PHPSpec2\Formatter\Presenter\Differ;
 
-class Diff
+class Differ
 {
     private $engines = array();
 

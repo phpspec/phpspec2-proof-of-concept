@@ -24,7 +24,7 @@ use PHPSpec2\Listener\MethodNotFoundListener;
 use PHPSpec2\Mocker\MockeryMocker;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Loader\SpecificationsClassLoader;
-use PHPSpec2\Formatter\Diff;
+use PHPSpec2\Formatter\Presenter\Differ;
 
 class RunCommand extends Command
 {
@@ -51,7 +51,12 @@ class RunCommand extends Command
         $io = new IO($input, $output, $this->getHelperSet());
         $output->setFormatter(new CliOutputFormatter($io->isDecorated()));
 
-        $presenter = new TaggedPresenter();
+        // setup differ
+        $differ = new Differ\Differ;
+        $differ->addEngine(new Differ\StringEngine);
+
+        // setup presenter
+        $presenter = new TaggedPresenter($differ);
 
         $mocker    = new MockeryMocker;
         $unwrapper = new ArgumentsUnwrapper;
@@ -68,17 +73,14 @@ class RunCommand extends Command
         $locator = new Locator(new SpecificationsClassLoader);
         $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $unwrapper, $input->getOptions());
 
-        // setup differ
-        $differ = new Diff\Diff;
-        $differ->addEngine(new Diff\StringEngine);
-
         // setup statistics collector
         $collector = new StatisticsCollector;
         $runner->getEventDispatcher()->addSubscriber($collector);
 
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter($presenter, $differ);
+        $formatter = new Formatter\PrettyFormatter;
         $formatter->setIO($io);
+        $formatter->setPresenter($presenter);
         $formatter->setStatisticsCollector($collector);
         $runner->getEventDispatcher()->addSubscriber($formatter);
 

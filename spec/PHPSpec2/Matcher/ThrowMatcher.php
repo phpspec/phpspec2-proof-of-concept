@@ -7,9 +7,10 @@ use PHPSpec2\ObjectBehavior;
 class ThrowMatcher extends ObjectBehavior
 {
     /**
-     * @param PHPSpec2\Wrapper\ArgumentsUnwrapper $unwrapper
+     * @param PHPSpec2\Wrapper\ArgumentsUnwrapper             $unwrapper
+     * @param PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
      */
-    function described_with($unwrapper)
+    function described_with($unwrapper, $presenter)
     {
         $unwrapper->unwrapAll(ANY_ARGUMENTS)->willReturnUsing(function($arguments) {
             if (!is_array($arguments[0])) {
@@ -19,7 +20,10 @@ class ThrowMatcher extends ObjectBehavior
             return $arguments;
         });
 
-        $this->initializedWith($unwrapper);
+        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
+        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');
+
+        $this->initializedWith($unwrapper, $presenter);
     }
 
     function it_supports_the_throw_alias_for_object_and_exception_name()

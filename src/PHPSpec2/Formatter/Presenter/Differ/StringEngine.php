@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSpec2\Formatter\Diff;
+namespace PHPSpec2\Formatter\Presenter\Differ;
 
 class StringEngine implements EngineInterface
 {

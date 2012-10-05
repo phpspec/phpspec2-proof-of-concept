@@ -6,6 +6,17 @@ use PHPSpec2\ObjectBehavior;
 
 class ObjectStateMatcher extends ObjectBehavior
 {
+    /**
+     * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
+     */
+    function described_with($presenter)
+    {
+        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
+        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');
+
+        $this->initializedWith($presenter);
+    }
+
     function it_infers_matcher_alias_name_from_methods_prefixed_with_is()
     {
         $subject = new \ReflectionClass($this);

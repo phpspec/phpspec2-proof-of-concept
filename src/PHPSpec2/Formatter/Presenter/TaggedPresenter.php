@@ -8,4 +8,14 @@ class TaggedPresenter extends StringPresenter
     {
         return '<value>'.parent::presentString($string).'</value>';
     }
+
+    public function presentCodeLine($number, $line)
+    {
+        return sprintf('<lineno>%s</lineno> <code>%s</code>', $number, $line);
+    }
+
+    public function presentHighlight($line)
+    {
+        return '<hl>'.$line.'</hl>';
+    }
 }

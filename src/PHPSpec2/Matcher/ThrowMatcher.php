@@ -4,7 +4,6 @@ namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Looper\Looper;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
-use PHPSpec2\Formatter\Presenter\StringPresenter;
 use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Exception\Example\NotEqualException;
@@ -15,10 +14,10 @@ class ThrowMatcher implements MatcherInterface
     private $unwrapper;
     private $presenter;
 
-    public function __construct(ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter = null)
+    public function __construct(ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter)
     {
         $this->unwrapper = $unwrapper;
-        $this->presenter = $presenter ?: new StringPresenter;
+        $this->presenter = $presenter;
     }
 
     public function supports($name, $subject, array $arguments)

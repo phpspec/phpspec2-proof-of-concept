@@ -6,6 +6,14 @@ use PHPSpec2\ObjectBehavior;
 
 class StringPresenter extends ObjectBehavior
 {
+    /**
+     * @param PHPSpec2\Formatter\Presenter\Differ\Differ $differ
+     */
+    function described_with($differ)
+    {
+        $this->initializedWith($differ);
+    }
+
     function it_should_present_short_string_in_quotes()
     {
         $this->presentValue('some_string')->shouldReturn('"some_string"');

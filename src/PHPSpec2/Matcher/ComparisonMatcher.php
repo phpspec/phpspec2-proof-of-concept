@@ -5,15 +5,14 @@ namespace PHPSpec2\Matcher;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
-use PHPSpec2\Formatter\Presenter\StringPresenter;
 
 class ComparisonMatcher extends BasicMatcher
 {
     private $presenter;
 
-    public function __construct(PresenterInterface $presenter = null)
+    public function __construct(PresenterInterface $presenter)
     {
-        $this->presenter = $presenter ?: new StringPresenter;
+        $this->presenter = $presenter;
     }
 
     public function supports($name, $subject, array $arguments)

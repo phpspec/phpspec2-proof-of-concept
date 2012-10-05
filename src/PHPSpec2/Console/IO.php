@@ -35,24 +35,32 @@ class IO
         return (bool) $this->input->getOption('verbose');
     }
 
-    public function writeln($message = '')
+    public function writeln($message = '', $indent = null)
     {
-        $this->write($message, true);
+        $this->write($message, $indent, true);
     }
 
-    public function write($message, $newline = false)
+    public function write($message, $indent = null, $newline = false)
     {
+        if (null !== $indent) {
+            $message = $this->indentText($message, $indent);
+        }
+
         $this->output->write($message, $newline);
         $this->lastMessage = $message.($newline ? "\n" : '');
     }
 
-    public function overwriteln($message = '')
+    public function overwriteln($message = '', $indent = null)
     {
-        $this->overwrite($message, true);
+        $this->overwrite($message, $indent, true);
     }
 
-    public function overwrite($message, $newline = false)
+    public function overwrite($message, $indent = null, $newline = false)
     {
+        if (null !== $indent) {
+            $message = $this->indentText($message, $indent);
+        }
+
         $size = strlen(strip_tags($this->lastMessage));
 
         $this->write(str_repeat("\x08", $size));
@@ -84,5 +92,15 @@ class IO
     public function askAndValidate($question, $validator, $attempts = false, $default = null)
     {
         return $this->helpers->get('dialog')->askAndValidate($this->output, $question, $validator, $attempts, $default);
+    }
+
+    private function indentText($text, $indent)
+    {
+        return implode("\n", array_map(
+            function($line) use($indent) {
+                return str_repeat(' ', $indent).$line;
+            },
+            explode("\n", $text)
+        ));
     }
 }
