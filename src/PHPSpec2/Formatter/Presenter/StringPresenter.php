@@ -73,13 +73,14 @@ class StringPresenter implements PresenterInterface
             }
         }
 
-        list($file, $line) = $this->getExceptionExamplePosition($exception);
-        $presentation .= "\n".$this->presentFileCode($file, $line);
+        if ($exception instanceof PHPSpec2Exception) {
+            list($file, $line) = $this->getExceptionExamplePosition($exception);
 
-        if (!$exception instanceof PHPSpec2Exception) {
-            if (trim($trace = $this->presentExceptionStackTrace($exception))) {
-                return $presentation."\n".$trace;
-            }
+            return $presentation."\n".$this->presentFileCode($file, $line);
+        }
+
+        if (trim($trace = $this->presentExceptionStackTrace($exception))) {
+            return $presentation."\n".$trace;
         }
 
         return $presentation;
@@ -88,16 +89,6 @@ class StringPresenter implements PresenterInterface
     public function presentString($string)
     {
         return $string;
-    }
-
-    public function presentCodeLine($number, $line)
-    {
-        return $number.' '.$line;
-    }
-
-    public function presentHighlight($line)
-    {
-        return $line;
     }
 
     protected function presentFileCode($file, $lineno, $context = 6)
@@ -122,6 +113,16 @@ class StringPresenter implements PresenterInterface
         return $text;
     }
 
+    protected function presentCodeLine($number, $line)
+    {
+        return $number.' '.$line;
+    }
+
+    protected function presentHighlight($line)
+    {
+        return $line;
+    }
+
     protected function presentExceptionDifference(Exception $exception)
     {
         return $this->differ->compare($exception->getExpected(), $exception->getActual());
@@ -129,44 +130,76 @@ class StringPresenter implements PresenterInterface
 
     protected function presentExceptionStackTrace(Exception $exception)
     {
-        list($file, $line) = $this->getExceptionExamplePosition($exception);
+        $phpspecPath = dirname(dirname(__DIR__));
+        $runnerPath  = $phpspecPath.DIRECTORY_SEPARATOR.'Runner';
 
-        $refl = $exception->cause;
-        $text = "\n";
+        $offset = 0;
+        $text   = "\n";
+
+        $text .= $this->presentExceptionTraceHeader(sprintf("%2d %s:%d",
+            $offset++,
+            str_replace(getcwd().DIRECTORY_SEPARATOR, '', $exception->getFile()),
+            $exception->getLine()
+        ));
+        $text .= $this->presentExceptionTraceFunction(
+            'throw new '.get_class($exception), array($exception->getMessage())
+        );
+
         foreach ($exception->getTrace() as $call) {
-            if (isset($call['class'])
-                && $refl->getDeclaringClass()->getName() == $call['class']
-                && $refl->getName() == $call['function']) {
+            // skip internal framework calls
+            if (isset($call['file']) && false !== strpos($call['file'], $runnerPath)) {
                 break;
             }
-            if (isset($call['file']) && $file == $call['file'] && $line == $call['line']) {
-                break;
+            if (isset($call['file']) && 0 === strpos($call['file'], $phpspecPath)) {
+                continue;
+            }
+            if (isset($call['class']) && 0 === strpos($call['class'], "PHPSpec2\\")) {
+                continue;
             }
 
-            $excFile = isset($call['file']) ? $call['file'] : $exception->getFile();
-            $excLine = isset($call['line']) ? $call['line'] : $exception->getLine();
+            if (isset($call['file'])) {
+                $text .= $this->presentExceptionTraceHeader(sprintf("%2d %s:%d",
+                    $offset++,
+                    str_replace(getcwd().DIRECTORY_SEPARATOR, '', $call['file']),
+                    $call['line']
+                ));
+            } else {
+                $text .= $this->presentExceptionTraceHeader(sprintf("%2d [internal]", $offset++));
+            }
 
-            if (isset($call['class']) && isset($call['function'])) {
-                $args = array_map(array($this, 'presentValue'), $call['args']);
-                $text .= sprintf("<lineno>%4d</lineno> <trace-type>%s</trace-type>\n     %s%s%s(%s)\n",
-                    $excLine, str_replace(getcwd().DIRECTORY_SEPARATOR, '', $excFile),
-                    '<trace-class>'.$call['class'].'</trace-class>',
-                    '<trace-type>'.$call['type'].'</trace-type>',
-                    '<trace-func>'.$call['function'].'</trace-func>',
-                    '<trace-args>'.implode(', ', $args).'</trace-args>'
+            if (isset($call['class'])) {
+                $text .= $this->presentExceptionTraceMethod(
+                    $call['class'], $call['type'], $call['function'], $call['args']
                 );
             } elseif (isset($call['function'])) {
                 $args = array_map(array($this, 'presentValue'), $call['args']);
 
-                $text .= sprintf("<lineno>%4d</lineno> <trace-type>%s</trace-type>\n     %s(%s)\n",
-                    $excLine, str_replace(getcwd().DIRECTORY_SEPARATOR, '', $excFile),
-                    '<trace-func>'.$call['function'].'</trace-func>',
-                    '<trace-args>'.implode(', ', $args).'</trace-args>'
+                $text .= $this->presentExceptionTraceFunction(
+                    $call['function'], $call['args']
                 );
             }
         }
 
         return $text;
+    }
+
+    protected function presentExceptionTraceHeader($header)
+    {
+        return $header."\n";
+    }
+
+    protected function presentExceptionTraceMethod($class, $type, $method, array $args)
+    {
+        $args = array_map(array($this, 'presentValue'), $args);
+
+        return sprintf("   %s%s%s(%s)\n", $class, $type, $method, implode(', ', $args));
+    }
+
+    protected function presentExceptionTraceFunction($function, array $args)
+    {
+        $args = array_map(array($this, 'presentValue'), $args);
+
+        return sprintf("   %s(%s)\n", $function, implode(', ', $args));
     }
 
     protected function getExceptionExamplePosition(Exception $exception)

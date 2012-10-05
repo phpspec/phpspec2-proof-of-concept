@@ -22,10 +22,11 @@ class Formatter extends OutputFormatter
         $this->setStyle('code', new OutputFormatterStyle('white'));
         $this->setStyle('hl', new OutputFormatterStyle('black', 'yellow', array('bold')));
 
-        $this->setStyle('trace-class', new OutputFormatterStyle('red'));
+        $this->setStyle('trace', new OutputFormatterStyle());
+        $this->setStyle('trace-class', new OutputFormatterStyle('blue'));
         $this->setStyle('trace-func', new OutputFormatterStyle('blue'));
-        $this->setStyle('trace-type', new OutputFormatterStyle(null));
-        $this->setStyle('trace-args', new OutputFormatterStyle(null));
+        $this->setStyle('trace-type', new OutputFormatterStyle());
+        $this->setStyle('trace-args', new OutputFormatterStyle());
 
         $this->setStyle('diff-add', new OutputFormatterStyle('green'));
         $this->setStyle('diff-del', new OutputFormatterStyle('red'));
