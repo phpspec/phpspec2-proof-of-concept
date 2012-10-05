@@ -10,7 +10,7 @@ class IdentityMatcher extends ObjectBehavior
     /**
      * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
      */
-    function described_with($presenter)
+    function let($presenter)
     {
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');

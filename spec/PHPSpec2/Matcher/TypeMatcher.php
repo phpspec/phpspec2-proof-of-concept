@@ -10,7 +10,7 @@ class TypeMatcher extends ObjectBehavior
     /**
      * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
      */
-    function described_with($presenter)
+    function let($presenter)
     {
         $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('object');

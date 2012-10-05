@@ -6,7 +6,7 @@ use PHPSpec2\ObjectBehavior;
 
 class Specification extends ObjectBehavior
 {
-    function described_with()
+    function let()
     {
         $this->initializedWith('test spec');
     }

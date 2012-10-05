@@ -9,7 +9,7 @@ class Example extends ObjectBehavior
     /**
      * @param ReflectionFunctionAbstract $function
      */
-    function described_with($function)
+    function let($function)
     {
         $this->initializedWith('test example', 'test subject', $function);
     }

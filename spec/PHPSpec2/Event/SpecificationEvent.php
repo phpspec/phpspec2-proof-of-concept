@@ -9,7 +9,7 @@ class SpecificationEvent extends ObjectBehavior
     /**
      * @param PHPSpec2\Loader\Node\Specification $specification
      */
-    function described_with($specification)
+    function let($specification)
     {
         $this->initializedWith($specification);
     }

@@ -9,7 +9,7 @@ class ExampleEvent extends ObjectBehavior
     /**
      * @param PHPSpec2\Loader\Node\Example $example
      */
-    function described_with($example)
+    function let($example)
     {
         $this->initializedWith($example);
     }

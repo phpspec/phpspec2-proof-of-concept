@@ -26,8 +26,12 @@ class SpecificationsClassLoader implements LoaderInterface
             }
 
             $preFunctions = array();
-            if ($class->hasMethod('described_with')) {
-                $preFunctions[] = $class->getMethod('described_with');
+            if ($class->hasMethod('let')) {
+                $preFunctions[] = $class->getMethod('let');
+            }
+            $postFunctions = array();
+            if ($class->hasMethod('letgo')) {
+                $postFunctions[] = $class->getMethod('letgo');
             }
 
             $subject = $this->getClassSubject($class->getName());
@@ -46,6 +50,7 @@ class SpecificationsClassLoader implements LoaderInterface
                     str_replace('_', ' ', $method->getName()), $subject, $method
                 );
                 array_map(array($example, 'addPreFunction'), $preFunctions);
+                array_map(array($example, 'addPostFunction'), $postFunctions);
 
                 $specification->addChild($example);
             }

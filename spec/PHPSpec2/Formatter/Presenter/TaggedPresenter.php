@@ -9,7 +9,7 @@ class TaggedPresenter extends ObjectBehavior
     /**
      * @param PHPSpec2\Formatter\Presenter\Differ\Differ $differ
      */
-    function described_with($differ)
+    function let($differ)
     {
         $this->initializedWith($differ);
     }

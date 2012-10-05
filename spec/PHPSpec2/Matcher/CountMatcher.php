@@ -10,7 +10,7 @@ class CountMatcher extends ObjectBehavior
     /**
      * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
      */
-    function described_with($presenter)
+    function let($presenter)
     {
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('countable');
         $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
