@@ -55,6 +55,13 @@ class Runner
 
     public function runSpecification(Specification $specification)
     {
+        if (defined('PHPSPEC_ERROR_REPORTING')) {
+            $errorLevel = PHPSPEC_ERROR_REPORTING;
+        } else {
+            $errorLevel = E_ALL ^ E_WARNING;
+        }
+        $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
+
         $this->eventDispatcher->dispatch('beforeSpecification',
             new SpecificationEvent($specification)
         );
@@ -62,16 +69,16 @@ class Runner
 
         $result = ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
-            if ($child instanceof Specification) {
-                $result = max($result, $this->runSpecification($child));
-            } else {
-                $result = max($result, $this->runExample($child));
-            }
+            $result = max($result, $this->runExample($child));
         }
 
         $this->eventDispatcher->dispatch('afterSpecification',
             new SpecificationEvent($specification, microtime(true) - $startTime, $result)
         );
+
+        if (null !== $oldHandler) {
+            set_error_handler($oldHandler);
+        }
 
         return $result;
     }
@@ -82,42 +89,35 @@ class Runner
         $startTime = microtime(true);
 
         $context = $this->createContext($example);
-        if (defined('PHPSPEC_ERROR_REPORTING')) {
-            $errorLevel = PHPSPEC_ERROR_REPORTING;
-        } else {
-            $errorLevel = E_ALL ^ E_WARNING;
-        }
-        $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
+        $dependencies = $this->getExampleDependencies($example, $context);
 
         try {
-            $dependencies = $this->getExampleDependencies($example, $context);
+            foreach ($example->getPreFunctions() as $preFunction) {
+                $this->invoke($context, $preFunction, $dependencies);
+            }
+
             $this->invoke($context, $example->getFunction(), $dependencies);
-            $this->mocker->verify();
+
             foreach ($example->getPostFunctions() as $postFunction) {
                 $this->invoke($context, $postFunction, $dependencies);
             }
 
-            $event = new ExampleEvent(
-                $example, microtime(true) - $startTime, ExampleEvent::PASSED
-            );
+            $this->mocker->verify();
+
+            $status    = ExampleEvent::PASSED;
+            $exception = null;
         } catch (PendingException $e) {
-            $event = new ExampleEvent(
-                $example, microtime(true) - $startTime, ExampleEvent::PENDING, $e
-            );
+            $status    = ExampleEvent::PENDING;
+            $exception = $e;
         } catch (FailureException $e) {
-            $event = new ExampleEvent(
-                $example, microtime(true) - $startTime, ExampleEvent::FAILED, $e
-            );
+            $status    = ExampleEvent::FAILED;
+            $exception = $e;
         } catch (\Exception $e) {
-            $event = new ExampleEvent(
-                $example, microtime(true) - $startTime, ExampleEvent::BROKEN, $e
-            );
+            $status    = ExampleEvent::BROKEN;
+            $exception = $e;
         }
 
-        if (null !== $oldHandler) {
-            set_error_handler($oldHandler);
-        }
-
+        $event = new ExampleEvent($example, microtime(true) - $startTime, $status, $exception);
         $this->eventDispatcher->dispatch('afterExample', $event);
 
         return $event->getResult();
@@ -126,11 +126,7 @@ class Runner
     protected function createContext(Example $example)
     {
         $function = $example->getFunction();
-        if ($function instanceof ReflectionMethod) {
-            $context = $function->getDeclaringClass()->newInstance();
-        } else {
-            $context = new ObjectBehavior();
-        }
+        $context  = $function->getDeclaringClass()->newInstance();
 
         $context->setProphet(new ObjectProphet(
             new LazyObject($example->getSubject()), $this->matchers, $this->unwrapper
@@ -147,10 +143,8 @@ class Runner
     protected function getExampleDependencies(Example $example, $context)
     {
         $dependencies = array();
-
         foreach ($example->getPreFunctions() as $preFunction) {
             $dependencies = $this->getDependencies($preFunction, $dependencies);
-            $this->invoke($context, $preFunction, $dependencies);
         }
 
         return $this->getDependencies($example->getFunction(), $dependencies);
@@ -159,9 +153,7 @@ class Runner
     private function getDependencies(ReflectionFunctionAbstract $function, array $dependencies)
     {
         foreach (explode("\n", trim($function->getDocComment())) as $line) {
-            $line = preg_replace('/^\/\*\*\s*|^\s*\*\s*|\s*\*\/$|\s*$/', '', $line);
-
-            if (preg_match('#^@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
+            if (preg_match('#@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
                 if (!isset($dependencies[$match[2]])) {
                     $dependencies[$match[2]] = $this->createMockBehavior();
                     $dependencies[$match[2]]->beAMockOf($match[1]);
@@ -189,12 +181,7 @@ class Runner
             }
         }
 
-        if ($function instanceof ReflectionMethod) {
-            $function->invokeArgs($context, $parameters);
-        } elseif ($function->isClosure()) {
-            $closure = $function->getClosure()->bindTo($context);
-            call_user_func_array($closure, $parameters);
-        }
+        $function->invokeArgs($context, $parameters);
     }
 
     /**
