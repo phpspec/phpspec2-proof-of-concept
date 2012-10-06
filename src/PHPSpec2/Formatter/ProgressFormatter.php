@@ -43,11 +43,20 @@ class ProgressFormatter implements FormatterInterface
         $total  = $this->stats->getEventsCount();
         $counts = $this->stats->getCountsHash();
 
-        $progress = '';
-        foreach ($counts as $status => $count) {
-            $percent = round($count / ($total / 100), 0, PHP_ROUND_HALF_EVEN);
-            $length  = round($percent / 2, 0, PHP_ROUND_HALF_EVEN);
-            $text    = $percent.'%';
+        $percents = array_map(function($count) use($total) {
+            return round($count / ($total / 100), 0);
+        }, $counts);
+        $lengths  = array_map(function($percent) {
+            return round($percent / 2, 0);
+        }, $percents);
+
+        $size = 50;
+        asort($lengths);
+        $progress = array();
+        foreach ($lengths as $status => $length) {
+            $text   = $percents[$status].'%';
+            $length = ($size - $length) >= 0 ? $length : $size;
+            $size   = $size - $length;
 
             if ($length > strlen($text) + 2) {
                 $text = str_pad($text, $length, ' ', STR_PAD_BOTH);
@@ -55,10 +64,11 @@ class ProgressFormatter implements FormatterInterface
                 $text = str_pad('', $length, ' ');
             }
 
-            $progress .= sprintf("<$status-bg>%s</$status-bg>", $text);
+            $progress[$status] = sprintf("<$status-bg>%s</$status-bg>", $text);
         }
+        krsort($progress);
 
-        $this->io->writeTemp($progress.' : '.$total);
+        $this->io->writeTemp(implode('', $progress).' : '.$total);
         $this->printException($event, 2);
     }
 

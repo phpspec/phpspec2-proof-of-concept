@@ -19,8 +19,8 @@ class Formatter extends OutputFormatter
         $this->setStyle('failed', new OutputFormatterStyle('red'));
         $this->setStyle('failed-bg', new OutputFormatterStyle('white', 'red', array('bold')));
 
-        $this->setStyle('broken', new OutputFormatterStyle('red'));
-        $this->setStyle('broken-bg', new OutputFormatterStyle('white', 'red', array('bold')));
+        $this->setStyle('broken', new OutputFormatterStyle('magenta'));
+        $this->setStyle('broken-bg', new OutputFormatterStyle('white', 'magenta', array('bold')));
 
         $this->setStyle('passed', new OutputFormatterStyle('green'));
         $this->setStyle('passed-bg', new OutputFormatterStyle('black', 'green', array('bold')));
