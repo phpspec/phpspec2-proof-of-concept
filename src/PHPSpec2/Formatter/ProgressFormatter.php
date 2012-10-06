@@ -45,9 +45,9 @@ class ProgressFormatter implements FormatterInterface
 
         $progress = '';
         foreach ($counts as $status => $count) {
-            $percent   = $count / ($total / 100);
-            $length    = round($percent / 2);
-            $text      = $count.'%';
+            $percent = round($count / ($total / 100));
+            $length  = round($percent / 2);
+            $text    = $percent.'%';
 
             if ($length > strlen($text) + 2) {
                 $text = str_pad($text, $length, ' ', STR_PAD_BOTH);
