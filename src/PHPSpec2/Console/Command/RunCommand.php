@@ -37,8 +37,7 @@ class RunCommand extends Command
 
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
-            new InputOption('example', 'e', InputOption::VALUE_REQUIRED, 'Run examples matching pattern'),
-            new InputOption('fail-fast', null, InputOption::VALUE_NONE, 'Abort the run on first failure')
+            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'pretty'),
         ));
     }
 
@@ -78,8 +77,12 @@ class RunCommand extends Command
         $runner->getEventDispatcher()->addSubscriber($collector);
 
         // setup formatter
-        //$formatter = new Formatter\PrettyFormatter;
-        $formatter = new Formatter\ProgressFormatter;
+        if ('progress' === $input->getOption('format')) {
+            $formatter = new Formatter\ProgressFormatter;
+        } else {
+            $formatter = new Formatter\PrettyFormatter;
+        }
+
         $formatter->setIO($io);
         $formatter->setPresenter($presenter);
         $formatter->setStatisticsCollector($collector);
