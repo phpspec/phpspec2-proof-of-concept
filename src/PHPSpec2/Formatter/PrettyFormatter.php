@@ -76,39 +76,22 @@ class PrettyFormatter implements FormatterInterface
 
     public function afterSuite(SuiteEvent $event)
     {
-        $failedEvents = $this->stats->getFailedEvents();
-        if (count($failedEvents)) {
-            $this->io->writeln("\n<failed>====  failed examples</failed>\n");
-        }
-        foreach ($failedEvents as $failEvent) {
-            $example  = $failEvent->getExample();
-            $function = $example->getFunction();
+        $this->io->writeln();
 
-            $this->io->writeln(sprintf('<lineno>%4d</lineno>  %s',
-                $function->getStartLine(),
-                str_replace(getcwd().DIRECTORY_SEPARATOR, '', $function->getFileName())
-            ));
-            $this->io->writeln(sprintf('<failed>✘ %s</failed>',
-                $example->getTitle()
-            ), 6);
-            $this->printException($failEvent, 8);
-        }
-        $brokenEvents = $this->stats->getBrokenEvents();
-        if (count($brokenEvents)) {
-            $this->io->writeln("\n<broken>====  broken examples</broken>\n");
-        }
-        foreach ($brokenEvents as $failEvent) {
-            $example  = $failEvent->getExample();
-            $function = $example->getFunction();
+        foreach (array(
+            'failed' => $this->stats->getFailedEvents(),
+            'broken' => $this->stats->getBrokenEvents()
+        ) as $status => $events) {
+            if (!count($events)) {
+                continue;
+            }
 
-            $this->io->writeln(sprintf('<lineno>%4d</lineno>  %s',
-                $function->getStartLine(),
-                str_replace(getcwd().DIRECTORY_SEPARATOR, '', $function->getFileName())
-            ));
-            $this->io->writeln(sprintf('<broken>! %s</broken>',
-                $example->getTitle()
-            ), 6);
-            $this->printException($failEvent, 8);
+            $this->io->writeln(sprintf("<%s>----  %s examples</%s>\n", $status, $status, $status));
+            foreach ($events as $failEvent) {
+                $this->io->writeln(sprintf('%s', $failEvent->getSpecification()->getTitle()), 8);
+                $this->afterExample($failEvent);
+                $this->io->writeln();
+            }
         }
 
         $counts = array();
