@@ -83,33 +83,20 @@ class PrettyFormatter implements FormatterInterface
 
     public function afterSuite(SuiteEvent $event)
     {
-        $stats = $this->stats;
-
         $counts = array();
-        if ($count = count($stats->getPassedEvents())) {
-            $counts[] = sprintf('<passed>%d passed</passed>', $count);
-        }
-        if ($count = count($stats->getPendingEvents())) {
-            $counts[] = sprintf('<pending>%d pending</pending>', $count);
-        }
-        if ($count = count($stats->getFailedEvents())) {
-            $counts[] = sprintf('<failed>%d failed</failed>', $count);
-        }
-        if ($count = count($stats->getBrokenEvents())) {
-            $counts[] = sprintf('<broken>%d broken</broken>', $count);
+        foreach ($this->stats->getCountsHash() as $type => $count) {
+            if ($count) {
+                $counts[] = sprintf('<%s>%d %s</%s>', $type, $count, $type, $type);
+            }
         }
 
-        $this->io->write(sprintf(
-            "\n%d examples ", count($stats->getAllEvents())
-        ));
+        $this->io->write(sprintf("\n%d examples ", $this->stats->getEventsCount()));
         if (count($counts)) {
-            $this->io->write(sprintf(
-                "(%s)", implode(', ', $counts)
-            ));
+            $this->io->write(sprintf("(%s)", implode(', ', $counts)));
         }
 
         $this->io->writeln(sprintf(
-            "\n%s", round($stats->getTotalTime() * 1000) . 'ms'
+            "\n%s", round($event->getTime() * 1000) . 'ms'
         ));
     }
 

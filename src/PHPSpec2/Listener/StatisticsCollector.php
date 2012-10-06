@@ -8,8 +8,6 @@ use PHPSpec2\Event\ExampleEvent;
 
 class StatisticsCollector implements EventSubscriberInterface
 {
-    private $startTime;
-    private $finishTime;
     private $globalResult  = 0;
     private $passedEvents  = array();
     private $pendingEvents = array();
@@ -18,21 +16,7 @@ class StatisticsCollector implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'beforeSuite'  => array('beforeSuite', 10),
-            'afterSuite'   => array('afterSuite', 10),
-            'afterExample' => array('afterExample', 10),
-        );
-    }
-
-    public function beforeSuite()
-    {
-        $this->startTime = microtime(true);
-    }
-
-    public function afterSuite()
-    {
-        $this->finishTime = microtime(true);
+        return array('afterExample' => array('afterExample', 10));
     }
 
     public function afterExample(ExampleEvent $event)
@@ -53,11 +37,6 @@ class StatisticsCollector implements EventSubscriberInterface
                 $this->brokenEvents[] = $event;
                 break;
         }
-    }
-
-    public function getTotalTime()
-    {
-        return $this->finishTime - $this->startTime;
     }
 
     public function getGlobalResult()
@@ -93,5 +72,20 @@ class StatisticsCollector implements EventSubscriberInterface
     public function getBrokenEvents()
     {
         return $this->brokenEvents;
+    }
+
+    public function getCountsHash()
+    {
+        return array(
+            'passed'  => count($this->getPassedEvents()),
+            'pending' => count($this->getPendingEvents()),
+            'failed'  => count($this->getFailedEvents()),
+            'broken'  => count($this->getBrokenEvents()),
+        );
+    }
+
+    public function getEventsCount()
+    {
+        return count($this->getAllEvents());
     }
 }
