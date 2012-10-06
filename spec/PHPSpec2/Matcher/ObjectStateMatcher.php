@@ -36,7 +36,7 @@ class ObjectStateMatcher extends ObjectBehavior
     {
         $subject = new \ReflectionClass($this);
 
-        $this->shouldNotThrow()->duringPositiveMatch('beCloneable', $subject, array());
+        $this->shouldNotThrow()->duringPositiveMatch('beUserDefined', $subject, array());
     }
 
     function it_does_not_matches_if_state_checker_returns_false()
