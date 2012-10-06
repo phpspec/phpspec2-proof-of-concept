@@ -78,7 +78,8 @@ class RunCommand extends Command
         $runner->getEventDispatcher()->addSubscriber($collector);
 
         // setup formatter
-        $formatter = new Formatter\PrettyFormatter;
+        //$formatter = new Formatter\PrettyFormatter;
+        $formatter = new Formatter\ProgressFormatter;
         $formatter->setIO($io);
         $formatter->setPresenter($presenter);
         $formatter->setStatisticsCollector($collector);

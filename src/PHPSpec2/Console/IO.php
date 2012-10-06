@@ -47,11 +47,16 @@ class IO
         $this->hasTempString = true;
     }
 
+    public function freezeTemp()
+    {
+        $this->write($this->lastMessage);
+    }
+
     public function write($message, $indent = null, $newline = false)
     {
         if ($this->hasTempString) {
-            $this->overwrite($message, $indent, $newline);
             $this->hasTempString = false;
+            $this->overwrite($message, $indent, $newline);
 
             return;
         }

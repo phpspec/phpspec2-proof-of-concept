@@ -14,9 +14,17 @@ class Formatter extends OutputFormatter
         parent::__construct($decorated, $styles);
 
         $this->setStyle('pending', new OutputFormatterStyle('yellow'));
+        $this->setStyle('pending-bg', new OutputFormatterStyle('black', 'yellow'));
+
         $this->setStyle('failed', new OutputFormatterStyle('red'));
+        $this->setStyle('failed-bg', new OutputFormatterStyle('black', 'red'));
+
         $this->setStyle('broken', new OutputFormatterStyle('red'));
+        $this->setStyle('broken-bg', new OutputFormatterStyle('black', 'red'));
+
         $this->setStyle('passed', new OutputFormatterStyle('green'));
+        $this->setStyle('passed-bg', new OutputFormatterStyle('black', 'green'));
+
         $this->setStyle('value', new OutputFormatterStyle('yellow'));
 
         $this->setStyle('lineno', new OutputFormatterStyle(null, 'black'));
