@@ -60,7 +60,6 @@ class ProgressFormatter implements FormatterInterface
 
         $this->io->writeTemp($progress.' : '.$total);
         $this->printException($event, 2);
-        usleep(50000);
     }
 
     public function afterSuite(SuiteEvent $event)
