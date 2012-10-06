@@ -2,26 +2,13 @@
 
 namespace PHPSpec2\Formatter;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-
 use PHPSpec2\Console\IO;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Listener\StatisticsCollector;
+
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Exception\Example\MatcherException;
-use PHPSpec2\Exception\Example\NotEqualException;
-use PHPSpec2\Exception\Exception as PHPSpec2Exception;
-
-use Mockery\CountValidator\Exception as MockeryCountException;
-use Mockery\Exception as MockeryException;
-
-use ReflectionClass;
-use ReflectionMethod;
-use Exception;
-use PHPSpec2\Loader\Node\Example;
-use PHPSpec2\Listener\StatisticsCollector;
 
 class PrettyFormatter implements FormatterInterface
 {
