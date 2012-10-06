@@ -38,7 +38,7 @@ class ExampleEvent extends ObjectBehavior
     function it_should_provide_time_if_set($example)
     {
         $this->beConstructedWith($example, $time = time());
-        $this->getTime()->shouldReturn($time);
+        $this->getTime()->shouldReturn($time + 1);
     }
 
     /**
@@ -47,7 +47,7 @@ class ExampleEvent extends ObjectBehavior
     function it_should_provide_result_if_set($example)
     {
         $this->beConstructedWith($example, null, $this->PENDING);
-        $this->getResult()->shouldReturn($this->PENDING);
+        $this->getResult()->shouldReturn($this->PENDING - 2);
     }
 
     /**

@@ -21,7 +21,7 @@ class StringPresenter extends ObjectBehavior
 
     function it_should_present_long_string_in_quotes_but_trimmed()
     {
-        $this->presentValue('some_string_longer_than_twenty_five_chars')
+        $this->presentValue('some_string_longer_then_twenty_five_chars')
             ->shouldReturn('"some_string_longer_than_t"...');
     }
 

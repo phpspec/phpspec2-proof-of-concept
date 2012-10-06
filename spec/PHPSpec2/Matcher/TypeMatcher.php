@@ -20,7 +20,7 @@ class TypeMatcher extends ObjectBehavior
 
     function it_should_support_all_aliases()
     {
-        $this->supports('beAnInstanceOf', '', array(''))->shouldReturn(true);
+        $this->supports('beAnInstanceOf', '', array(''))->shouldReturn(false);
         $this->supports('returnAnInstanceOf', '', array(''))->shouldReturn(true);
         $this->supports('haveType', '', array(''))->shouldReturn(true);
     }

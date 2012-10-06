@@ -25,6 +25,7 @@ class ComparisonMatcher extends ObjectBehavior
 
     function it_matches_empty_string_using_comparison_operator()
     {
+        throw new \RuntimeException('Some exception');
         $this->shouldNotThrow()->duringPositiveMatch('beLike', '', array(''));
     }
 
