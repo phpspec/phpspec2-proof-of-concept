@@ -18,9 +18,7 @@ class PrettyFormatter implements FormatterInterface
 
     public static function getSubscribedEvents()
     {
-        $events = array(
-            'beforeSpecification', 'afterSpecification', 'afterExample', 'afterSuite'
-        );
+        $events = array('beforeSpecification', 'afterExample', 'afterSuite');
 
         return array_combine($events, $events);
     }
@@ -43,14 +41,9 @@ class PrettyFormatter implements FormatterInterface
     public function beforeSpecification(SpecificationEvent $event)
     {
         $this->io->writeln(
-            sprintf("\n      %s\n", $event->getSpecification()->getTitle()),
+            sprintf("\n----  %s\n", $event->getSpecification()->getTitle()),
             2 * $event->getSpecification()->getDepth()
         );
-    }
-
-    public function afterSpecification(SpecificationEvent $event)
-    {
-        $this->io->writeln();
     }
 
     public function afterExample(ExampleEvent $event)
