@@ -12,8 +12,8 @@ class TypeMatcher extends ObjectBehavior
      */
     function let($presenter)
     {
-        $presenter->presentString(ANY_ARGUMENTS)->willReturnArgument();
-        $presenter->presentValue(ANY_ARGUMENTS)->willReturn('object');
+        $presenter->presentString(ANY_ARGUMENT)->willReturnArgument();
+        $presenter->presentValue(ANY_ARGUMENT)->willReturn('object');
 
         $this->beConstructedWith($presenter);
     }

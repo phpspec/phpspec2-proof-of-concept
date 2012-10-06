@@ -99,11 +99,19 @@ class MockeryMocker implements MockerInterface
             return;
         }
 
-        if (is_string($arguments[0]) && '__phpspec2_any_args__' === $arguments[0]) {
+        if (is_string($arguments[0]) && ANY_ARGUMENTS === $arguments[0]) {
             $expectation->withAnyArgs();
 
             return;
         }
+
+        $arguments = array_map(function($arg) {
+            if (is_string($arg) && ANY_ARGUMENT === $arg) {
+                return Mockery::any();
+            } else {
+                return $arg;
+            }
+        }, $arguments);
 
         call_user_func_array(array($expectation, 'with'), $arguments);
     }

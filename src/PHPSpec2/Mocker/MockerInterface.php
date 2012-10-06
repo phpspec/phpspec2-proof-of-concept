@@ -3,6 +3,7 @@
 namespace PHPSpec2\Mocker;
 
 define('ANY_ARGUMENTS', '__phpspec2_any_args__');
+define('ANY_ARGUMENT', '__phpspec2_any_arg__');
 
 interface MockerInterface
 {
