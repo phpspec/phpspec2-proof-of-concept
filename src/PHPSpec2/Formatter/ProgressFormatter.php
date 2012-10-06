@@ -45,8 +45,8 @@ class ProgressFormatter implements FormatterInterface
 
         $progress = '';
         foreach ($counts as $status => $count) {
-            $percent = round($count / ($total / 100));
-            $length  = round($percent / 2);
+            $percent = round($count / ($total / 100), 0, PHP_ROUND_HALF_EVEN);
+            $length  = round($percent / 2, 0, PHP_ROUND_HALF_EVEN);
             $text    = $percent.'%';
 
             if ($length > strlen($text) + 2) {
@@ -60,6 +60,7 @@ class ProgressFormatter implements FormatterInterface
 
         $this->io->writeTemp($progress.' : '.$total);
         $this->printException($event, 2);
+        usleep(50000);
     }
 
     public function afterSuite(SuiteEvent $event)
@@ -87,7 +88,7 @@ class ProgressFormatter implements FormatterInterface
             return;
         }
 
-        $title = str_pad($event->getSpecification()->getTitle(), 50, ' ', STR_PAD_BOTH);
+        $title = str_pad($event->getSpecification()->getTitle(), 50, ' ', STR_PAD_RIGHT);
         // TODO: add cause to exception interface
         $exception->cause = $event->getExample()->getFunction();
         $message = $this->presenter->presentException($exception, $this->io->isVerbose());
