@@ -43,18 +43,17 @@ class StringPresenter extends ObjectBehavior
 
     function it_should_present_array_as_elements_count()
     {
-        $this->presentValue(array(1, 2, 3))->shouldReturn('[array:5]');
+        $this->presentValue(array(1, 2, 3))->shouldReturn('[array:3]');
     }
 
     function it_should_present_boolean_as_string()
     {
-        throw new \Exception('shit');
         $this->presentValue(true)->shouldReturn('true');
     }
 
     function it_should_present_closure_as_type()
     {
-        $this->presentValue(function(){})->shouldReturn('[closure]s');
+        $this->presentValue(function(){})->shouldReturn('[closure]');
     }
 
     function it_should_present_exception_as_class_with_constructor()
