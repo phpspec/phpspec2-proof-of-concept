@@ -76,6 +76,41 @@ class PrettyFormatter implements FormatterInterface
 
     public function afterSuite(SuiteEvent $event)
     {
+        $failedEvents = $this->stats->getFailedEvents();
+        if (count($failedEvents)) {
+            $this->io->writeln("\n<failed>====  failed examples</failed>\n");
+        }
+        foreach ($failedEvents as $event) {
+            $example  = $event->getExample();
+            $function = $example->getFunction();
+
+            $this->io->writeln(sprintf('<lineno>%4d</lineno>  %s',
+                $function->getStartLine(),
+                str_replace(getcwd().DIRECTORY_SEPARATOR, '', $function->getFileName())
+            ));
+            $this->io->writeln(sprintf('<failed>✘ %s</failed>',
+                $example->getTitle()
+            ), 6);
+            $this->printException($event, 8);
+        }
+        $brokenEvents = $this->stats->getBrokenEvents();
+        if (count($brokenEvents)) {
+            $this->io->writeln("\n<broken>====  broken examples</broken>\n");
+        }
+        foreach ($brokenEvents as $event) {
+            $example  = $event->getExample();
+            $function = $example->getFunction();
+
+            $this->io->writeln(sprintf('<lineno>%4d</lineno>  %s',
+                $function->getStartLine(),
+                str_replace(getcwd().DIRECTORY_SEPARATOR, '', $function->getFileName())
+            ));
+            $this->io->writeln(sprintf('<broken>! %s</broken>',
+                $example->getTitle()
+            ), 6);
+            $this->printException($event, 8);
+        }
+
         $counts = array();
         foreach ($this->stats->getCountsHash() as $type => $count) {
             if ($count) {
@@ -103,7 +138,7 @@ class PrettyFormatter implements FormatterInterface
         }
     }
 
-    protected function printException(ExampleEvent $event)
+    protected function printException(ExampleEvent $event, $depth = null)
     {
         if (null === $exception = $event->getException()) {
             return;
@@ -111,7 +146,7 @@ class PrettyFormatter implements FormatterInterface
 
         // TODO: add cause to exception interface
         $exception->cause = $event->getExample()->getFunction();
-        $depth = ($event->getExample()->getDepth() * 2) + 6;
+        $depth = $depth ?: (($event->getExample()->getDepth() * 2) + 6);
         $message = $this->presenter->presentException($exception, $this->io->isVerbose());
 
         if (ExampleEvent::FAILED === $event->getResult()) {
