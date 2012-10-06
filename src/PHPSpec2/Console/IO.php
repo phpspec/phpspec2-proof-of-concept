@@ -12,6 +12,7 @@ class IO
     private $output;
     private $helpers;
     private $lastMessage;
+    private $hasTempString = false;
 
     public function __construct(InputInterface $input, OutputInterface $output, HelperSet $helpers)
     {
@@ -40,8 +41,21 @@ class IO
         $this->write($message, $indent, true);
     }
 
+    public function writeTemp($message, $indent = null)
+    {
+        $this->write($message, $indent);
+        $this->hasTempString = true;
+    }
+
     public function write($message, $indent = null, $newline = false)
     {
+        if ($this->hasTempString) {
+            $this->overwrite($message, $indent, $newline);
+            $this->hasTempString = false;
+
+            return;
+        }
+
         if (null !== $indent) {
             $message = $this->indentText($message, $indent);
         }
