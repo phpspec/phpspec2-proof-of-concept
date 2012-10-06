@@ -34,8 +34,8 @@ class SpecificationsClassLoader implements LoaderInterface
                 $postFunctions[] = $class->getMethod('letgo');
             }
 
+            $specification = new Node\Specification($class->getName());
             $subject = $this->getClassSubject($class->getName());
-            $specification = new Node\Specification($subject);
 
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it_|its_)/', $method->getName())) {
