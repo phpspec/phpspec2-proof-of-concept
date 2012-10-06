@@ -37,7 +37,7 @@ class RunCommand extends Command
 
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
-            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'pretty'),
+            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'progress'),
         ));
     }
 
