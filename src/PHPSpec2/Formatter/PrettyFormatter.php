@@ -80,8 +80,8 @@ class PrettyFormatter implements FormatterInterface
         if (count($failedEvents)) {
             $this->io->writeln("\n<failed>====  failed examples</failed>\n");
         }
-        foreach ($failedEvents as $event) {
-            $example  = $event->getExample();
+        foreach ($failedEvents as $failEvent) {
+            $example  = $failEvent->getExample();
             $function = $example->getFunction();
 
             $this->io->writeln(sprintf('<lineno>%4d</lineno>  %s',
@@ -91,14 +91,14 @@ class PrettyFormatter implements FormatterInterface
             $this->io->writeln(sprintf('<failed>✘ %s</failed>',
                 $example->getTitle()
             ), 6);
-            $this->printException($event, 8);
+            $this->printException($failEvent, 8);
         }
         $brokenEvents = $this->stats->getBrokenEvents();
         if (count($brokenEvents)) {
             $this->io->writeln("\n<broken>====  broken examples</broken>\n");
         }
-        foreach ($brokenEvents as $event) {
-            $example  = $event->getExample();
+        foreach ($brokenEvents as $failEvent) {
+            $example  = $failEvent->getExample();
             $function = $example->getFunction();
 
             $this->io->writeln(sprintf('<lineno>%4d</lineno>  %s',
@@ -108,7 +108,7 @@ class PrettyFormatter implements FormatterInterface
             $this->io->writeln(sprintf('<broken>! %s</broken>',
                 $example->getTitle()
             ), 6);
-            $this->printException($event, 8);
+            $this->printException($failEvent, 8);
         }
 
         $counts = array();
@@ -123,9 +123,7 @@ class PrettyFormatter implements FormatterInterface
             $this->io->write(sprintf("(%s)", implode(', ', $counts)));
         }
 
-        $this->io->writeln(sprintf(
-            "\n%s", round($event->getTime() * 1000) . 'ms'
-        ));
+        $this->io->writeln(sprintf("\n%sms", round($event->getTime() * 1000)));
     }
 
     protected function printSlowTime(ExampleEvent $event)

@@ -43,12 +43,11 @@ class StringPresenter extends ObjectBehavior
 
     function it_should_present_array_as_elements_count()
     {
-        $this->presentValue(array(1, 2, 3))->shouldReturn('[array:5]');
+        $this->presentValue(array(1, 2, 3))->shouldReturn('[array:3]');
     }
 
     function it_should_present_boolean_as_string()
     {
-        throw new \Exception('shit');
         $this->presentValue(true)->shouldReturn('true');
     }
 
