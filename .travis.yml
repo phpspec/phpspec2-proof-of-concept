@@ -8,7 +8,7 @@ branches:
   only:
     - master
     - develop
-    - failure-demo
+    - failures-demo
 
 before_script:
   - curl http://getcomposer.org/installer | php
