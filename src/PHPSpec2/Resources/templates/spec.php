@@ -8,6 +8,6 @@ class %class% extends ObjectBehavior
 {
     function it_should_be_initializable()
     {
-        $this->object->shouldHaveType('%subject%');
+        $this->shouldHaveType('%subject%');
     }
 }
