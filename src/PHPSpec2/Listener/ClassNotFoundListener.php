@@ -35,7 +35,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
                 }
             }
 
-            if ($this->io->askConfirmation('You want me to create this class for you?')) {
+            if ($this->io->askConfirmation('Do you want me to create this class for you?')) {
                 $classname = $exception->getClassname();
                 $filepath  = $this->path.str_replace('\\', DIRECTORY_SEPARATOR, $classname).'.php';
 

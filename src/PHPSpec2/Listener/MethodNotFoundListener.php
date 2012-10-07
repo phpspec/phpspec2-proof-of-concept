@@ -32,7 +32,7 @@ class MethodNotFoundListener implements EventSubscriberInterface
                 }
             }
 
-            if ($this->io->askConfirmation('You want me to create this method for you?')) {
+            if ($this->io->askConfirmation('Do you want me to create this method for you?')) {
                 $class  = new \ReflectionClass($exception->getSubject());
                 $method = $exception->getMethod();
 
