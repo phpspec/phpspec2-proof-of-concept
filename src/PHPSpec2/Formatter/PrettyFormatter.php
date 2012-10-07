@@ -40,10 +40,9 @@ class PrettyFormatter implements FormatterInterface
 
     public function beforeSpecification(SpecificationEvent $event)
     {
-        $this->io->writeln(
-            sprintf("\n----  %s\n", $event->getSpecification()->getTitle()),
-            2 * $event->getSpecification()->getDepth()
-        );
+        $this->io->writeln(sprintf("\n----  %s\n",
+            str_replace('\\', DIRECTORY_SEPARATOR, $event->getSpecification()->getTitle())
+        ), 2 * $event->getSpecification()->getDepth());
     }
 
     public function afterExample(ExampleEvent $event)
@@ -88,7 +87,9 @@ class PrettyFormatter implements FormatterInterface
 
             $this->io->writeln(sprintf("<%s>----  %s examples</%s>\n", $status, $status, $status));
             foreach ($events as $failEvent) {
-                $this->io->writeln(sprintf('%s', $failEvent->getSpecification()->getTitle()), 8);
+                $this->io->writeln(sprintf('%s',
+                    str_replace('\\', DIRECTORY_SEPARATOR, $failEvent->getSpecification()->getTitle())
+                ), 8);
                 $this->afterExample($failEvent);
                 $this->io->writeln();
             }

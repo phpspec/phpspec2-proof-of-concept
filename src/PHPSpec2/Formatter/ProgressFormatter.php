@@ -97,8 +97,8 @@ class ProgressFormatter implements FormatterInterface
             return;
         }
 
-        $title = str_pad($event->getSpecification()->getTitle(), 50, ' ', STR_PAD_RIGHT);
-        // TODO: add cause to exception interface
+        $title = str_replace('\\', DIRECTORY_SEPARATOR, $event->getSpecification()->getTitle())
+        $title = str_pad($title, 50, ' ', STR_PAD_RIGHT);
         $exception->cause = $event->getExample()->getFunction();
         $message = $this->presenter->presentException($exception, $this->io->isVerbose());
 

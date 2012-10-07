@@ -22,6 +22,12 @@ class Locator
         if (preg_match('/^(.*)\:(\d+)$/', $path, $matches)) {
             list($_, $path, $line) = $matches;
         }
+        $path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+        if ('.' !== dirname($path)
+            && !file_exists($path)
+            && 0 !== strpos($path, 'spec'.DIRECTORY_SEPARATOR)) {
+            $path = 'spec'.DIRECTORY_SEPARATOR.$path;
+        }
 
         $specs = array();
         if (is_dir($path)) {
@@ -32,6 +38,11 @@ class Locator
                 }
             }
         } elseif (is_file($path)) {
+            $file = new SplFileInfo(realpath($path));
+            if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
+                $specs = array_merge($specs, $fromFile);
+            }
+        } elseif (is_file($path = $path.'.php')) {
             $file = new SplFileInfo(realpath($path));
             if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
                 $specs = array_merge($specs, $fromFile);
