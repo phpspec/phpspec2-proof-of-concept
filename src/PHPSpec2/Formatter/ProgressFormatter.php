@@ -68,8 +68,8 @@ class ProgressFormatter implements FormatterInterface
         }
         krsort($progress);
 
-        $this->io->writeTemp(implode('', $progress).' '.$total);
         $this->printException($event, 2);
+        $this->io->writeTemp(implode('', $progress).' '.$total);
     }
 
     public function afterSuite(SuiteEvent $event)
