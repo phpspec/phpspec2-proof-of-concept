@@ -9,31 +9,29 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-use PHPSpec2\Console\IO;
-use PHPSpec2\Runner\Locator;
-use PHPSpec2\Runner\Runner;
+use PHPSpec2\Event;
+use PHPSpec2\Console;
+use PHPSpec2\Loader;
+use PHPSpec2\Runner;
 use PHPSpec2\Matcher;
-use PHPSpec2\Listener\StatisticsCollector;
+use PHPSpec2\Listener;
+use PHPSpec2\Mocker;
 use PHPSpec2\Formatter;
-use PHPSpec2\Console\Formatter as CliOutputFormatter;
-use PHPSpec2\Event\SuiteEvent;
-use PHPSpec2\Event\ExampleEvent;
-use PHPSpec2\Formatter\Presenter\TaggedPresenter;
-use PHPSpec2\Listener\ClassNotFoundListener;
-use PHPSpec2\Listener\MethodNotFoundListener;
-use PHPSpec2\Mocker\MockeryMocker;
+use PHPSpec2\Formatter\Presenter;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
-use PHPSpec2\Loader\SpecificationsClassLoader;
-use PHPSpec2\Formatter\Presenter\Differ;
 
 class RunCommand extends Command
 {
+    private $dispatcher;
+
     /**
      * Initializes command.
      */
-    public function __construct()
+    public function __construct(EventDispatcher $dispatcher)
     {
         parent::__construct('run');
+
+        $this->dispatcher = $dispatcher;
 
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
@@ -46,21 +44,58 @@ class RunCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // setup IO
-        $io = new IO($input, $output, $this->getHelperSet());
-        $output->setFormatter(new CliOutputFormatter($io->isDecorated()));
+        $output->setFormatter(new Console\Formatter($output->isDecorated()));
 
-        // setup differ
-        $differ = new Differ\Differ;
-        $differ->addEngine(new Differ\StringEngine);
+        $this->io  = new Console\IO($input, $output, $this->getHelperSet());
+        $presenter = $this->createPresenter();
+        $mocker    = $this->createMocker();
+        $unwrapper = $this->createArgumentsUnwrapper();
+        $matchers  = $this->createMatchersCollection($presenter, $unwrapper);
+        $collector = $this->createStatisticsCollector();
+        $formatter = $this->createFormatter($input->getOption('format'), $presenter, $collector);
 
-        // setup presenter
-        $presenter = new TaggedPresenter($differ);
+        $specifications = $this->createLocator()->getSpecifications($input->getArgument('spec'));
+        $runner         = $this->createRunner($matchers, $mocker, $unwrapper);
 
-        $mocker    = new MockeryMocker;
-        $unwrapper = new ArgumentsUnwrapper;
+        $this->configureAdditionalListeners();
+        $this->dispatcher->dispatch('beforeSuite', new Event\SuiteEvent($collector));
 
+        $result = 0;
+        $startTime = microtime(true);
+        foreach ($specifications as $spec) {
+            $result = max($result, $runner->runSpecification($spec));
+        }
+
+        $this->dispatcher->dispatch('afterSuite', new Event\SuiteEvent(
+            microtime(true) - $startTime, $result
+        ));
+
+        return intval(Event\ExampleEvent::PASSED !== $result);
+    }
+
+    protected function createPresenter()
+    {
+        $differ = new Presenter\Differ\Differ;
+        $differ->addEngine(new Presenter\Differ\StringEngine);
+
+        return new Presenter\TaggedPresenter($differ);
+    }
+
+    protected function createMocker()
+    {
+        return new Mocker\MockeryMocker;
+    }
+
+    protected function createArgumentsUnwrapper()
+    {
+        return new ArgumentsUnwrapper;
+    }
+
+    protected function createMatchersCollection(Presenter\PresenterInterface $presenter,
+                                                ArgumentsUnwrapper $unwrapper)
+    {
         $matchers = new Matcher\MatchersCollection();
+
         $matchers->add(new Matcher\IdentityMatcher($presenter));
         $matchers->add(new Matcher\ComparisonMatcher($presenter));
         $matchers->add(new Matcher\ThrowMatcher($unwrapper, $presenter));
@@ -68,42 +103,49 @@ class RunCommand extends Command
         $matchers->add(new Matcher\TypeMatcher($presenter));
         $matchers->add(new Matcher\ObjectStateMatcher($presenter));
 
-        // setup specs locator and runner
-        $locator = new Locator(new SpecificationsClassLoader);
-        $runner  = new Runner(new EventDispatcher(), $matchers, $mocker, $unwrapper, $input->getOptions());
+        return $matchers;
+    }
 
-        // setup statistics collector
-        $collector = new StatisticsCollector;
-        $runner->getEventDispatcher()->addSubscriber($collector);
+    protected function createLocator()
+    {
+        return new Runner\Locator(new Loader\SpecificationsClassLoader);
+    }
 
-        // setup formatter
-        if ('progress' === $input->getOption('format')) {
+    protected function createRunner(Matcher\MatchersCollection $matchers,
+                                    Mocker\MockerInterface $mocker, ArgumentsUnwrapper $unwrapper)
+    {
+        return new Runner\Runner($this->dispatcher, $matchers, $mocker, $unwrapper);
+    }
+
+    protected function createStatisticsCollector()
+    {
+        $collector = new Listener\StatisticsCollector;
+        $this->dispatcher->addSubscriber($collector);
+
+        return $collector;
+    }
+
+    protected function createFormatter($format, Presenter\PresenterInterface $presenter,
+                                       Listener\StatisticsCollector $collector)
+    {
+        if ('progress' === $format) {
             $formatter = new Formatter\ProgressFormatter;
         } else {
             $formatter = new Formatter\PrettyFormatter;
         }
 
-        $formatter->setIO($io);
+        $formatter->setIO($this->io);
         $formatter->setPresenter($presenter);
         $formatter->setStatisticsCollector($collector);
-        $runner->getEventDispatcher()->addSubscriber($formatter);
 
-        // setup listeners
-        $runner->getEventDispatcher()->addSubscriber(new ClassNotFoundListener($io));
-        $runner->getEventDispatcher()->addSubscriber(new MethodNotFoundListener($io));
+        $this->dispatcher->addSubscriber($formatter);
 
-        $specifications = $locator->getSpecifications($input->getArgument('spec'));
+        return $formatter;
+    }
 
-        $runner->getEventDispatcher()->dispatch('beforeSuite', new SuiteEvent($collector));
-        $startTime = microtime(true);
-        $result = 0;
-        foreach ($specifications as $spec) {
-            $result = max($result, $runner->runSpecification($spec));
-        }
-        $runner->getEventDispatcher()->dispatch('afterSuite', new SuiteEvent(
-            microtime(true) - $startTime, $result
-        ));
-
-        return intval(ExampleEvent::PASSED !== $result);
+    protected function configureAdditionalListeners()
+    {
+        $this->dispatcher->addSubscriber(new Listener\ClassNotFoundListener($this->io));
+        $this->dispatcher->addSubscriber(new Listener\MethodNotFoundListener($this->io));
     }
 }
