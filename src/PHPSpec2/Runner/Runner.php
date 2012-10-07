@@ -8,27 +8,13 @@ use ReflectionFunctionAbstract;
 use ReflectionMethod;
 
 use PHPSpec2\ObjectBehavior;
-
-use PHPSpec2\Loader\Node\Specification;
-use PHPSpec2\Loader\Node\Example;
-
-use PHPSpec2\Event\SpecificationEvent;
-use PHPSpec2\Event\ExampleEvent;
-
-use PHPSpec2\Exception\Example\ErrorException;
-use PHPSpec2\Exception\Example\PendingException;
-use PHPSpec2\Exception\Example\FailureException;
-
+use PHPSpec2\Loader\Node;
+use PHPSpec2\Event;
+use PHPSpec2\Exception\Example as ExampleException;
 use PHPSpec2\Matcher\MatchersCollection;
-
 use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Mocker\MockBehavior;
-
-use PHPSpec2\Prophet\ObjectProphet;
-use PHPSpec2\Prophet\MockProphet;
-
+use PHPSpec2\Prophet;
 use PHPSpec2\Subject\LazyObject;
-
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
 class Runner
@@ -53,7 +39,7 @@ class Runner
         return $this->eventDispatcher;
     }
 
-    public function runSpecification(Specification $specification)
+    public function runSpecification(Node\Specification $specification)
     {
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
@@ -63,17 +49,17 @@ class Runner
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
         $this->eventDispatcher->dispatch('beforeSpecification',
-            new SpecificationEvent($specification)
+            new Event\SpecificationEvent($specification)
         );
         $startTime = microtime(true);
 
-        $result = ExampleEvent::PASSED;
+        $result = Event\ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
             $result = max($result, $this->runExample($child));
         }
 
         $this->eventDispatcher->dispatch('afterSpecification',
-            new SpecificationEvent($specification, microtime(true) - $startTime, $result)
+            new Event\SpecificationEvent($specification, microtime(true) - $startTime, $result)
         );
 
         if (null !== $oldHandler) {
@@ -83,9 +69,9 @@ class Runner
         return $result;
     }
 
-    public function runExample(Example $example)
+    public function runExample(Node\Example $example)
     {
-        $this->eventDispatcher->dispatch('beforeExample', new ExampleEvent($example));
+        $this->eventDispatcher->dispatch('beforeExample', new Event\ExampleEvent($example));
         $startTime = microtime(true);
 
         $context = $this->createContext($example);
@@ -104,43 +90,45 @@ class Runner
 
             $this->mocker->verify();
 
-            $status    = ExampleEvent::PASSED;
+            $status    = Event\ExampleEvent::PASSED;
             $exception = null;
-        } catch (PendingException $e) {
-            $status    = ExampleEvent::PENDING;
+        } catch (ExampleException\PendingException $e) {
+            $status    = Event\ExampleEvent::PENDING;
             $exception = $e;
-        } catch (FailureException $e) {
-            $status    = ExampleEvent::FAILED;
+        } catch (ExampleException\FailureException $e) {
+            $status    = Event\ExampleEvent::FAILED;
             $exception = $e;
         } catch (\Exception $e) {
-            $status    = ExampleEvent::BROKEN;
+            $status    = Event\ExampleEvent::BROKEN;
             $exception = $e;
         }
 
-        $event = new ExampleEvent($example, microtime(true) - $startTime, $status, $exception);
+        $event = new Event\ExampleEvent(
+            $example, microtime(true) - $startTime, $status, $exception
+        );
         $this->eventDispatcher->dispatch('afterExample', $event);
 
         return $event->getResult();
     }
 
-    protected function createContext(Example $example)
+    protected function createContext(Node\Example $example)
     {
         $function = $example->getFunction();
         $context  = $function->getDeclaringClass()->newInstance();
 
-        $context->setProphet(new ObjectProphet(
+        $context->setProphet(new Prophet\ObjectProphet(
             new LazyObject($example->getSubject()), $this->matchers, $this->unwrapper
         ));
 
         return $context;
     }
 
-    protected function createMockBehavior($subject = null)
+    protected function createMockProphet($subject = null)
     {
-        return new MockProphet($subject, $this->mocker, $this->unwrapper);
+        return new Prophet\MockProphet($subject, $this->mocker, $this->unwrapper);
     }
 
-    protected function getExampleDependencies(Example $example, $context)
+    protected function getExampleDependencies(Node\Example $example, $context)
     {
         $dependencies = array();
         foreach ($example->getPreFunctions() as $preFunction) {
@@ -155,7 +143,7 @@ class Runner
         foreach (explode("\n", trim($function->getDocComment())) as $line) {
             if (preg_match('#@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
                 if (!isset($dependencies[$match[2]])) {
-                    $dependencies[$match[2]] = $this->createMockBehavior();
+                    $dependencies[$match[2]] = $this->createMockProphet();
                     $dependencies[$match[2]]->beAMockOf($match[1]);
                 }
             }
@@ -163,7 +151,7 @@ class Runner
 
         foreach ($function->getParameters() as $parameter) {
             if (!isset($dependencies[$parameter->getName()])) {
-                $dependencies[$parameter->getName()] = $this->createMockBehavior();
+                $dependencies[$parameter->getName()] = $this->createMockProphet();
             }
         }
 
@@ -177,7 +165,7 @@ class Runner
             if (isset($dependencies[$parameter->getName()])) {
                 $parameters[] = $dependencies[$parameter->getName()];
             } else {
-                $parameters[] = $this->createMockBehavior();
+                $parameters[] = $this->createMockProphet();
             }
         }
 
@@ -203,7 +191,7 @@ class Runner
     final public function errorHandler($level, $message, $file, $line)
     {
         if (0 !== error_reporting()) {
-            throw new ErrorException($level, $message, $file, $line);
+            throw new ExampleException\ErrorException($level, $message, $file, $line);
         }
 
         // error reporting turned off or more likely suppressed with @
