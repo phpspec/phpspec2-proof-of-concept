@@ -37,12 +37,7 @@ class Locator
                     $specs = array_merge($specs, $fromFile);
                 }
             }
-        } elseif (is_file($path)) {
-            $file = new SplFileInfo(realpath($path));
-            if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
-                $specs = array_merge($specs, $fromFile);
-            }
-        } elseif (is_file($path = $path.'.php')) {
+        } elseif (is_file($path) || is_file($path = $path.'.php')) {
             $file = new SplFileInfo(realpath($path));
             if ($fromFile = $this->getSpecificationsFromFile($file, $line)) {
                 $specs = array_merge($specs, $fromFile);
