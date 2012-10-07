@@ -36,6 +36,11 @@ class IO
         return (bool) $this->input->getOption('verbose');
     }
 
+    public function getLastWrittenMessage()
+    {
+        return $this->lastMessage;
+    }
+
     public function writeln($message = '', $indent = null)
     {
         $this->write($message, $indent, true);
@@ -45,6 +50,18 @@ class IO
     {
         $this->write($message, $indent);
         $this->hasTempString = true;
+    }
+
+    public function cutTemp()
+    {
+        if (false === $this->hasTempString) {
+            return;
+        }
+
+        $message = $this->lastMessage;
+        $this->write('');
+
+        return $message;
     }
 
     public function freezeTemp()
@@ -105,6 +122,13 @@ class IO
 
     public function askConfirmation($question, $default = true)
     {
+        $question = '<question>'.
+            str_repeat(' ', 70)."\n".
+            str_pad($question, 70, ' ', STR_PAD_BOTH)."\n".
+            str_repeat(' ', 62).
+            '</question> <value>[y/n]</value> '
+        ;
+
         return $this->helpers->get('dialog')->askConfirmation($this->output, $question, $default);
     }
 

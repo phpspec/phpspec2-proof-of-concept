@@ -39,5 +39,7 @@ class Formatter extends OutputFormatter
 
         $this->setStyle('diff-add', new OutputFormatterStyle('green'));
         $this->setStyle('diff-del', new OutputFormatterStyle('red'));
+
+        $this->setStyle('question', new OutputFormatterStyle('black', 'yellow', array('bold')));
     }
 }

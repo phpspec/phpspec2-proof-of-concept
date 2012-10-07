@@ -44,6 +44,8 @@ class DescribeCommand extends Command
         if ($srcPath = $input->getOption('src-path')) {
             $spec = preg_replace('#^'.preg_quote($srcPath, '#').'/#', '', $spec);
         }
+        $spec = preg_replace('#\.php$#', '', $spec);
+        $spec = str_replace('/', '\\', $spec);
 
         $specsPath = realpath($specsPath).DIRECTORY_SEPARATOR;
         $subject   = str_replace('/', '\\', $spec);
@@ -54,13 +56,14 @@ class DescribeCommand extends Command
 
         if (file_exists($filepath)) {
             $overwrite = $this->io->askConfirmation(sprintf(
-                "<info>File <value>%s</value> already exists. Overwrite?</info> [y/N]",
-                $this->relativizePath($filepath)
+                'File "%s" already exists. Overwrite?', basename($filepath)
             ), false);
 
             if (!$overwrite) {
                 return 1;
             }
+
+            $this->io->writeln();
         }
 
         $dirpath = dirname($filepath);
