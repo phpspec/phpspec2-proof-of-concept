@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use PHPSpec2\Event\ExampleEvent;
 use PHPSpec2\Console\IO;
 use Symfony\Component\Console\Helper\DialogHelper;
-use PHPSpec2\Exception\Prophet\ClassDoesNotExistsException;
+use PHPSpec2\Exception\ClassNotFoundException;
 
 class ClassNotFoundListener implements EventSubscriberInterface
 {
@@ -17,29 +17,27 @@ class ClassNotFoundListener implements EventSubscriberInterface
     public function __construct(IO $io, $path = 'src')
     {
         $this->io   = $io;
-        $this->path = $path;
+        $this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
     }
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'afterExample' => 'afterExample'
-        );
+        return array('afterExample' => 'afterExample');
     }
 
     public function afterExample(ExampleEvent $event)
     {
         $exception = $event->getException();
-        if (null !== $exception && $exception instanceof ClassDoesNotExistsException) {
-            $output = $this->io->getOutput();
-            $dialog = new DialogHelper;
+        if (null !== $exception && $exception instanceof ClassNotFoundException) {
+            if (null === $ioTemp = $this->io->cutTemp()) {
+                if ("\n" !== $this->io->getLastWrittenMessage()) {
+                    $this->io->writeln();
+                }
+            }
 
-            if ($dialog->askConfirmation($output, sprintf(
-                "         <info>You want me to create it for you?</info> <value>[Y/n]</value> "
-            ))) {
+            if ($this->io->askConfirmation('Do you want me to create this class for you?')) {
                 $classname = $exception->getClassname();
-                $filepath  = $this->path.DIRECTORY_SEPARATOR.
-                    str_replace('\\', DIRECTORY_SEPARATOR, $classname).'.php';
+                $filepath  = $this->path.str_replace('\\', DIRECTORY_SEPARATOR, $classname).'.php';
 
                 $path = dirname($filepath);
                 if (!is_dir($path)) {
@@ -47,10 +45,14 @@ class ClassNotFoundListener implements EventSubscriberInterface
                 }
                 file_put_contents($filepath, $this->getClassContentFor($classname));
 
-                $output->writeln(sprintf(
-                    "         <info>Class <value>%s</value> has been created.</info>\n",
-                    $classname
-                ));
+                $this->io->writeln(sprintf(
+                    "\n<info>class <value>%s</value> has been created.</info>", $classname
+                ), 6);
+            }
+
+            $this->io->writeln();
+            if (null !== $ioTemp) {
+                $this->io->writeTemp($ioTemp);
             }
         }
     }
@@ -60,30 +62,20 @@ class ClassNotFoundListener implements EventSubscriberInterface
         $classpath = str_replace('\\', DIRECTORY_SEPARATOR, $classname);
 
         if ('.' !== $namespace = str_replace(DIRECTORY_SEPARATOR, '\\', dirname($classpath))) {
-            return strtr(<<<TPL
-<?php
+            $template = file_get_contents(__DIR__.'/../Resources/templates/nsclass.php');
 
-namespace %namespace%;
-
-class %class%
-{
-}
-TPL
-            , array(
-                '%class%'     => basename($classpath),
+            return strtr($template, array(
+                '%classname%' => $classname,
                 '%namespace%' => $namespace,
-            ));
-        } else {
-            return strtr(<<<TPL
-<?php
-
-class %class%
-{
-}
-TPL
-            , array(
-                '%class%' => $classpath,
+                '%class%'     => basename($classpath),
             ));
         }
+
+        $template = file_get_contents(__DIR__.'/../Resources/templates/class.php');
+
+        return strtr($template, array(
+            '%classname%' => $classname,
+            '%class%'     => basename($classpath),
+        ));
     }
 }

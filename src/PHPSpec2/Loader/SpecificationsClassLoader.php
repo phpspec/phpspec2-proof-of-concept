@@ -21,19 +21,22 @@ class SpecificationsClassLoader implements LoaderInterface
                 continue;
             }
 
-            if (!$class->implementsInterface('PHPSpec2\\Specification')) {
+            if (!$class->implementsInterface('PHPSpec2\\SpecificationInterface')) {
                 continue;
             }
 
             $preFunctions = array();
-            if ($class->hasMethod('described_with')) {
-                $preFunctions[] = $class->getMethod('described_with');
+            if ($class->hasMethod('let')) {
+                $preFunctions[] = $class->getMethod('let');
+            }
+            $postFunctions = array();
+            if ($class->hasMethod('letgo')) {
+                $postFunctions[] = $class->getMethod('letgo');
             }
 
-            $specification = new Node\Specification(
-                $class->getName(),
-                preg_replace("|^spec\\\|", '', $class->getName())
-            );
+            $specification = new Node\Specification($class->getName());
+            $subject = $this->getClassSubject($class->getName());
+
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it_|its_)/', $method->getName())) {
                     continue;
@@ -43,16 +46,28 @@ class SpecificationsClassLoader implements LoaderInterface
                     continue;
                 }
 
-                $example = new Node\Example(str_replace('_', ' ', $method->getName()), $method);
+                $example = new Node\Example(
+                    str_replace('_', ' ', $method->getName()), $subject, $method
+                );
                 array_map(array($example, 'addPreFunction'), $preFunctions);
+                array_map(array($example, 'addPostFunction'), $postFunctions);
 
                 $specification->addChild($example);
             }
 
-            $specifications[] = $specification;
+            if (count($specification->getChildren())) {
+                $specifications[] = $specification;
+            }
         }
 
         return $specifications;
+    }
+
+    private function getClassSubject($classname)
+    {
+        $subject = preg_replace("|^spec\\\|", '', $classname);
+
+        return $subject;
     }
 
     private function lineIsInsideMethod($line, ReflectionMethod $method)

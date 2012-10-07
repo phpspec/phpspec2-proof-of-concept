@@ -16,7 +16,7 @@ class SpecificationEvent extends Event implements EventInterface
     {
         $this->specification = $specification;
         $this->time          = $time;
-        $this->result        = null;
+        $this->result        = $result;
     }
 
     public function getSpecification()

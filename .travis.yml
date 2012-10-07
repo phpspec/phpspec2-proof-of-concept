@@ -7,9 +7,10 @@ php:
 branches:
   only:
     - master
+    - develop
 
 before_script:
   - curl http://getcomposer.org/installer | php
   - php composer.phar install --dev
 
-script: bin/phpspec run
+script: bin/phpspec run -v

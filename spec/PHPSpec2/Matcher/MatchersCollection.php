@@ -2,35 +2,35 @@
 
 namespace spec\PHPSpec2\Matcher;
 
-use PHPSpec2\Specification;
-use PHPSpec2\Exception\Example\MatcherNotFoundException;
+use PHPSpec2\ObjectBehavior;
+use PHPSpec2\Exception\MatcherNotFoundException;
 
-class MatchersCollection implements Specification
+class MatchersCollection extends ObjectBehavior
 {
     function it_will_complain_if_no_matchers_registered()
     {
-        $this->object->shouldThrow(new MatcherNotFoundException('crazy_alias'))
-            ->during('find', array('crazy_alias', 42, array()));
+        $this->shouldThrow(new MatcherNotFoundException('crazy_alias'))
+            ->duringFind('crazy_alias', 42, array());
     }
 
     /**
-     * @param Prophet $matcher dummy of PHPSpec2\Matcher\MatcherInterface
+     * @param PHPSpec2\Matcher\MatcherInterface $matcher
      */
     function it_will_complain_if_matcher_is_not_found($matcher)
     {
-        $this->object->add($matcher);
-        $this->object->shouldThrow(new MatcherNotFoundException('crazy_alias'))
-            ->during('find', array('crazy_alias', 42, array()));
+        $this->add($matcher);
+        $this->shouldThrow(new MatcherNotFoundException('crazy_alias'))
+            ->duringFind('crazy_alias', 42, array());
     }
 
     /**
-     * @param Prophet $matcher stub of PHPSpec2\Matcher\MatcherInterface
+     * @param PHPSpec2\Matcher\MatcherInterface $matcher
      */
     function it_will_return_matcher_if_found($matcher)
     {
         $matcher->supports('work', 42, array())->willReturn(true);
 
-        $this->object->add($matcher);
-        $this->object->find('work', 42, array())->shouldBeEqualTo($matcher);
+        $this->add($matcher);
+        $this->find('work', 42, array())->shouldReturn($matcher);
     }
 }

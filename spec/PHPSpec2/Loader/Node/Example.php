@@ -2,68 +2,69 @@
 
 namespace spec\PHPSpec2\Loader\Node;
 
-use PHPSpec2\Specification as SpecificationInterface;
+use PHPSpec2\ObjectBehavior;
 
-class Example implements SpecificationInterface
+class Example extends ObjectBehavior
 {
     /**
-     * @param Prophet $function mock of ReflectionFunctionAbstract
+     * @param ReflectionFunctionAbstract $function
      */
-    function described_with($function)
+    function let($function)
     {
-        $this->example->isAnInstanceOf('PHPSpec2\Loader\Node\Example', array(
-            'test example', $function
-        ));
+        $this->beConstructedWith('test example', 'test subject', $function);
     }
 
     function it_should_have_title()
     {
-        $this->example->getTitle()->shouldReturn('test example');
+        $this->getTitle()->shouldReturn('test example');
+    }
+
+    function it_should_have_subject()
+    {
+        $this->getSubject()->shouldReturn('test subject');
     }
 
     function it_should_have_mapped_function($function)
     {
-        $this->example->getFunction()->shouldReturn($function);
+        $this->getFunction()->shouldReturn($function);
     }
 
     function it_should_not_have_prefunctions_by_default()
     {
-        $this->example->getPreFunctions()->shouldHaveCount(0);
+        $this->getPreFunctions()->shouldHaveCount(0);
     }
 
     function it_should_not_have_postfunctions_by_default()
     {
-        $this->example->getPostFunctions()->shouldHaveCount(0);
+        $this->getPostFunctions()->shouldHaveCount(0);
     }
 
     function it_could_have_prefunctions($function)
     {
-        $this->example->addPreFunction($function);
-        $this->example->getPreFunctions()->shouldHaveCount(1);
+        $this->addPreFunction($function);
+        $this->getPreFunctions()->shouldHaveCount(1);
     }
 
     function it_could_have_postfunctions($function)
     {
-        $this->example->addPostFunction($function);
-        $this->example->getPostFunctions()->shouldHaveCount(1);
+        $this->addPostFunction($function);
+        $this->getPostFunctions()->shouldHaveCount(1);
+    }
+
+    function it_should_not_have_specification_by_default()
+    {
+        $this->getSpecification()->shouldReturn(null);
     }
 
     /**
-     * @param Prophet $specification mock of PHPSpec2\Loader\Node\Specification
+     * @param PHPSpec2\Loader\Node\Specification $specification1
+     * @param PHPSpec2\Loader\Node\Specification $specification2
      */
-    function its_subject_should_be_calculated_from_parent($specification)
+    function it_should_return_first_parent_specification($specification1, $specification2)
     {
-        $specification->getSubject()->willReturn('Class');
-        $this->example->setParent($specification);
-        $this->example->getSubject()->shouldReturn('Class');
-    }
+        $specification1->getParent()->willReturn($specification2);
+        $this->setParent($specification1);
 
-    /**
-     * @param Prophet $specification mock of PHPSpec2\Loader\Node\Specification
-     */
-    function its_subject_should_be_null_if_theres_no_parent($specification)
-    {
-        $specification->getSubject()->willReturn(null);
-        $this->example->getSubject()->shouldReturn(null);
+        $this->getSpecification()->shouldReturn($specification1);
     }
 }

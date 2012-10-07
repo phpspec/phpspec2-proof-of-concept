@@ -11,7 +11,7 @@ abstract class Node
         return $this->parent;
     }
 
-    public function setParent($parent)
+    public function setParent(Node $parent)
     {
         $this->parent = $parent;
     }

@@ -4,19 +4,25 @@ namespace PHPSpec2\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-use PHPSpec2\StatisticsCollector;
+use PHPSpec2\Listener\StatisticsCollector;
 
 class SuiteEvent extends Event implements EventInterface
 {
-    private $collector;
+    private $time;
 
-    public function __construct(StatisticsCollector $collector)
+    public function __construct($time = null, $result = null)
     {
-        $this->collector = $collector;
+        $this->time   = $time;
+        $this->result = $result;
     }
 
-    public function getStatisticsCollector()
+    public function getTime()
     {
-        return $this->collector;
+        return $this->time;
+    }
+
+    public function getResult()
+    {
+        return $this->result;
     }
 }

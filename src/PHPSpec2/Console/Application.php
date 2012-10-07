@@ -3,10 +3,7 @@
 namespace PHPSpec2\Console;
 
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Application extends BaseApplication
 {
@@ -17,7 +14,9 @@ class Application extends BaseApplication
     {
         parent::__construct('PHPSpec2', $version);
 
-        $this->add(new Command\RunCommand);
-        $this->add(new Command\DescribeCommand);
+        $dispatcher = new EventDispatcher();
+
+        $this->add(new Command\RunCommand($dispatcher));
+        $this->add(new Command\DescribeCommand($dispatcher));
     }
 }
