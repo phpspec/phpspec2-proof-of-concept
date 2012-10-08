@@ -11,6 +11,7 @@ use PHPSpec2\Exception\MethodNotFoundException;
 class MethodNotFoundListener implements EventSubscriberInterface
 {
     private $io;
+    private $proposedMethods = array();
 
     public function __construct(IO $io)
     {
@@ -31,6 +32,11 @@ class MethodNotFoundListener implements EventSubscriberInterface
                     $this->io->writeln();
                 }
             }
+            $shortcut = get_class($exception->getSubject()).'::'.$exception->getMethod();
+            if (in_array($shortcut, $this->proposedMethods)) {
+                return;
+            }
+            $this->proposedMethods[] = $shortcut;
 
             if ($this->io->askConfirmation('Do you want me to create this method for you?')) {
                 $class  = new \ReflectionClass($exception->getSubject());
