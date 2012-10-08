@@ -6,6 +6,7 @@ use Exception;
 use PHPSpec2\Exception\Exception as PHPSpec2Exception;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Example\MockerException;
+use PHPSpec2\Exception\Example\ErrorException;
 
 class StringPresenter implements PresenterInterface
 {
@@ -61,7 +62,7 @@ class StringPresenter implements PresenterInterface
     {
         $presentation = sprintf('Exception %s has been thrown.', $this->presentValue($exception));
         if ($exception instanceof PHPSpec2Exception) {
-            $presentation = $exception->getMessage();
+            $presentation = wordwrap($exception->getMessage(), 120);
         }
 
         if (!$verbose) {

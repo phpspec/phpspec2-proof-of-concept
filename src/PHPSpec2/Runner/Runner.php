@@ -44,7 +44,7 @@ class Runner
         if (defined('PHPSPEC_ERROR_REPORTING')) {
             $errorLevel = PHPSPEC_ERROR_REPORTING;
         } else {
-            $errorLevel = E_ALL ^ E_WARNING;
+            $errorLevel = E_ALL ^ E_STRICT;
         }
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
