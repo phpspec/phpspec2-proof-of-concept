@@ -5,13 +5,13 @@ namespace PHPSpec2\Exception\Example;
 class ErrorException extends ExampleException
 {
     private $levels = array(
-        E_WARNING           => 'Warning',
-        E_NOTICE            => 'Notice',
-        E_USER_ERROR        => 'User Error',
-        E_USER_WARNING      => 'User Warning',
-        E_USER_NOTICE       => 'User Notice',
-        E_STRICT            => 'Runtime Notice',
-        E_RECOVERABLE_ERROR => 'Catchable Fatal Error',
+        E_WARNING           => 'warning',
+        E_NOTICE            => 'notice',
+        E_USER_ERROR        => 'error',
+        E_USER_WARNING      => 'warning',
+        E_USER_NOTICE       => 'notice',
+        E_STRICT            => 'notice',
+        E_RECOVERABLE_ERROR => 'error',
     );
 
     /**

@@ -13,6 +13,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
 {
     private $io;
     private $path;
+    private $proposedClasses = array();
 
     public function __construct(IO $io, $path = 'src')
     {
@@ -29,6 +30,11 @@ class ClassNotFoundListener implements EventSubscriberInterface
     {
         $exception = $event->getException();
         if (null !== $exception && $exception instanceof ClassNotFoundException) {
+            if (in_array($exception->getClassname(), $this->proposedClasses)) {
+                return;
+            }
+            $this->proposedClasses[] = $exception->getClassname();
+
             if (null === $ioTemp = $this->io->cutTemp()) {
                 if ("\n" !== $this->io->getLastWrittenMessage()) {
                     $this->io->writeln();

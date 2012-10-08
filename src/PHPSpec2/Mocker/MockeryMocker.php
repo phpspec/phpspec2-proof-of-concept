@@ -3,6 +3,8 @@
 namespace PHPSpec2\Mocker;
 
 use Mockery;
+use PHPSpec2\Exception\Example\MockerException;
+use Mockery\CountValidator\Exception as MockeryCountException;
 
 class MockeryMocker implements MockerInterface
 {
@@ -133,6 +135,23 @@ class MockeryMocker implements MockerInterface
 
     public function verify()
     {
-        Mockery::close();
+        try {
+            Mockery::close();
+        } catch (MockeryCountException $e) {
+            $message = $e->getMessage();
+
+            if (preg_match(
+                '/^Method ([^ ]+) from ([^ ]+).*(at least|at most|exactly).*(\d+).*(\d+)/smi',
+                $message,
+                $matches
+            )) {
+                $message = sprintf(
+                    "Method <value>%s::%s</value>\nshould be called %s %d time(s), but called %d.",
+                    $matches[2], $matches[1], $matches[3], $matches[4], $matches[5]
+                );
+            }
+
+            throw new MockerException($message);
+        }
     }
 }
