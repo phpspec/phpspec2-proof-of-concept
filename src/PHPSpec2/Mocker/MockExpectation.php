@@ -26,13 +26,6 @@ class MockExpectation implements ArrayAccess
         $this->unwrapper = $unwrapper;
     }
 
-    public function byDefault()
-    {
-        $this->mocker->makeDefault($this->getExpectation());
-
-        return $this;
-    }
-
     public function shouldBeCalled()
     {
         $this->mocker->shouldBeCalled($this->getExpectation());
@@ -43,6 +36,13 @@ class MockExpectation implements ArrayAccess
     public function shouldNotBeCalled()
     {
         $this->mocker->shouldNotBeCalled($this->getExpectation());
+
+        return $this;
+    }
+
+    public function willBeDefault()
+    {
+        $this->mocker->makeDefault($this->getExpectation());
 
         return $this;
     }
