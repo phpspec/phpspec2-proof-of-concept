@@ -122,14 +122,17 @@ class IO
 
     public function askConfirmation($question, $default = true)
     {
-        $question = '<question>'.
-            str_repeat(' ', 70)."\n".
-            str_pad($question, 70, ' ', STR_PAD_BOTH)."\n".
-            str_repeat(' ', 62).
-            '</question> <value>[y/n]</value> '
-        ;
+        $lines   = array();
+        $lines[] = '<question>'.str_repeat(' ', 70)."</question>";
+        foreach (explode("\n", wordwrap($question), 50) as $line) {
+            $lines[] = '<question>  '.str_pad($line, 68).'</question>';
+        }
+        $lines[] = '<question>'.str_repeat(' ', 62).'</question> <value>'.
+            ($default ? '[Y/n]' : '[y/N]').'</value> ';
 
-        return $this->helpers->get('dialog')->askConfirmation($this->output, $question, $default);
+        return $this->helpers->get('dialog')->askConfirmation(
+            $this->output, implode("\n", $lines), $default
+        );
     }
 
     public function askAndValidate($question, $validator, $attempts = false, $default = null)
