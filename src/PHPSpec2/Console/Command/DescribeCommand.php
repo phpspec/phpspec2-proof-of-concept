@@ -41,6 +41,7 @@ class DescribeCommand extends Command
             mkdir($specsPath, 0777, true);
         }
 
+        $spec = preg_replace('#^'.preg_quote($specsPath, '#').'/#', '', $spec);
         if ($srcPath = $input->getOption('src-path')) {
             $spec = preg_replace('#^'.preg_quote($srcPath, '#').'/#', '', $spec);
         }
