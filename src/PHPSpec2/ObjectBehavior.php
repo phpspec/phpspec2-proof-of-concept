@@ -2,10 +2,12 @@
 
 namespace PHPSpec2;
 
+use ArrayAccess;
+
 use PHPSpec2\Prophet\ProphetInterface;
 use PHPSpec2\Wrapper\SubjectWrapperInterface;
 
-class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
+class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface, ArrayAccess
 {
     protected $object;
 
@@ -17,6 +19,26 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
     public function getWrappedSubject()
     {
         return $this->object;
+    }
+
+    public function offsetExists($offset)
+    {
+        return $this->object->offsetExists($offset);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->object->offsetGet($offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->object->offsetSet($offset, $value);
+    }
+
+    public function offsetUnset($offset)
+    {
+        return $this->object->offsetUnset($offset);
     }
 
     public function __call($method, array $arguments = array())
