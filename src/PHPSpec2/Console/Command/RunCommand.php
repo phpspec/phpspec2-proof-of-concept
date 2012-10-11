@@ -102,6 +102,7 @@ class RunCommand extends Command
         $matchers->add(new Matcher\CountMatcher($presenter));
         $matchers->add(new Matcher\TypeMatcher($presenter));
         $matchers->add(new Matcher\ObjectStateMatcher($presenter));
+        $matchers->add(new Matcher\ScalarMatcher($presenter));
 
         return $matchers;
     }
