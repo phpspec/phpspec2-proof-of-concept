@@ -17,36 +17,37 @@ class ScalarMatcher extends BasicMatcher
         $this->presenter = $presenter;
     }
 
-    protected function matches($type, array $arguments)
+    protected function matches($subject, array $arguments)
     {
-        switch ($type) {
+
+        switch ($arguments[0]) {
             case 'int':
-                return 'integer' == gettype($arguments[0]);
+                return 'integer' == gettype($subject);
             case 'float':
-                return 'double' == gettype($arguments[0]);
+                return 'double' == gettype($subject);
             case 'null':
-                return 'NULL' == gettype($arguments[0]);
+                return 'NULL' == gettype($subject);
             case 'callable':
-                return is_callable($arguments[0]);
+                return is_callable($subject);
             default:
-                return $type == gettype($arguments[0]);
+                return $arguments[0] == gettype($subject);
         }
     }
 
-    protected function getFailureException($name, $type, array $arguments)
+    protected function getFailureException($name, $subject, array $arguments)
     {
         return new NotEqualException(sprintf(
             'Expected %s, but got %s.',
             $this->presenter->presentValue($arguments[0]),
-            $this->presenter->presentValue($type)
-        ), $type, gettype($arguments[0]));
+            $this->presenter->presentValue(gettype($subject))
+        ), gettype($arguments[0]), gettype($subject));
     }
 
-    protected function getNegativeFailureException($name, $type, array $arguments)
+    protected function getNegativeFailureException($name, $subject, array $arguments)
     {
         return new FailureException(sprintf(
             'Not expected %s, but got one.',
-            $this->presenter->presentValue($type)
+            $this->presenter->presentValue($arguments[0])
         ));
     }
 
@@ -54,16 +55,20 @@ class ScalarMatcher extends BasicMatcher
      * Checks if matcher supports provided subject and matcher name.
      *
      * @param string $name
-     * @param mixed  $type
+     * @param mixed  $subject
      * @param array  $arguments
      *
      * @return Boolean
      */
-    public function supports($name, $type, array $arguments)
+    public function supports($name, $subject, array $arguments)
     {
+
         return in_array($name, array('beScalar'))
-            && in_array($type, array('float', 'string', 'int', 'boolean', 'array', 'object', 'resource', 'null', 'callable'))
-            && 1 == count($arguments);
+            && 1 == count($arguments)
+            && in_array(
+                $arguments[0],
+                array('float', 'string', 'int', 'boolean', 'array', 'resource', 'null', 'callable')
+            );
     }
 
 }
