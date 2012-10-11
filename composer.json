@@ -18,12 +18,17 @@
     ],
 
     "require": {
-        "php":                      ">=5.3.1",
-        "symfony/console":          ">=2.1.0,<2.2.0",
-        "symfony/event-dispatcher": ">=2.1.0,<2.2.0",
-        "symfony/finder":           ">=2.1.0,<2.2.0",
-        "mockery/mockery":          "0.7.*",
-        "phpspec/php-diff":         "*@dev"
+        "php":                       ">=5.3.1",
+        "symfony/console":           ">=2.1.0,<2.2.0",
+        "symfony/event-dispatcher":  ">=2.1.0,<2.2.0",
+        "symfony/finder":            ">=2.1.0,<2.2.0",
+        "mockery/mockery":           "0.7.*",
+        "phpunit/php-code-coverage": "1.2.*",
+        "phpspec/php-diff":          "*@dev"
+    },
+
+    "require-dev" : {
+        "ext-xdebug" : "*"
     },
 
     "autoload": {

@@ -36,6 +36,7 @@ class RunCommand extends Command
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
             new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'progress'),
+            new InputOption('coverage-html', null, InputOption::VALUE_OPTIONAL, 'HTML Code Coverage'),
         ));
     }
 
@@ -60,10 +61,26 @@ class RunCommand extends Command
         $this->configureAdditionalListeners();
         $this->dispatcher->dispatch('beforeSuite', new Event\SuiteEvent($collector));
 
+        if ($input->getOption('coverage-html')) {
+            $filter = new \PHP_CodeCoverage_Filter;
+            $filter->addDirectoryToBlacklist(getcwd() . '/vendor');
+            $filter->addDirectoryToBlacklist(getcwd() . '/spec');
+
+            $coverage = new \PHP_CodeCoverage(null, $filter);
+            $coverage->start('PHPSpec2');
+        }
+
         $result = 0;
         $startTime = microtime(true);
         foreach ($specifications as $spec) {
             $result = max($result, $runner->runSpecification($spec));
+        }
+
+        if (isset($coverage)) {
+            $coverage->stop();
+
+            $writer = new \PHP_CodeCoverage_Report_HTML;
+            $writer->process($coverage, $input->getOption('coverage-html'));
         }
 
         $this->dispatcher->dispatch('afterSuite', new Event\SuiteEvent(
