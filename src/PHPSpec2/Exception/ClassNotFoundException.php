@@ -11,7 +11,7 @@ class ClassNotFoundException extends Exception
         $this->classname = $classname;
 
         parent::__construct(sprintf(
-            'Class <value>%s</value> does not exists.',
+            'Class <value>%s</value> does not exist.',
             $classname
         ));
     }
