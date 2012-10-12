@@ -38,7 +38,7 @@ class SpecificationsClassLoader implements LoaderInterface
             $subject = $this->getClassSubject($class->getName());
 
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                if (!preg_match('/^(it_|its_)/', $method->getName())) {
+                if (!preg_match('/^(it|its)[^a-zA-Z]/', $method->getName())) {
                     continue;
                 }
 
