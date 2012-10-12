@@ -23,7 +23,7 @@ class MatchersCollection
             }
         }
 
-        throw new MatcherNotFoundException($keyword);
+        throw new MatcherNotFoundException($keyword, $subject, $arguments);
     }
 
     public function getAll()
