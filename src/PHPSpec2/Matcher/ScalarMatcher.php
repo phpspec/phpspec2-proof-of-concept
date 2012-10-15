@@ -4,51 +4,28 @@ namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Exception\Example\FailureException;
-use PHPSpec2\Exception\Example\NotEqualException;
+use PHPSpec2\Exception\FunctionNotFoundException;
 
 
-class ScalarMatcher extends BasicMatcher
+class ScalarMatcher implements MatcherInterface
 {
 
+    /**
+     * @var \PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
+     */
     private $presenter;
 
+    /**
+     * @var string $regex
+     */
+    private $regex = '/(be)(.+)/';
+
+    /**
+     * @param \PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
+     */
     public function __construct(PresenterInterface $presenter)
     {
         $this->presenter = $presenter;
-    }
-
-    protected function matches($subject, array $arguments)
-    {
-
-        switch ($arguments[0]) {
-            case 'int':
-                return 'integer' == gettype($subject);
-            case 'float':
-                return 'double' == gettype($subject);
-            case 'null':
-                return 'NULL' == gettype($subject);
-            case 'callable':
-                return is_callable($subject);
-            default:
-                return $arguments[0] == gettype($subject);
-        }
-    }
-
-    protected function getFailureException($name, $subject, array $arguments)
-    {
-        return new NotEqualException(sprintf(
-            'Expected %s, but got %s.',
-            $this->presenter->presentValue($arguments[0]),
-            $this->presenter->presentValue(gettype($subject))
-        ), gettype($arguments[0]), gettype($subject));
-    }
-
-    protected function getNegativeFailureException($name, $subject, array $arguments)
-    {
-        return new FailureException(sprintf(
-            'Not expected %s, but got one.',
-            $this->presenter->presentValue($arguments[0])
-        ));
     }
 
     /**
@@ -62,13 +39,97 @@ class ScalarMatcher extends BasicMatcher
      */
     public function supports($name, $subject, array $arguments)
     {
+        return is_scalar($subject)
+               && preg_match($this->regex, $name);
+    }
 
-        return in_array($name, array('beScalar'))
-            && 1 == count($arguments)
-            && in_array(
-                $arguments[0],
-                array('float', 'string', 'int', 'boolean', 'array', 'resource', 'null', 'callable')
-            );
+    /**
+     * Evaluates positive match.
+     *
+     * @param string $name
+     * @param mixed  $subject
+     * @param array  $arguments
+     *
+     * @throws \PHPSpec2\Exception\FunctionNotFoundException
+     * @throws \PHPSpec2\Exception\Example\FailureException
+     * @return boolean
+     */
+    public function positiveMatch($name, $subject, array $arguments)
+    {
+        preg_match($this->regex, $name, $matches);
+
+        $expected = strtolower($matches[2]);
+
+        switch ($expected) {
+
+            case 'boolean':
+                $func = 'is_bool';
+                break;
+
+            default:
+                $func = 'is_' . $expected;
+                break;
+        }
+
+        if (!function_exists($func)) {
+            throw new FunctionNotFoundException($func);
+        }
+
+        if (false === call_user_func_array($func, array($subject))) {
+            throw new FailureException(sprintf(
+                'Expected %s, but got %s.',
+                $expected,
+                gettype($subject)
+            ));
+        }
+    }
+
+    /**
+     * Evaluates negative match.
+     *
+     * @param string $name
+     * @param mixed  $subject
+     * @param array  $arguments
+     *
+     * @throws \PHPSpec2\Exception\FunctionNotFoundException
+     * @throws \PHPSpec2\Exception\Example\FailureException
+     * @return boolean
+     */
+    public function negativeMatch($name, $subject, array $arguments)
+    {
+        preg_match($this->regex, $name, $matches);
+        $expected = strtolower($matches[2]);
+
+        switch ($expected) {
+            case 'boolean':
+                $func = 'is_bool';
+                break;
+
+            default:
+                $func = 'is_' . $expected;
+                break;
+        }
+
+        if (!function_exists($func)) {
+            throw new FunctionNotFoundException($func);
+        }
+
+        if (true === call_user_func_array($func, array($subject))) {
+            throw new FailureException(sprintf(
+                'Expected %s.',
+                $expected
+            ));
+        }
+    }
+
+    /**
+     * Returns matcher priority.
+     *
+     * @return integer
+     */
+    public function getPriority()
+    {
+        return 50;
     }
 
 }

@@ -3,7 +3,6 @@
 namespace spec\PHPSpec2\Matcher;
 
 use PHPSpec2\ObjectBehavior;
-use PHPSpec2\Exception\Example\FailureException;
 
 
 class ScalarMatcher extends ObjectBehavior
@@ -22,88 +21,63 @@ class ScalarMatcher extends ObjectBehavior
 
     public function it_should_support_all_aliases()
     {
-        $this->supports('beScalar', '', array('string'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('float'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('int'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('boolean'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('array'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('resource'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('null'))->shouldReturn(true);
-        $this->supports('beScalar', '', array('callable'))->shouldReturn(true);
+        $this->supports('beInt', '', array())->shouldReturn(true);
+        $this->supports('beFloat', '', array())->shouldReturn(true);
+        $this->supports('beString', '', array())->shouldReturn(true);
+        $this->supports('beBoolean', '', array())->shouldReturn(true);
     }
 
-    public function it_should_not_support_types_that_is_not_primitive()
+    public function it_should_not_support_non_scalar_types()
     {
-        $this->supports('beScalar', '', array('\\stdClass'))->shouldReturn(false);
+        $this->supports('beArray', array(), array())->shouldReturn(false);
+        $this->supports('beResource', fopen(__FILE__, 'r'), array())->shouldReturn(false);
+        $this->supports('beCallable', function() {return;}, array())->shouldReturn(false);
+    }
+
+    public function it_throws_exception_if_scalar_has_not_a_checker()
+    {
+        $this->shouldThrow(
+            '\\PHPSpec2\\Exception\\FunctionNotFoundException'
+        )->duringPositiveMatch('beNum', 2, array());
+    }
+
+    public function it_throws_exception_when_type_doenst_match()
+    {
+        $this->shouldThrow(
+            '\\PHPSpec2\\Exception\\Example\\FailureException'
+        )->duringPositiveMatch('beString', true, array());
     }
 
     public function it_should_identify_string()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', '', array('string'));
-
+        $this->shouldNotThrow()->duringPositiveMatch('beString', '', array());
         $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', '', array('string'));
+            '\\PHPSpec2\\Exception\\Example\\FailureException'
+        )->duringNegativeMatch('beString', '', array());
     }
 
     public function it_should_identify_boolean()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', true, array('boolean'));
+        $this->shouldNotThrow()->duringPositiveMatch('beBoolean', true, array());
         $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', true, array('boolean'));
+            '\\PHPSpec2\\Exception\\Example\\FailureException'
+        )->duringNegativeMatch('beBoolean', true, array('boolean'));
     }
 
     public function it_should_identify_int()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', 42, array('int'));
+        $this->shouldNotThrow()->duringPositiveMatch('beInt', 42, array('int'));
         $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', 42, array('int'));
+            '\\PHPSpec2\\Exception\\Example\\FailureException'
+        )->duringNegativeMatch('beInt', 42, array('int'));
     }
 
     public function it_should_identify_float()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', 42.0, array('float'));
+        $this->shouldNotThrow()->duringPositiveMatch('beFloat', 42.0, array('float'));
         $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', 42.0, array('float'));
-    }
-
-    public function it_should_identify_array()
-    {
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', array(), array('array'));
-        $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', array(), array('array'));
-    }
-
-    public function it_should_identify_null()
-    {
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', null, array('null'));
-        $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', null, array('null'));
-    }
-
-    public function it_should_identify_resource()
-    {
-        $resource = fopen(__FILE__, 'r');
-
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', $resource, array('resource'));
-        $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', $resource, array('resource'));
-    }
-
-    public function it_should_identify_callable()
-    {
-        $f = function() { return; };
-
-        $this->shouldNotThrow()->duringPositiveMatch('beScalar', $f, array('callable'));
-        $this->shouldThrow(
-            new FailureException('Not expected val1, but got one.')
-        )->duringNegativeMatch('beScalar', $f, array('callable'));
+            '\\PHPSpec2\\Exception\\Example\\FailureException'
+        )->duringNegativeMatch('beFloat', 42.0, array('float'));
     }
 
 }
