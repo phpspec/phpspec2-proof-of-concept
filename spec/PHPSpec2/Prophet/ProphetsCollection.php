@@ -6,20 +6,6 @@ use PHPSpec2\ObjectBehavior;
 
 class ProphetsCollection extends ObjectBehavior
 {
-    function it_should_have_no_subject_prophet_by_default()
-    {
-        $this->getSubject()->shouldReturn(null);
-    }
-
-    /**
-     * @param PHPSpec2\Prophet\ProphetInterface $prophet
-     */
-    function it_should_return_subject_prophet_if_its_set($prophet)
-    {
-        $this->setSubject($prophet);
-        $this->getSubject()->shouldReturn($prophet);
-    }
-
     function it_should_have_no_collaborators_by_default()
     {
         $this->getCollaborators()->shouldHaveCount(0);

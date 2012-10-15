@@ -4,18 +4,7 @@ namespace PHPSpec2\Prophet;
 
 class ProphetsCollection
 {
-    private $subject;
     private $collaborators = array();
-
-    public function getSubject()
-    {
-        return $this->subject;
-    }
-
-    public function setSubject(ProphetInterface $subject)
-    {
-        $this->subject = $subject;
-    }
 
     public function getCollaborators()
     {
