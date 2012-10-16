@@ -64,7 +64,7 @@ class ScalarMatcher implements MatcherInterface
         if (false === call_user_func_array($checkerName, array($subject))) {
             throw new FailureException(sprintf(
                 'Expected %s, but got %s.',
-                substr($checkerName, 0, 3),
+                substr($checkerName, 3),
                 gettype($subject)
             ));
         }
@@ -88,7 +88,7 @@ class ScalarMatcher implements MatcherInterface
         if (true === call_user_func_array($checkerName, array($subject))) {
             throw new FailureException(sprintf(
                 'Expected %s, but got %s.',
-                substr($checkerName, 0, 3),
+                substr($checkerName, 3),
                 gettype($subject)
             ));
         }
