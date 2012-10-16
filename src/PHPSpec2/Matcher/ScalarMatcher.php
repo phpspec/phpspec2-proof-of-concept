@@ -39,8 +39,11 @@ class ScalarMatcher implements MatcherInterface
      */
     public function supports($name, $subject, array $arguments)
     {
+        $checkerName = $this->getCheckerName($name);
+
         return is_scalar($subject)
-               && preg_match($this->regex, $name);
+               && $checkerName !== false
+               && function_exists($checkerName);
     }
 
     /**
@@ -56,29 +59,12 @@ class ScalarMatcher implements MatcherInterface
      */
     public function positiveMatch($name, $subject, array $arguments)
     {
-        preg_match($this->regex, $name, $matches);
+        $checkerName = $this->getCheckerName($name);
 
-        $expected = strtolower($matches[2]);
-
-        switch ($expected) {
-
-            case 'boolean':
-                $func = 'is_bool';
-                break;
-
-            default:
-                $func = 'is_' . $expected;
-                break;
-        }
-
-        if (!function_exists($func)) {
-            throw new FunctionNotFoundException($func);
-        }
-
-        if (false === call_user_func_array($func, array($subject))) {
+        if (false === call_user_func_array($checkerName, array($subject))) {
             throw new FailureException(sprintf(
                 'Expected %s, but got %s.',
-                $expected,
+                substr($checkerName, 0, 3),
                 gettype($subject)
             ));
         }
@@ -97,27 +83,13 @@ class ScalarMatcher implements MatcherInterface
      */
     public function negativeMatch($name, $subject, array $arguments)
     {
-        preg_match($this->regex, $name, $matches);
-        $expected = strtolower($matches[2]);
+        $checkerName = $this->getCheckerName($name);
 
-        switch ($expected) {
-            case 'boolean':
-                $func = 'is_bool';
-                break;
-
-            default:
-                $func = 'is_' . $expected;
-                break;
-        }
-
-        if (!function_exists($func)) {
-            throw new FunctionNotFoundException($func);
-        }
-
-        if (true === call_user_func_array($func, array($subject))) {
+        if (true === call_user_func_array($checkerName, array($subject))) {
             throw new FailureException(sprintf(
-                'Expected %s.',
-                $expected
+                'Expected %s, but got %s.',
+                substr($checkerName, 0, 3),
+                gettype($subject)
             ));
         }
     }
@@ -130,6 +102,25 @@ class ScalarMatcher implements MatcherInterface
     public function getPriority()
     {
         return 50;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string|boolean
+     */
+    private function getCheckerName($name)
+    {
+        $isSupported = preg_match($this->regex, $name, $matches);
+        if ($isSupported) {
+            $expected = strtolower($matches[2]);
+
+            if ($expected == 'boolean') {
+                return 'is_bool';
+            }
+            return 'is_' . $expected;
+        }
+        return false;
     }
 
 }

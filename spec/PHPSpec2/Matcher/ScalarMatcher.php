@@ -34,13 +34,6 @@ class ScalarMatcher extends ObjectBehavior
         $this->supports('beCallable', function() {return;}, array())->shouldReturn(false);
     }
 
-    public function it_throws_exception_if_scalar_has_not_a_checker()
-    {
-        $this->shouldThrow(
-            '\\PHPSpec2\\Exception\\FunctionNotFoundException'
-        )->duringPositiveMatch('beNum', 2, array());
-    }
-
     public function it_throws_exception_when_type_doenst_match()
     {
         $this->shouldThrow(
