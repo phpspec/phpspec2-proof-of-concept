@@ -54,23 +54,23 @@ class ScalarMatcher extends ObjectBehavior
         $this->shouldNotThrow()->duringPositiveMatch('beBoolean', true, array());
         $this->shouldThrow(
             '\\PHPSpec2\\Exception\\Example\\FailureException'
-        )->duringNegativeMatch('beBoolean', true, array('boolean'));
+        )->duringNegativeMatch('beBoolean', true, array());
     }
 
     public function it_should_identify_int()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('beInt', 42, array('int'));
+        $this->shouldNotThrow()->duringPositiveMatch('beInt', 42, array());
         $this->shouldThrow(
             '\\PHPSpec2\\Exception\\Example\\FailureException'
-        )->duringNegativeMatch('beInt', 42, array('int'));
+        )->duringNegativeMatch('beInt', 42, array());
     }
 
     public function it_should_identify_float()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('beFloat', 42.0, array('float'));
+        $this->shouldNotThrow()->duringPositiveMatch('beFloat', 42.0, array());
         $this->shouldThrow(
             '\\PHPSpec2\\Exception\\Example\\FailureException'
-        )->duringNegativeMatch('beFloat', 42.0, array('float'));
+        )->duringNegativeMatch('beFloat', 42.0, array());
     }
 
 }
