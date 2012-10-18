@@ -3,6 +3,7 @@
 namespace spec\PHPSpec2\Prophet;
 
 use PHPSpec2\ObjectBehavior;
+use PHPSpec2\Exception\CollaboratorNotFoundException;
 
 class ProphetsCollection extends ObjectBehavior
 {
@@ -58,5 +59,11 @@ class ProphetsCollection extends ObjectBehavior
 
         $this->getCollaborator('1')->shouldReturn($prophet1);
         $this->getCollaborator('2')->shouldReturn($prophet2);
+    }
+
+    function it_should_throw_exception_if_collaborator_not_found()
+    {
+        $this->shouldThrow(new CollaboratorNotFoundException('unexistent'))
+            ->duringGetCollaborator('unexistent');
     }
 }
