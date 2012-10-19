@@ -57,6 +57,10 @@ class LazyObject implements LazySubjectInterface
 
         $reflection = new ReflectionClass($this->classname);
 
-        return $this->instance = $reflection->newInstanceArgs($this->arguments);
+        if (!empty($this->arguments)) {
+            return $this->instance = $reflection->newInstanceArgs($this->arguments);
+        }
+
+        return $this->instance = $reflection->newInstance();
     }
 }
