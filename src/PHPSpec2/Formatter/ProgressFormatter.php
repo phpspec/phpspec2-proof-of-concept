@@ -83,7 +83,9 @@ class ProgressFormatter implements FormatterInterface
                 $counts[] = sprintf('<%s>%d %s</%s>', $type, $count, $type, $type);
             }
         }
-        $this->io->write(sprintf("\n%d examples ", $this->stats->getEventsCount()));
+        $count = $this->stats->getEventsCount();
+        $plural = $count ==! 1 ? 's' : '';
+        $this->io->write(sprintf("\n%d example%s ", $count, $plural));
         if (count($counts)) {
             $this->io->write(sprintf("(%s)", implode(', ', $counts)));
         }
