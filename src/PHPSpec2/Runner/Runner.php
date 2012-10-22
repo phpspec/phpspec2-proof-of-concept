@@ -45,11 +45,7 @@ class Runner
 
     public function getInitializers()
     {
-        if (0 === count($this->initializers)) {
-            return array();
-        }
-
-        if (!$this->initializersSorted) {
+        if (0 != count($this->initializers) && !$this->initializersSorted) {
             @usort($this->initializers, function($init1, $init2) {
                 return strnatcmp($init1->getPriority(), $init2->getPriority());
             });

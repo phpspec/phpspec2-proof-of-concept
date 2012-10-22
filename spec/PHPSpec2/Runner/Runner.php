@@ -17,6 +17,11 @@ class Runner extends ObjectBehavior
         $this->beConstructedWith($dispatcher, $matchers, $mocker, $unwrapper);
     }
 
+    function it_should_not_have_initializers_registered_by_default()
+    {
+        $this->getInitializers()->shouldHaveCount(0);
+    }
+
     /**
      * @param PHPSpec2\Initializer\InitializerInterface $initializer1
      * @param PHPSpec2\Initializer\InitializerInterface $initializer2
