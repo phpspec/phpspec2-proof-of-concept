@@ -10,23 +10,13 @@ class FunctionParametersReader
     public function getParameters(Example $example)
     {
         $parameters = array();
-        foreach ($example->getPreFunctions() as $function) {
-            foreach ($this->getFunctionParameters($function) as $name => $type) {
-                if (!isset($parameters[$name])) {
-                    $parameters[$name] = $type;
-                }
-            }
-        }
+        $functions  = array_merge(
+            $example->getPreFunctions(),
+            ($function = $example->getFunction()) ? array($function) : array(),
+            $example->getPostFunctions()
+        );
 
-        if ($function = $example->getFunction()) {
-            foreach ($this->getFunctionParameters($function) as $name => $type) {
-                if (!isset($parameters[$name])) {
-                    $parameters[$name] = $type;
-                }
-            }
-        }
-
-        foreach ($example->getPostFunctions() as $function) {
+        foreach ($functions as $function) {
             foreach ($this->getFunctionParameters($function) as $name => $type) {
                 if (!isset($parameters[$name])) {
                     $parameters[$name] = $type;
