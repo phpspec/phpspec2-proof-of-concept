@@ -23,6 +23,11 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
         $this->shouldBeAnInstanceOf('PHPSpec2\Initializer\InitializerInterface');
     }
 
+    function it_should_have_zero_priority()
+    {
+        $this->getPriority()->shouldReturn(0);
+    }
+
     function it_should_support_any_specification($specification, $example)
     {
         $this->supports($specification, $example)->shouldReturn(true);
