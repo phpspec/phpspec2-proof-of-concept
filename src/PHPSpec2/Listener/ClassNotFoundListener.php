@@ -52,7 +52,7 @@ class ClassNotFoundListener implements EventSubscriberInterface
                 file_put_contents($filepath, $this->getClassContentFor($classname));
 
                 $this->io->writeln(sprintf(
-                    "\n<info>class <value>%s</value> has been created at \"" . $filepath . "\".</info>", $classname
+                    "\n<info>Class <value>%s</value> has been created at <value>" . $filepath . "</value>.</info>", $classname
                 ), 6);
             }
 
