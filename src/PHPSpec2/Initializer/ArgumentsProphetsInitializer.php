@@ -35,7 +35,7 @@ class ArgumentsProphetsInitializer implements InitializerInterface
     }
 
     public function initialize(SpecificationInterface $specification, Example $example,
-        ProphetsCollection $prophets, MatchersCollection $matchers)
+                               ProphetsCollection $prophets, MatchersCollection $matchers)
     {
         foreach ($this->parametersReader->getParameters($example) as $name => $type) {
             $prophet = new MockProphet(
