@@ -16,6 +16,7 @@ use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Prophet;
 use PHPSpec2\Subject\LazyObject;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+use PHPSpec2\Initializer\InitializerInterface;
 
 class Runner
 {
@@ -23,6 +24,8 @@ class Runner
     private $matchers;
     private $mocker;
     private $unwrapper;
+    private $initializers = array();
+    private $initializersSorted = false;
 
     public function __construct(EventDispatcherInterface $dispatcher,
                                 MatchersCollection $matchers, MockerInterface $mocker,
@@ -32,6 +35,29 @@ class Runner
         $this->matchers        = $matchers;
         $this->mocker          = $mocker;
         $this->unwrapper       = $unwrapper;
+    }
+
+    public function registerInitializer(InitializerInterface $initializer)
+    {
+        $this->initializers[]     = $initializer;
+        $this->initializersSorted = false;
+    }
+
+    public function getInitializers()
+    {
+        if (0 === count($this->initializers)) {
+            return array();
+        }
+
+        if (!$this->initializersSorted) {
+            @usort($this->initializers, function($init1, $init2) {
+                return strnatcmp($init1->getPriority(), $init2->getPriority());
+            });
+
+            $this->initializersSorted = true;
+        }
+
+        return $this->initializers;
     }
 
     public function getEventDispatcher()
