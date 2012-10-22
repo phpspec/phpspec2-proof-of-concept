@@ -37,11 +37,11 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
     {
         $parametersReader->getParameters($example)->willReturn(array(
             'param1' => 'stdClass',
-            'param2' => 'ReflectionFunction'
+            'param2' => null
         ))->shouldBeCalled();
 
         $mocker->mock('stdClass')->shouldBeCalled();
-        $mocker->mock('ReflectionFunction')->shouldBeCalled();
+        $mocker->mock(null)->shouldNotBeCalled();
 
         $prophets->setCollaborator('param1', ANY_ARGUMENT)->shouldBeCalled();
         $prophets->setCollaborator('param2', ANY_ARGUMENT)->shouldBeCalled();

@@ -38,9 +38,8 @@ class ArgumentsProphetsInitializer implements InitializerInterface
                                ProphetsCollection $prophets, MatchersCollection $matchers)
     {
         foreach ($this->parametersReader->getParameters($example) as $name => $type) {
-            $prophet = new MockProphet(
-                $this->mocker->mock($type), $this->mocker, $this->unwrapper
-            );
+            $subject = $type ? $this->mocker->mock($type) : $type;
+            $prophet = new MockProphet($subject, $this->mocker, $this->unwrapper);
             $prophets->setCollaborator($name, $prophet);
         }
     }
