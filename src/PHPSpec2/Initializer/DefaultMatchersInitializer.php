@@ -4,7 +4,7 @@ namespace PHPSpec2\Initializer;
 
 use PHPSpec2\SpecificationInterface;
 use PHPSpec2\Loader\Node\Example;
-use PHPSpec2\Prophet\ProphetsCollection;
+use PHPSpec2\Prophet\CollaboratorsCollection;
 use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Matcher;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
@@ -32,7 +32,7 @@ class DefaultMatchersInitializer implements InitializerInterface
     }
 
     public function initialize(SpecificationInterface $specification, Example $example,
-                               ProphetsCollection $prophets, MatchersCollection $matchers)
+                               CollaboratorsCollection $prophets, MatchersCollection $matchers)
     {
         $matchers->add(new Matcher\IdentityMatcher($this->presenter));
         $matchers->add(new Matcher\ComparisonMatcher($this->presenter));

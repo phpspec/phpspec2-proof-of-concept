@@ -4,28 +4,28 @@ namespace PHPSpec2\Prophet;
 
 use PHPSpec2\Exception\CollaboratorNotFoundException;
 
-class ProphetsCollection
+class CollaboratorsCollection
 {
     private $collaborators = array();
 
-    public function getCollaborators()
+    public function getAll()
     {
         return $this->collaborators;
     }
 
-    public function setCollaborator($name, ProphetInterface $collaborator)
+    public function set($name, ProphetInterface $collaborator)
     {
         $this->collaborators[$name] = $collaborator;
     }
 
-    public function hasCollaborator($name)
+    public function has($name)
     {
         return isset($this->collaborators[$name]);
     }
 
-    public function getCollaborator($name)
+    public function get($name)
     {
-        if (!$this->hasCollaborator($name)) {
+        if (!$this->has($name)) {
             throw new CollaboratorNotFoundException($name);
         }
 

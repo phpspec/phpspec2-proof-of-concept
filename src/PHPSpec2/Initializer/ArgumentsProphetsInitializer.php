@@ -4,7 +4,7 @@ namespace PHPSpec2\Initializer;
 
 use PHPSpec2\SpecificationInterface;
 use PHPSpec2\Loader\Node\Example;
-use PHPSpec2\Prophet\ProphetsCollection;
+use PHPSpec2\Prophet\CollaboratorsCollection;
 use PHPSpec2\Prophet\MockProphet;
 use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Mocker\MockerInterface;
@@ -35,12 +35,12 @@ class ArgumentsProphetsInitializer implements InitializerInterface
     }
 
     public function initialize(SpecificationInterface $specification, Example $example,
-                               ProphetsCollection $prophets, MatchersCollection $matchers)
+                               CollaboratorsCollection $prophets, MatchersCollection $matchers)
     {
         foreach ($this->parametersReader->getParameters($example) as $name => $type) {
             $subject = $type ? $this->mocker->mock($type) : $type;
             $prophet = new MockProphet($subject, $this->mocker, $this->unwrapper);
-            $prophets->setCollaborator($name, $prophet);
+            $prophets->set($name, $prophet);
         }
     }
 }

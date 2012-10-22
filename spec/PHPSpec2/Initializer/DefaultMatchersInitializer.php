@@ -35,10 +35,10 @@ class DefaultMatchersInitializer extends ObjectBehavior
     }
 
     /**
-     * @param PHPSpec2\SpecificationInterface     $specification
-     * @param PHPSpec2\Loader\Node\Example        $example
-     * @param PHPSpec2\Prophet\ProphetsCollection $prophets
-     * @param PHPSpec2\Matcher\MatchersCollection $matchers
+     * @param PHPSpec2\SpecificationInterface          $specification
+     * @param PHPSpec2\Loader\Node\Example             $example
+     * @param PHPSpec2\Prophet\CollaboratorsCollection $prophets
+     * @param PHPSpec2\Matcher\MatchersCollection      $matchers
      */
     function it_should_add_some_default_matchers($specification, $example, $prophets, $matchers)
     {

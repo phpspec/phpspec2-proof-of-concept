@@ -34,10 +34,10 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
     }
 
     /**
-     * @param PHPSpec2\Prophet\ProphetsCollection $prophets
-     * @param PHPSpec2\Matcher\MatchersCollection $matchers
+     * @param PHPSpec2\Prophet\CollaboratorsCollection $collaborators
+     * @param PHPSpec2\Matcher\MatchersCollection      $matchers
      */
-    function it_should_set_prophets_for_example_arguments($specification, $example, $prophets,
+    function it_should_set_prophets_for_example_arguments($specification, $example, $collaborators,
                                                           $matchers, $parametersReader, $mocker)
     {
         $parametersReader->getParameters($example)->willReturn(array(
@@ -48,9 +48,9 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
         $mocker->mock('stdClass')->shouldBeCalled();
         $mocker->mock(null)->shouldNotBeCalled();
 
-        $prophets->setCollaborator('param1', ANY_ARGUMENT)->shouldBeCalled();
-        $prophets->setCollaborator('param2', ANY_ARGUMENT)->shouldBeCalled();
+        $collaborators->set('param1', ANY_ARGUMENT)->shouldBeCalled();
+        $collaborators->set('param2', ANY_ARGUMENT)->shouldBeCalled();
 
-        $this->initialize($specification, $example, $prophets, $matchers);
+        $this->initialize($specification, $example, $collaborators, $matchers);
     }
 }
