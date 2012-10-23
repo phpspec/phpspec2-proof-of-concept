@@ -31,8 +31,8 @@ class Runner extends ObjectBehavior
         $this->registerInitializer($initializer1);
         $this->registerInitializer($initializer2);
 
-        $initializer1->getPriority()->willReturn(1);
-        $initializer2->getPriority()->willReturn(2);
+        $initializer1->getPriority()->willReturn(0);
+        $initializer2->getPriority()->willReturn(0);
 
         $this->getInitializers()->shouldHaveCount(2);
     }
@@ -50,5 +50,35 @@ class Runner extends ObjectBehavior
         $initializer2->getPriority()->willReturn(1);
 
         $this->getInitializers()->shouldReturn(array($initializer2, $initializer1));
+    }
+
+    /**
+     * @param PHPSpec2\Prophet\SubjectGuesserInterface $guesser1
+     * @param PHPSpec2\Prophet\SubjectGuesserInterface $guesser2
+     */
+    function it_should_be_able_to_register_subject_guesser($guesser1, $guesser2)
+    {
+        $this->registerSubjectGuesser($guesser1);
+        $this->registerSubjectGuesser($guesser2);
+
+        $guesser1->getPriority()->willReturn(0);
+        $guesser2->getPriority()->willReturn(0);
+
+        $this->getSubjectGuessers()->shouldHaveCount(2);
+    }
+
+    /**
+     * @param PHPSpec2\Prophet\SubjectGuesserInterface $guesser1
+     * @param PHPSpec2\Prophet\SubjectGuesserInterface $guesser2
+     */
+    function it_should_sort_guessers_before_returning($guesser1, $guesser2)
+    {
+        $this->registerSubjectGuesser($guesser1);
+        $this->registerSubjectGuesser($guesser2);
+
+        $guesser1->getPriority()->willReturn(5);
+        $guesser2->getPriority()->willReturn(1);
+
+        $this->getSubjectGuessers()->shouldReturn(array($guesser2, $guesser1));
     }
 }

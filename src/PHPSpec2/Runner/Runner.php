@@ -17,6 +17,7 @@ use PHPSpec2\Prophet;
 use PHPSpec2\Subject\LazyObject;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Initializer\InitializerInterface;
+use PHPSpec2\Prophet\SubjectGuesserInterface;
 
 class Runner
 {
@@ -24,6 +25,9 @@ class Runner
     private $matchers;
     private $mocker;
     private $unwrapper;
+
+    private $guessers = array();
+    private $guessersSorted = false;
     private $initializers = array();
     private $initializersSorted = false;
 
@@ -54,6 +58,22 @@ class Runner
         }
 
         return $this->initializers;
+    }
+
+    public function registerSubjectGuesser(SubjectGuesserInterface $guesser)
+    {
+        $this->guessers[] = $guesser;
+    }
+
+    public function getSubjectGuessers()
+    {
+        if (0 !== count($this->guessers) && !$this->guessersSorted) {
+            @usort($this->guessers, function($guesser1, $guesser2) {
+                return strnatcmp($guesser1->getPriority(), $guesser2->getPriority());
+            });
+        }
+
+        return $this->guessers;
     }
 
     public function getEventDispatcher()
