@@ -35,8 +35,6 @@ class SpecificationsClassLoader implements LoaderInterface
             }
 
             $specification = new Node\Specification($class->getName());
-            $subject = $this->getClassSubject($class->getName());
-
             foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 if (!preg_match('/^(it|its)[^a-zA-Z]/', $method->getName())) {
                     continue;
@@ -46,9 +44,7 @@ class SpecificationsClassLoader implements LoaderInterface
                     continue;
                 }
 
-                $example = new Node\Example(
-                    str_replace('_', ' ', $method->getName()), $subject, $method
-                );
+                $example = new Node\Example(str_replace('_', ' ', $method->getName()), $method);
                 array_map(array($example, 'addPreFunction'), $preFunctions);
                 array_map(array($example, 'addPostFunction'), $postFunctions);
 
@@ -61,13 +57,6 @@ class SpecificationsClassLoader implements LoaderInterface
         }
 
         return $specifications;
-    }
-
-    private function getClassSubject($classname)
-    {
-        $subject = preg_replace("|^spec\\\|", '', $classname);
-
-        return $subject;
     }
 
     private function lineIsInsideMethod($line, ReflectionMethod $method)

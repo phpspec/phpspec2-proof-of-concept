@@ -3,7 +3,7 @@
 namespace PHPSpec2\Initializer;
 
 use PHPSpec2\Loader\Node\Example;
-use ReflectionFunction;
+use ReflectionFunctionAbstract;
 
 class FunctionParametersReader
 {
@@ -27,7 +27,7 @@ class FunctionParametersReader
         return $parameters;
     }
 
-    private function getFunctionParameters(ReflectionFunction $function)
+    private function getFunctionParameters(ReflectionFunctionAbstract $function)
     {
         $parameters = $this->getDocParameters($function);
         foreach ($function->getParameters() as $parameter) {
@@ -39,7 +39,7 @@ class FunctionParametersReader
         return $parameters;
     }
 
-    private function getDocParameters(ReflectionFunction $function)
+    private function getDocParameters(ReflectionFunctionAbstract $function)
     {
         $parameters = array();
         if ($comment = $function->getDocComment()) {

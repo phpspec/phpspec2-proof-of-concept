@@ -5,24 +5,20 @@ namespace PHPSpec2\Runner;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use ReflectionFunctionAbstract;
-use ReflectionMethod;
 
-use PHPSpec2\ObjectBehavior;
 use PHPSpec2\Loader\Node;
 use PHPSpec2\Event;
-use PHPSpec2\Exception\Example as ExampleException;
-use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Prophet;
 use PHPSpec2\Subject\LazyObject;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
-use PHPSpec2\Initializer\InitializerInterface;
-use PHPSpec2\Prophet\SubjectGuesserInterface;
+use PHPSpec2\Prophet;
+use PHPSpec2\Matcher;
+use PHPSpec2\Initializer;
+use PHPSpec2\Exception\Example as ExampleException;
 
 class Runner
 {
     private $eventDispatcher;
-    private $matchers;
     private $mocker;
     private $unwrapper;
 
@@ -31,17 +27,15 @@ class Runner
     private $initializers = array();
     private $initializersSorted = false;
 
-    public function __construct(EventDispatcherInterface $dispatcher,
-                                MatchersCollection $matchers, MockerInterface $mocker,
+    public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker,
                                 ArgumentsUnwrapper $unwrapper)
     {
         $this->eventDispatcher = $dispatcher;
-        $this->matchers        = $matchers;
         $this->mocker          = $mocker;
         $this->unwrapper       = $unwrapper;
     }
 
-    public function registerInitializer(InitializerInterface $initializer)
+    public function registerInitializer(Initializer\InitializerInterface $initializer)
     {
         $this->initializers[]     = $initializer;
         $this->initializersSorted = false;
@@ -60,7 +54,7 @@ class Runner
         return $this->initializers;
     }
 
-    public function registerSubjectGuesser(SubjectGuesserInterface $guesser)
+    public function registerSubjectGuesser(Prophet\SubjectGuesserInterface $guesser)
     {
         $this->guessers[] = $guesser;
     }
@@ -113,21 +107,38 @@ class Runner
 
     public function runExample(Node\Example $example)
     {
+        $context  = $example->getFunction()->getDeclaringClass()->newInstance();
+        $prophets = new Prophet\CollaboratorsCollection;
+        $matchers = new Matcher\MatchersCollection;
+
+        foreach ($this->getInitializers() as $initializer) {
+            if ($initializer->supports($context, $example)) {
+                $initializer->initialize($context, $example, $prophets, $matchers);
+            }
+        }
+
+        foreach ($this->getSubjectGuessers() as $guesser) {
+            if ($guesser->supports($context)) {
+                $context->setProphet(new Prophet\ObjectProphet(
+                    new LazyObject($guesser->guess($context)), $matchers, $this->unwrapper
+                ));
+
+                break;
+            }
+        }
+
         $this->eventDispatcher->dispatch('beforeExample', new Event\ExampleEvent($example));
         $startTime = microtime(true);
 
-        $context = $this->createContext($example);
-        $dependencies = $this->getExampleDependencies($example, $context);
-
         try {
             foreach ($example->getPreFunctions() as $preFunction) {
-                $this->invoke($context, $preFunction, $dependencies);
+                $this->invoke($context, $preFunction, $prophets);
             }
 
-            $this->invoke($context, $example->getFunction(), $dependencies);
+            $this->invoke($context, $example->getFunction(), $prophets);
 
             foreach ($example->getPostFunctions() as $postFunction) {
-                $this->invoke($context, $postFunction, $dependencies);
+                $this->invoke($context, $postFunction, $prophets);
             }
 
             $this->mocker->verify();
@@ -153,62 +164,12 @@ class Runner
         return $event->getResult();
     }
 
-    protected function createContext(Node\Example $example)
-    {
-        $function = $example->getFunction();
-        $context  = $function->getDeclaringClass()->newInstance();
-
-        $context->setProphet(new Prophet\ObjectProphet(
-            new LazyObject($example->getSubject()), $this->matchers, $this->unwrapper
-        ));
-
-        return $context;
-    }
-
-    protected function createMockProphet($subject = null)
-    {
-        return new Prophet\MockProphet($subject, $this->mocker, $this->unwrapper);
-    }
-
-    protected function getExampleDependencies(Node\Example $example, $context)
-    {
-        $dependencies = array();
-        foreach ($example->getPreFunctions() as $preFunction) {
-            $dependencies = $this->getDependencies($preFunction, $dependencies);
-        }
-
-        return $this->getDependencies($example->getFunction(), $dependencies);
-    }
-
-    private function getDependencies(ReflectionFunctionAbstract $function, array $dependencies)
-    {
-        foreach (explode("\n", trim($function->getDocComment())) as $line) {
-            if (preg_match('#@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
-                if (!isset($dependencies[$match[2]])) {
-                    $dependencies[$match[2]] = $this->createMockProphet();
-                    $dependencies[$match[2]]->beAMockOf($match[1]);
-                }
-            }
-        }
-
-        foreach ($function->getParameters() as $parameter) {
-            if (!isset($dependencies[$parameter->getName()])) {
-                $dependencies[$parameter->getName()] = $this->createMockProphet();
-            }
-        }
-
-        return $dependencies;
-    }
-
-    private function invoke($context, ReflectionFunctionAbstract $function, array $dependencies)
+    private function invoke($context, ReflectionFunctionAbstract $function,
+                            Prophet\CollaboratorsCollection $prophets)
     {
         $parameters = array();
         foreach ($function->getParameters() as $parameter) {
-            if (isset($dependencies[$parameter->getName()])) {
-                $parameters[] = $dependencies[$parameter->getName()];
-            } else {
-                $parameters[] = $this->createMockProphet();
-            }
+            $parameters[] = $prophets->get($parameter->getName());
         }
 
         $function->invokeArgs($context, $parameters);

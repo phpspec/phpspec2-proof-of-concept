@@ -19,6 +19,8 @@ use PHPSpec2\Mocker;
 use PHPSpec2\Formatter;
 use PHPSpec2\Formatter\Presenter;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+use PHPSpec2\Prophet\DefaultSubjectGuesser;
+use PHPSpec2\Initializer;
 
 class RunCommand extends Command
 {
@@ -50,19 +52,27 @@ class RunCommand extends Command
         $presenter = $this->createPresenter();
         $mocker    = $this->createMocker();
         $unwrapper = $this->createArgumentsUnwrapper();
-        $matchers  = $this->createMatchersCollection($presenter, $unwrapper);
         $collector = $this->createStatisticsCollector();
         $formatter = $this->createFormatter($input->getOption('format'), $presenter, $collector);
 
-        $specifications = $this->createLocator()->getSpecifications($input->getArgument('spec'));
-        $runner         = $this->createRunner($matchers, $mocker, $unwrapper);
+        $specs  = $this->createLocator()->getSpecifications($input->getArgument('spec'));
+        $runner = $this->createRunner($mocker, $unwrapper);
+
+        // TODO: extension points
+        $runner->registerSubjectGuesser(new DefaultSubjectGuesser);
+        $runner->registerInitializer(new Initializer\ArgumentsProphetsInitializer(
+            new Initializer\FunctionParametersReader, $mocker, $unwrapper
+        ));
+        $runner->registerInitializer(new Initializer\DefaultMatchersInitializer(
+            $presenter, $unwrapper
+        ));
 
         $this->configureAdditionalListeners();
         $this->dispatcher->dispatch('beforeSuite', new Event\SuiteEvent($collector));
 
         $result = 0;
         $startTime = microtime(true);
-        foreach ($specifications as $spec) {
+        foreach ($specs as $spec) {
             $result = max($result, $runner->runSpecification($spec));
         }
 
@@ -91,30 +101,14 @@ class RunCommand extends Command
         return new ArgumentsUnwrapper;
     }
 
-    protected function createMatchersCollection(Presenter\PresenterInterface $presenter,
-                                                ArgumentsUnwrapper $unwrapper)
-    {
-        $matchers = new Matcher\MatchersCollection();
-
-        $matchers->add(new Matcher\IdentityMatcher($presenter));
-        $matchers->add(new Matcher\ComparisonMatcher($presenter));
-        $matchers->add(new Matcher\ThrowMatcher($unwrapper, $presenter));
-        $matchers->add(new Matcher\CountMatcher($presenter));
-        $matchers->add(new Matcher\TypeMatcher($presenter));
-        $matchers->add(new Matcher\ObjectStateMatcher($presenter));
-
-        return $matchers;
-    }
-
     protected function createLocator()
     {
         return new Runner\Locator(new Loader\SpecificationsClassLoader);
     }
 
-    protected function createRunner(Matcher\MatchersCollection $matchers,
-                                    Mocker\MockerInterface $mocker, ArgumentsUnwrapper $unwrapper)
+    protected function createRunner(Mocker\MockerInterface $mocker, ArgumentsUnwrapper $unwrapper)
     {
-        return new Runner\Runner($this->dispatcher, $matchers, $mocker, $unwrapper);
+        return new Runner\Runner($this->dispatcher, $mocker, $unwrapper);
     }
 
     protected function createStatisticsCollector()
