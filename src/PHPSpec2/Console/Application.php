@@ -2,6 +2,8 @@
 
 namespace PHPSpec2\Console;
 
+use PHPSpec2\Loader\ConfigurationLoader as Loader;
+
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -18,6 +20,7 @@ class Application extends BaseApplication
         parent::__construct('PHPSpec2', $version);
 
         $dispatcher = new EventDispatcher();
+        $configuration = $this->loadConfiguration();
 
         $this->add(new Command\RunCommand($dispatcher));
         $this->add(new Command\DescribeCommand($dispatcher));
@@ -33,5 +36,14 @@ class Application extends BaseApplication
         }
 
         parent::doRun($input, $output);
+    }
+
+    private function loadConfiguration()
+    {
+        $loader = new Loader();
+        if (file_exists('phpspec.yml')) {
+            return $loader->loadFromFile('phpspec.yml');
+        }
+        return array();
     }
 }

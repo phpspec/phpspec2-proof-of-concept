@@ -23,7 +23,8 @@
         "symfony/event-dispatcher": ">=2.1.0,<2.2.0",
         "symfony/finder":           ">=2.1.0,<2.2.0",
         "mockery/mockery":          "0.7.*",
-        "phpspec/php-diff":         "*@dev"
+        "phpspec/php-diff":         "*@dev",
+        "symfony/yaml":             ">=2.0.0,<2.2.0-dev"
     },
 
     "autoload": {

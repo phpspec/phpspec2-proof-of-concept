@@ -4,3 +4,4 @@ vendor
 bin/*
 !bin/phpspec
 composer.lock
+phpspec.yml
