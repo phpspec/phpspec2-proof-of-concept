@@ -22,8 +22,8 @@ class Application extends BaseApplication
         $dispatcher = new EventDispatcher();
         $configuration = $this->loadConfiguration();
 
-        $this->add(new Command\RunCommand($dispatcher));
-        $this->add(new Command\DescribeCommand($dispatcher));
+        $this->add(new Command\RunCommand($dispatcher, $configuration));
+        $this->add(new Command\DescribeCommand($configuration));
     }
 
     /**

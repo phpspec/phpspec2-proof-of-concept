@@ -23,12 +23,14 @@ use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 class RunCommand extends Command
 {
     private $dispatcher;
+    private $configuration;
 
     /**
      * Initializes command.
      */
-    public function __construct(EventDispatcher $dispatcher)
+    public function __construct(EventDispatcher $dispatcher, $configuration)
     {
+        $this->configuration = $configuration;
         parent::__construct('run');
 
         $this->dispatcher = $dispatcher;

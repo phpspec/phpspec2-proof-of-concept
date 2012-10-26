@@ -12,11 +12,14 @@ use PHPSpec2\Console;
 
 class DescribeCommand extends Command
 {
+    private $configuration;
+
     /**
      * Initializes command.
      */
-    public function __construct()
+    public function __construct($configuration)
     {
+        $this->configuration = $configuration;
         parent::__construct('describe');
 
         $this->setDefinition(array(
