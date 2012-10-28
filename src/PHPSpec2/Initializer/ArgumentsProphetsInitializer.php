@@ -6,11 +6,10 @@ use PHPSpec2\SpecificationInterface;
 use PHPSpec2\Loader\Node\Example;
 use PHPSpec2\Prophet\CollaboratorsCollection;
 use PHPSpec2\Prophet\MockProphet;
-use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
-class ArgumentsProphetsInitializer implements InitializerInterface
+class ArgumentsProphetsInitializer implements ExampleInitializerInterface
 {
     private $parametersReader;
     private $mocker;
@@ -35,12 +34,12 @@ class ArgumentsProphetsInitializer implements InitializerInterface
     }
 
     public function initialize(SpecificationInterface $specification, Example $example,
-                               CollaboratorsCollection $prophets, MatchersCollection $matchers)
+                               CollaboratorsCollection $collaborators)
     {
         foreach ($this->parametersReader->getParameters($example) as $name => $type) {
             $subject = $type ? $this->mocker->mock($type) : $type;
             $prophet = new MockProphet($subject, $this->mocker, $this->unwrapper);
-            $prophets->set($name, $prophet);
+            $collaborators->set($name, $prophet);
         }
     }
 }

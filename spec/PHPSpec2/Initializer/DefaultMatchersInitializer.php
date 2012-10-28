@@ -17,7 +17,7 @@ class DefaultMatchersInitializer extends ObjectBehavior
 
     function it_should_implement_InitializerInterface()
     {
-        $this->shouldBeAnInstanceOf('PHPSpec2\Initializer\InitializerInterface');
+        $this->shouldBeAnInstanceOf('PHPSpec2\Initializer\SpecificationInitializerInterface');
     }
 
     function it_should_have_zero_priority()
@@ -26,24 +26,21 @@ class DefaultMatchersInitializer extends ObjectBehavior
     }
 
     /**
-     * @param PHPSpec2\SpecificationInterface $specification
-     * @param PHPSpec2\Loader\Node\Example    $example
+     * @param PHPSpec2\Loader\Node\Specification $specification
      */
-    function it_should_support_any_specification($specification, $example)
+    function it_should_support_any_specification($specification)
     {
-        $this->supports($specification, $example)->shouldReturn(true);
+        $this->supports($specification)->shouldReturn(true);
     }
 
     /**
-     * @param PHPSpec2\SpecificationInterface          $specification
-     * @param PHPSpec2\Loader\Node\Example             $example
-     * @param PHPSpec2\Prophet\CollaboratorsCollection $prophets
-     * @param PHPSpec2\Matcher\MatchersCollection      $matchers
+     * @param PHPSpec2\Loader\Node\Specification  $specification
+     * @param PHPSpec2\Matcher\MatchersCollection $matchers
      */
-    function it_should_add_some_default_matchers($specification, $example, $prophets, $matchers)
+    function it_should_add_some_default_matchers($specification, $example, $matchers)
     {
         $matchers->add(ANY_ARGUMENT)->shouldBeCalled();
 
-        $this->initialize($specification, $example, $prophets, $matchers);
+        $this->initialize($specification, $matchers);
     }
 }

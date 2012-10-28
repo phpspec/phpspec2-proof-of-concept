@@ -18,37 +18,37 @@ class Runner extends ObjectBehavior
 
     function it_should_not_have_initializers_registered_by_default()
     {
-        $this->getInitializers()->shouldHaveCount(0);
+        $this->getSpecificationInitializers()->shouldHaveCount(0);
     }
 
     /**
-     * @param PHPSpec2\Initializer\InitializerInterface $initializer1
-     * @param PHPSpec2\Initializer\InitializerInterface $initializer2
+     * @param PHPSpec2\Initializer\SpecificationInitializerInterface $specInitializer1
+     * @param PHPSpec2\Initializer\SpecificationInitializerInterface $specInitializer2
      */
-    function it_should_be_able_to_register_initializers($initializer1, $initializer2)
+    function it_should_be_able_to_register_spec_initializers($specInitializer1, $specInitializer2)
     {
-        $this->registerInitializer($initializer1);
-        $this->registerInitializer($initializer2);
+        $this->registerSpecificationInitializer($specInitializer1);
+        $this->registerSpecificationInitializer($specInitializer2);
 
-        $initializer1->getPriority()->willReturn(0);
-        $initializer2->getPriority()->willReturn(0);
+        $specInitializer1->getPriority()->willReturn(0);
+        $specInitializer2->getPriority()->willReturn(0);
 
-        $this->getInitializers()->shouldHaveCount(2);
+        $this->getSpecificationInitializers()->shouldHaveCount(2);
     }
 
     /**
-     * @param PHPSpec2\Initializer\InitializerInterface $initializer1
-     * @param PHPSpec2\Initializer\InitializerInterface $initializer2
+     * @param PHPSpec2\Initializer\SpecificationInitializerInterface $specInitializer1
+     * @param PHPSpec2\Initializer\SpecificationInitializerInterface $specInitializer2
      */
-    function it_should_sort_initializers_before_returning($initializer1, $initializer2)
+    function it_should_sort_spec_initializers_before_returning($specInitializer1, $specInitializer2)
     {
-        $this->registerInitializer($initializer1);
-        $this->registerInitializer($initializer2);
+        $this->registerSpecificationInitializer($specInitializer1);
+        $this->registerSpecificationInitializer($specInitializer2);
 
-        $initializer1->getPriority()->willReturn(2);
-        $initializer2->getPriority()->willReturn(1);
+        $specInitializer1->getPriority()->willReturn(2);
+        $specInitializer2->getPriority()->willReturn(1);
 
-        $this->getInitializers()->shouldReturn(array($initializer2, $initializer1));
+        $this->getSpecificationInitializers()->shouldReturn(array($specInitializer2, $specInitializer1));
     }
 
     /**

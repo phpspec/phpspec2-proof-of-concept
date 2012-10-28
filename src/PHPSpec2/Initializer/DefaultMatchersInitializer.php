@@ -2,15 +2,13 @@
 
 namespace PHPSpec2\Initializer;
 
-use PHPSpec2\SpecificationInterface;
-use PHPSpec2\Loader\Node\Example;
-use PHPSpec2\Prophet\CollaboratorsCollection;
+use PHPSpec2\Loader\Node\Specification;
 use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Matcher;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
-class DefaultMatchersInitializer implements InitializerInterface
+class DefaultMatchersInitializer implements SpecificationInitializerInterface
 {
     private $presenter;
     private $unwrapper;
@@ -26,13 +24,12 @@ class DefaultMatchersInitializer implements InitializerInterface
         return 0;
     }
 
-    public function supports(SpecificationInterface $specification, Example $example)
+    public function supports(Specification $specification)
     {
         return true;
     }
 
-    public function initialize(SpecificationInterface $specification, Example $example,
-                               CollaboratorsCollection $prophets, MatchersCollection $matchers)
+    public function initialize(Specification $specification, MatchersCollection $matchers)
     {
         $matchers->add(new Matcher\IdentityMatcher($this->presenter));
         $matchers->add(new Matcher\ComparisonMatcher($this->presenter));

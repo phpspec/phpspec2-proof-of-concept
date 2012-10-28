@@ -20,7 +20,7 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
 
     function it_should_implement_InitializerInterface()
     {
-        $this->shouldBeAnInstanceOf('PHPSpec2\Initializer\InitializerInterface');
+        $this->shouldBeAnInstanceOf('PHPSpec2\Initializer\ExampleInitializerInterface');
     }
 
     function it_should_have_zero_priority()
@@ -35,10 +35,9 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
 
     /**
      * @param PHPSpec2\Prophet\CollaboratorsCollection $collaborators
-     * @param PHPSpec2\Matcher\MatchersCollection      $matchers
      */
     function it_should_set_prophets_for_example_arguments($specification, $example, $collaborators,
-                                                          $matchers, $parametersReader, $mocker)
+                                                          $parametersReader, $mocker)
     {
         $parametersReader->getParameters($example)->willReturn(array(
             'param1' => 'stdClass',
@@ -51,6 +50,6 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
         $collaborators->set('param1', ANY_ARGUMENT)->shouldBeCalled();
         $collaborators->set('param2', ANY_ARGUMENT)->shouldBeCalled();
 
-        $this->initialize($specification, $example, $collaborators, $matchers);
+        $this->initialize($specification, $example, $collaborators);
     }
 }

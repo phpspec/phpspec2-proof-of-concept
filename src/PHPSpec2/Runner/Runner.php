@@ -24,8 +24,10 @@ class Runner
 
     private $guessers = array();
     private $guessersSorted = false;
-    private $initializers = array();
-    private $initializersSorted = false;
+    private $specInitializers = array();
+    private $specInitializersSorted = false;
+    private $exampleInitializers = array();
+    private $exampleInitializersSorted = false;
 
     public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker,
                                 ArgumentsUnwrapper $unwrapper)
@@ -35,23 +37,42 @@ class Runner
         $this->unwrapper       = $unwrapper;
     }
 
-    public function registerInitializer(Initializer\InitializerInterface $initializer)
+    public function registerSpecificationInitializer(Initializer\SpecificationInitializerInterface $initializer)
     {
-        $this->initializers[]     = $initializer;
-        $this->initializersSorted = false;
+        $this->specInitializers[]     = $initializer;
+        $this->specInitializersSorted = false;
     }
 
-    public function getInitializers()
+    public function getSpecificationInitializers()
     {
-        if (0 != count($this->initializers) && !$this->initializersSorted) {
-            @usort($this->initializers, function($init1, $init2) {
+        if (0 != count($this->specInitializers) && !$this->specInitializersSorted) {
+            @usort($this->specInitializers, function($init1, $init2) {
                 return strnatcmp($init1->getPriority(), $init2->getPriority());
             });
 
-            $this->initializersSorted = true;
+            $this->specInitializersSorted = true;
         }
 
-        return $this->initializers;
+        return $this->specInitializers;
+    }
+
+    public function registerExampleInitializer(Initializer\ExampleInitializerInterface $initializer)
+    {
+        $this->exampleInitializers[]     = $initializer;
+        $this->exampleInitializersSorted = false;
+    }
+
+    public function getExampleInitializers()
+    {
+        if (0 != count($this->exampleInitializers) && !$this->exampleInitializersSorted) {
+            @usort($this->exampleInitializers, function($init1, $init2) {
+                return strnatcmp($init1->getPriority(), $init2->getPriority());
+            });
+
+            $this->exampleInitializersSorted = true;
+        }
+
+        return $this->exampleInitializers;
     }
 
     public function registerSubjectGuesser(Prophet\SubjectGuesserInterface $guesser)
@@ -84,6 +105,13 @@ class Runner
         }
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
+        $matchers = new Matcher\MatchersCollection;
+        foreach ($this->getSpecificationInitializers() as $initializer) {
+            if ($initializer->supports($specification)) {
+                $initializer->initialize($specification, $matchers);
+            }
+        }
+
         $this->eventDispatcher->dispatch('beforeSpecification',
             new Event\SpecificationEvent($specification)
         );
@@ -91,7 +119,7 @@ class Runner
 
         $result = Event\ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
-            $result = max($result, $this->runExample($child));
+            $result = max($result, $this->runExample($child, $matchers));
         }
 
         $this->eventDispatcher->dispatch('afterSpecification',
@@ -105,15 +133,14 @@ class Runner
         return $result;
     }
 
-    public function runExample(Node\Example $example)
+    public function runExample(Node\Example $example, Matcher\MatchersCollection $matchers)
     {
         $context  = $example->getFunction()->getDeclaringClass()->newInstance();
         $prophets = new Prophet\CollaboratorsCollection;
-        $matchers = new Matcher\MatchersCollection;
 
-        foreach ($this->getInitializers() as $initializer) {
+        foreach ($this->getExampleInitializers() as $initializer) {
             if ($initializer->supports($context, $example)) {
-                $initializer->initialize($context, $example, $prophets, $matchers);
+                $initializer->initialize($context, $example, $prophets);
             }
         }
 

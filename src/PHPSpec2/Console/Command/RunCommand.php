@@ -60,11 +60,11 @@ class RunCommand extends Command
 
         // TODO: extension points
         $runner->registerSubjectGuesser(new DefaultSubjectGuesser);
-        $runner->registerInitializer(new Initializer\ArgumentsProphetsInitializer(
-            new Initializer\FunctionParametersReader, $mocker, $unwrapper
-        ));
-        $runner->registerInitializer(new Initializer\DefaultMatchersInitializer(
+        $runner->registerSpecificationInitializer(new Initializer\DefaultMatchersInitializer(
             $presenter, $unwrapper
+        ));
+        $runner->registerExampleInitializer(new Initializer\ArgumentsProphetsInitializer(
+            new Initializer\FunctionParametersReader, $mocker, $unwrapper
         ));
 
         $this->configureAdditionalListeners();
