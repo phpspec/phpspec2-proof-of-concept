@@ -6,6 +6,14 @@ use PHPSpec2\ObjectBehavior;
 
 class DefaultSubjectGuesser extends ObjectBehavior
 {
+    /**
+     * @param PHPSpec2\Wrapper\ArgumentsUnwrapper $unwrapper
+     */
+    function let($unwrapper)
+    {
+        $this->beConstructedWith($unwrapper);
+    }
+
     function it_should_be_initializable()
     {
         $this->shouldHaveType('PHPSpec2\Prophet\SubjectGuesserInterface');

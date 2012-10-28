@@ -10,7 +10,6 @@ use PHPSpec2\Loader\Node;
 use PHPSpec2\Event;
 use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Subject\LazyObject;
-use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Prophet;
 use PHPSpec2\Matcher;
 use PHPSpec2\Initializer;
@@ -20,7 +19,6 @@ class Runner
 {
     private $eventDispatcher;
     private $mocker;
-    private $unwrapper;
 
     private $guessers = array();
     private $guessersSorted = false;
@@ -29,12 +27,10 @@ class Runner
     private $exampleInitializers = array();
     private $exampleInitializersSorted = false;
 
-    public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker,
-                                ArgumentsUnwrapper $unwrapper)
+    public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker)
     {
         $this->eventDispatcher = $dispatcher;
         $this->mocker          = $mocker;
-        $this->unwrapper       = $unwrapper;
     }
 
     public function registerSpecificationInitializer(Initializer\SpecificationInitializerInterface $initializer)
@@ -146,10 +142,7 @@ class Runner
 
         foreach ($this->getSubjectGuessers() as $guesser) {
             if ($guesser->supports($context)) {
-                $context->setProphet(new Prophet\ObjectProphet(
-                    new LazyObject($guesser->guess($context)), $matchers, $this->unwrapper
-                ));
-
+                $context->setProphet($guesser->guess($context, $matchers));
                 break;
             }
         }

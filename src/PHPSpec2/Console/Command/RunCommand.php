@@ -56,10 +56,10 @@ class RunCommand extends Command
         $formatter = $this->createFormatter($input->getOption('format'), $presenter, $collector);
 
         $specs  = $this->createLocator()->getSpecifications($input->getArgument('spec'));
-        $runner = $this->createRunner($mocker, $unwrapper);
+        $runner = $this->createRunner($mocker);
 
         // TODO: extension points
-        $runner->registerSubjectGuesser(new DefaultSubjectGuesser);
+        $runner->registerSubjectGuesser(new DefaultSubjectGuesser($unwrapper));
         $runner->registerSpecificationInitializer(new Initializer\DefaultMatchersInitializer(
             $presenter, $unwrapper
         ));
@@ -106,9 +106,9 @@ class RunCommand extends Command
         return new Runner\Locator(new Loader\SpecificationsClassLoader);
     }
 
-    protected function createRunner(Mocker\MockerInterface $mocker, ArgumentsUnwrapper $unwrapper)
+    protected function createRunner(Mocker\MockerInterface $mocker)
     {
-        return new Runner\Runner($this->dispatcher, $mocker, $unwrapper);
+        return new Runner\Runner($this->dispatcher, $mocker);
     }
 
     protected function createStatisticsCollector()
