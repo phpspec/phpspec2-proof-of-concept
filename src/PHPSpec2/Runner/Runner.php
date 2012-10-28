@@ -7,13 +7,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunctionAbstract;
 
 use PHPSpec2\Loader\Node;
-use PHPSpec2\Event;
 use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Subject\LazyObject;
+use PHPSpec2\Event;
 use PHPSpec2\Prophet;
 use PHPSpec2\Matcher;
 use PHPSpec2\Initializer;
 use PHPSpec2\Exception\Example as ExampleException;
+use PHPSpec2\SpecificationInterface;
 
 class Runner
 {
@@ -131,12 +131,12 @@ class Runner
 
     public function runExample(Node\Example $example, Matcher\MatchersCollection $matchers)
     {
-        $context  = $example->getFunction()->getDeclaringClass()->newInstance();
-        $prophets = new Prophet\CollaboratorsCollection;
+        $context       = $example->getFunction()->getDeclaringClass()->newInstance();
+        $collaborators = new Prophet\CollaboratorsCollection;
 
         foreach ($this->getExampleInitializers() as $initializer) {
             if ($initializer->supports($context, $example)) {
-                $initializer->initialize($context, $example, $prophets);
+                $initializer->initialize($context, $example, $collaborators);
             }
         }
 
@@ -147,18 +147,20 @@ class Runner
             }
         }
 
-        $this->eventDispatcher->dispatch('beforeExample', new Event\ExampleEvent($example));
+        $this->eventDispatcher->dispatch('beforeExample',
+            new Event\ExampleEvent($example)
+        );
         $startTime = microtime(true);
 
         try {
             foreach ($example->getPreFunctions() as $preFunction) {
-                $this->invoke($context, $preFunction, $prophets);
+                $this->invoke($context, $preFunction, $collaborators);
             }
 
-            $this->invoke($context, $example->getFunction(), $prophets);
+            $this->invoke($context, $example->getFunction(), $collaborators);
 
             foreach ($example->getPostFunctions() as $postFunction) {
-                $this->invoke($context, $postFunction, $prophets);
+                $this->invoke($context, $postFunction, $collaborators);
             }
 
             $this->mocker->verify();
@@ -176,20 +178,20 @@ class Runner
             $exception = $e;
         }
 
-        $event = new Event\ExampleEvent(
-            $example, microtime(true) - $startTime, $status, $exception
+        $runTime = microtime(true) - $startTime;
+        $this->eventDispatcher->dispatch('afterExample',
+            $event = new Event\ExampleEvent($example, $runTime, $status, $exception)
         );
-        $this->eventDispatcher->dispatch('afterExample', $event);
 
         return $event->getResult();
     }
 
-    private function invoke($context, ReflectionFunctionAbstract $function,
-                            Prophet\CollaboratorsCollection $prophets)
+    private function invoke(SpecificationInterface $context, ReflectionFunctionAbstract $function,
+                            Prophet\CollaboratorsCollection $collaborators)
     {
         $parameters = array();
         foreach ($function->getParameters() as $parameter) {
-            $parameters[] = $prophets->get($parameter->getName());
+            $parameters[] = $collaborators->get($parameter->getName());
         }
 
         $function->invokeArgs($context, $parameters);
