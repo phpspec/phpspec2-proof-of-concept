@@ -9,7 +9,7 @@ class MatchersCollection extends ObjectBehavior
 {
     function it_will_complain_if_no_matchers_registered()
     {
-        $this->shouldThrow(new MatcherNotFoundException('crazy_alias'))
+        $this->shouldThrow(new MatcherNotFoundException('crazy_alias', 42, array()))
             ->duringFind('crazy_alias', 42, array());
     }
 
@@ -19,7 +19,7 @@ class MatchersCollection extends ObjectBehavior
     function it_will_complain_if_matcher_is_not_found($matcher)
     {
         $this->add($matcher);
-        $this->shouldThrow(new MatcherNotFoundException('crazy_alias'))
+        $this->shouldThrow(new MatcherNotFoundException('crazy_alias', 42, array()))
             ->duringFind('crazy_alias', 42, array());
     }
 

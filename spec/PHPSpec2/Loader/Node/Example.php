@@ -11,17 +11,12 @@ class Example extends ObjectBehavior
      */
     function let($function)
     {
-        $this->beConstructedWith('test example', 'test subject', $function);
+        $this->beConstructedWith('test example', $function);
     }
 
     function it_should_have_title()
     {
         $this->getTitle()->shouldReturn('test example');
-    }
-
-    function it_should_have_subject()
-    {
-        $this->getSubject()->shouldReturn('test subject');
     }
 
     function it_should_have_mapped_function($function)
