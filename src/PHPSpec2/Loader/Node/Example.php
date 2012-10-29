@@ -7,26 +7,19 @@ use ReflectionFunctionAbstract;
 class Example extends Node
 {
     private $title;
-    private $subject;
     private $function;
     private $preFunctions  = array();
     private $postFunctions = array();
 
-    public function __construct($title, $subject, ReflectionFunctionAbstract $function)
+    public function __construct($title, ReflectionFunctionAbstract $function)
     {
         $this->title    = $title;
-        $this->subject  = $subject;
         $this->function = $function;
     }
 
     public function getTitle()
     {
         return $this->title;
-    }
-
-    public function getSubject()
-    {
-        return $this->subject;
     }
 
     public function getFunction()

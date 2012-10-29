@@ -5,33 +5,86 @@ namespace PHPSpec2\Runner;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use ReflectionFunctionAbstract;
-use ReflectionMethod;
 
-use PHPSpec2\ObjectBehavior;
 use PHPSpec2\Loader\Node;
-use PHPSpec2\Event;
-use PHPSpec2\Exception\Example as ExampleException;
-use PHPSpec2\Matcher\MatchersCollection;
 use PHPSpec2\Mocker\MockerInterface;
+use PHPSpec2\Event;
 use PHPSpec2\Prophet;
-use PHPSpec2\Subject\LazyObject;
-use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+use PHPSpec2\Matcher;
+use PHPSpec2\Initializer;
+use PHPSpec2\Exception\Example as ExampleException;
+use PHPSpec2\SpecificationInterface;
 
 class Runner
 {
     private $eventDispatcher;
-    private $matchers;
     private $mocker;
-    private $unwrapper;
 
-    public function __construct(EventDispatcherInterface $dispatcher,
-                                MatchersCollection $matchers, MockerInterface $mocker,
-                                ArgumentsUnwrapper $unwrapper)
+    private $guessers = array();
+    private $guessersSorted = false;
+    private $specInitializers = array();
+    private $specInitializersSorted = false;
+    private $exampleInitializers = array();
+    private $exampleInitializersSorted = false;
+
+    public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker)
     {
         $this->eventDispatcher = $dispatcher;
-        $this->matchers        = $matchers;
         $this->mocker          = $mocker;
-        $this->unwrapper       = $unwrapper;
+    }
+
+    public function registerSpecificationInitializer(Initializer\SpecificationInitializerInterface $initializer)
+    {
+        $this->specInitializers[]     = $initializer;
+        $this->specInitializersSorted = false;
+    }
+
+    public function getSpecificationInitializers()
+    {
+        if (0 != count($this->specInitializers) && !$this->specInitializersSorted) {
+            @usort($this->specInitializers, function($init1, $init2) {
+                return strnatcmp($init1->getPriority(), $init2->getPriority());
+            });
+
+            $this->specInitializersSorted = true;
+        }
+
+        return $this->specInitializers;
+    }
+
+    public function registerExampleInitializer(Initializer\ExampleInitializerInterface $initializer)
+    {
+        $this->exampleInitializers[]     = $initializer;
+        $this->exampleInitializersSorted = false;
+    }
+
+    public function getExampleInitializers()
+    {
+        if (0 != count($this->exampleInitializers) && !$this->exampleInitializersSorted) {
+            @usort($this->exampleInitializers, function($init1, $init2) {
+                return strnatcmp($init1->getPriority(), $init2->getPriority());
+            });
+
+            $this->exampleInitializersSorted = true;
+        }
+
+        return $this->exampleInitializers;
+    }
+
+    public function registerSubjectGuesser(Prophet\SubjectGuesserInterface $guesser)
+    {
+        $this->guessers[] = $guesser;
+    }
+
+    public function getSubjectGuessers()
+    {
+        if (0 !== count($this->guessers) && !$this->guessersSorted) {
+            @usort($this->guessers, function($guesser1, $guesser2) {
+                return strnatcmp($guesser1->getPriority(), $guesser2->getPriority());
+            });
+        }
+
+        return $this->guessers;
     }
 
     public function getEventDispatcher()
@@ -48,6 +101,13 @@ class Runner
         }
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
+        $matchers = new Matcher\MatchersCollection;
+        foreach ($this->getSpecificationInitializers() as $initializer) {
+            if ($initializer->supports($specification)) {
+                $initializer->initialize($specification, $matchers);
+            }
+        }
+
         $this->eventDispatcher->dispatch('beforeSpecification',
             new Event\SpecificationEvent($specification)
         );
@@ -55,7 +115,7 @@ class Runner
 
         $result = Event\ExampleEvent::PASSED;
         foreach ($specification->getChildren() as $child) {
-            $result = max($result, $this->runExample($child));
+            $result = max($result, $this->runExample($child, $matchers));
         }
 
         $this->eventDispatcher->dispatch('afterSpecification',
@@ -69,23 +129,38 @@ class Runner
         return $result;
     }
 
-    public function runExample(Node\Example $example)
+    public function runExample(Node\Example $example, Matcher\MatchersCollection $matchers)
     {
-        $this->eventDispatcher->dispatch('beforeExample', new Event\ExampleEvent($example));
-        $startTime = microtime(true);
+        $context       = $example->getFunction()->getDeclaringClass()->newInstance();
+        $collaborators = new Prophet\CollaboratorsCollection;
 
-        $context = $this->createContext($example);
-        $dependencies = $this->getExampleDependencies($example, $context);
+        foreach ($this->getExampleInitializers() as $initializer) {
+            if ($initializer->supports($context, $example)) {
+                $initializer->initialize($context, $example, $collaborators);
+            }
+        }
+
+        foreach ($this->getSubjectGuessers() as $guesser) {
+            if ($guesser->supports($context)) {
+                $context->setProphet($guesser->guess($context, $matchers));
+                break;
+            }
+        }
+
+        $this->eventDispatcher->dispatch('beforeExample',
+            new Event\ExampleEvent($example)
+        );
+        $startTime = microtime(true);
 
         try {
             foreach ($example->getPreFunctions() as $preFunction) {
-                $this->invoke($context, $preFunction, $dependencies);
+                $this->invoke($context, $preFunction, $collaborators);
             }
 
-            $this->invoke($context, $example->getFunction(), $dependencies);
+            $this->invoke($context, $example->getFunction(), $collaborators);
 
             foreach ($example->getPostFunctions() as $postFunction) {
-                $this->invoke($context, $postFunction, $dependencies);
+                $this->invoke($context, $postFunction, $collaborators);
             }
 
             $this->mocker->verify();
@@ -103,70 +178,20 @@ class Runner
             $exception = $e;
         }
 
-        $event = new Event\ExampleEvent(
-            $example, microtime(true) - $startTime, $status, $exception
+        $runTime = microtime(true) - $startTime;
+        $this->eventDispatcher->dispatch('afterExample',
+            $event = new Event\ExampleEvent($example, $runTime, $status, $exception)
         );
-        $this->eventDispatcher->dispatch('afterExample', $event);
 
         return $event->getResult();
     }
 
-    protected function createContext(Node\Example $example)
-    {
-        $function = $example->getFunction();
-        $context  = $function->getDeclaringClass()->newInstance();
-
-        $context->setProphet(new Prophet\ObjectProphet(
-            new LazyObject($example->getSubject()), $this->matchers, $this->unwrapper
-        ));
-
-        return $context;
-    }
-
-    protected function createMockProphet($subject = null)
-    {
-        return new Prophet\MockProphet($subject, $this->mocker, $this->unwrapper);
-    }
-
-    protected function getExampleDependencies(Node\Example $example, $context)
-    {
-        $dependencies = array();
-        foreach ($example->getPreFunctions() as $preFunction) {
-            $dependencies = $this->getDependencies($preFunction, $dependencies);
-        }
-
-        return $this->getDependencies($example->getFunction(), $dependencies);
-    }
-
-    private function getDependencies(ReflectionFunctionAbstract $function, array $dependencies)
-    {
-        foreach (explode("\n", trim($function->getDocComment())) as $line) {
-            if (preg_match('#@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
-                if (!isset($dependencies[$match[2]])) {
-                    $dependencies[$match[2]] = $this->createMockProphet();
-                    $dependencies[$match[2]]->beAMockOf($match[1]);
-                }
-            }
-        }
-
-        foreach ($function->getParameters() as $parameter) {
-            if (!isset($dependencies[$parameter->getName()])) {
-                $dependencies[$parameter->getName()] = $this->createMockProphet();
-            }
-        }
-
-        return $dependencies;
-    }
-
-    private function invoke($context, ReflectionFunctionAbstract $function, array $dependencies)
+    private function invoke(SpecificationInterface $context, ReflectionFunctionAbstract $function,
+                            Prophet\CollaboratorsCollection $collaborators)
     {
         $parameters = array();
         foreach ($function->getParameters() as $parameter) {
-            if (isset($dependencies[$parameter->getName()])) {
-                $parameters[] = $dependencies[$parameter->getName()];
-            } else {
-                $parameters[] = $this->createMockProphet();
-            }
+            $parameters[] = $collaborators->get($parameter->getName());
         }
 
         $function->invokeArgs($context, $parameters);
