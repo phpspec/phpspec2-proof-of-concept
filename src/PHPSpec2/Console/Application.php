@@ -23,7 +23,7 @@ use ArrayAccess;
 use Closure;
 use InvalidArgumentException;
 
-class Application extends BaseApplication implements ArrayAccess
+class Application extends BaseApplication implements ArrayAccess, ExtendableApplicationInterface
 {
     private $items;
 
