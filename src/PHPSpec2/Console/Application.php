@@ -18,6 +18,7 @@ use PHPSpec2\Formatter\Presenter;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Prophet\DefaultSubjectGuesser;
 use PHPSpec2\Initializer;
+use PHPSpec2\Configuration;
 
 use ArrayAccess;
 use Closure;
@@ -34,7 +35,20 @@ class Application extends BaseApplication implements ArrayAccess, ExtendableAppl
     {
         parent::__construct('PHPSpec2', $version);
 
-        $this['parameters.format'] = 'progress';
+        $this['configuration_loader'] = $this->share(function() {
+            return new Configuration\ConfigurationLoader;
+        });
+        $this['configuration'] = function($c) {
+            return $c['configuration_loader']->loadFromFile(
+                'phpspec.yml'
+            );
+        };
+
+        if ($this['configuration']->hasExtensions()) {
+            $this->loadExtensions();
+        }
+
+        $this['parameters.format'] = $this['configuration']->getParameter('format');
 
         $this['console.commands'] = array();
         $this['io'] = $this->share(function($c) {
@@ -191,6 +205,15 @@ class Application extends BaseApplication implements ArrayAccess, ExtendableAppl
         }
 
         parent::doRun($input, $output);
+    }
+
+    protected function loadExtensions()
+    {
+        foreach ($this['configuration']->getParameter('extensions') as $extensionClass => $extensionConfiguration) {
+            $extension = new $extensionClass;
+            $extension->setApplication($this);
+            $extension->setConfiguration(new Configuration\Configuration($extensionConfiguration));
+        }
     }
 
     public function offsetSet($id, $value)
