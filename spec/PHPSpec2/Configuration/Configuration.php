@@ -15,7 +15,7 @@ class Configuration extends ObjectBehavior
                     'Some\Amazing\Extension' => null
                 )
             )
-        ));
+        ), 'default');
     }
 
     function it_returns_the_parameter_from_the_default_profile()

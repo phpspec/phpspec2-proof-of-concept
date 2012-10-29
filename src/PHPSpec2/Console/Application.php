@@ -212,7 +212,7 @@ class Application extends BaseApplication implements ArrayAccess, ExtendableAppl
         foreach ($this['configuration']->getParameter('extensions') as $extensionClass => $extensionConfiguration) {
             $extension = new $extensionClass;
             $extension->setApplication($this);
-            $extension->setConfiguration(new Configuration\Configuration($extensionConfiguration));
+            $extension->setConfiguration(new Configuration\Configuration($extensionConfiguration, $extensionClass));
         }
     }
 
