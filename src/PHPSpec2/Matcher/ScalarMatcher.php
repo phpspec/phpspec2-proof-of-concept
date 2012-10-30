@@ -41,8 +41,7 @@ class ScalarMatcher implements MatcherInterface
     {
         $checkerName = $this->getCheckerName($name);
 
-        return is_scalar($subject)
-               && $checkerName !== false
+        return $checkerName !== false
                && function_exists($checkerName);
     }
 
