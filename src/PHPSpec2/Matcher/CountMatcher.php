@@ -18,7 +18,7 @@ class CountMatcher extends BasicMatcher
     {
         return 'haveCount' === $name
             && 1 == count($arguments)
-            && is_array($subject) || $subject instanceof \Countable
+            && (is_array($subject) || $subject instanceof \Countable)
         ;
     }
 
