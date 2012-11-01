@@ -3,6 +3,7 @@
 namespace spec\PHPSpec2\Loader\Node;
 
 use PHPSpec2\ObjectBehavior;
+use PHPSpec2\Exception\Example\PendingException;
 
 class Example extends ObjectBehavior
 {

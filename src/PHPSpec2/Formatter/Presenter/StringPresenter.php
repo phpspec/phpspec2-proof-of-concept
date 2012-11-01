@@ -7,6 +7,7 @@ use PHPSpec2\Exception\Exception as PHPSpec2Exception;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Exception\Example\MockerException;
 use PHPSpec2\Exception\Example\ErrorException;
+use PHPSpec2\Exception\Example\PendingException;
 
 class StringPresenter implements PresenterInterface
 {
@@ -65,7 +66,7 @@ class StringPresenter implements PresenterInterface
             $presentation = wordwrap($exception->getMessage(), 120);
         }
 
-        if (!$verbose) {
+        if (!$verbose || $exception instanceof PendingException) {
             return $presentation;
         }
 

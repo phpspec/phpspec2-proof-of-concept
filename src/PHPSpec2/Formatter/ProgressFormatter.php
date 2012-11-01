@@ -9,6 +9,7 @@ use PHPSpec2\Listener\StatisticsCollector;
 use PHPSpec2\Event\SuiteEvent;
 use PHPSpec2\Event\SpecificationEvent;
 use PHPSpec2\Event\ExampleEvent;
+use PHPSpec2\Exception\Example\PendingException;
 
 class ProgressFormatter implements FormatterInterface
 {
@@ -104,7 +105,15 @@ class ProgressFormatter implements FormatterInterface
         $exception->cause = $event->getExample()->getFunction();
         $message = $this->presenter->presentException($exception, $this->io->isVerbose());
 
-        if (ExampleEvent::FAILED === $event->getResult()) {
+        if ($exception instanceof PendingException) {
+            $this->io->writeln(sprintf('<pending-bg>%s</pending-bg>', $title));
+            $this->io->writeln(sprintf(
+                '<lineno>%4d</lineno>  <pending>✘ %s</pending>',
+                $event->getExample()->getFunction()->getStartLine(),
+                $event->getExample()->getTitle()
+            ));
+            $this->io->writeln(sprintf('<pending>%s</pending>', lcfirst($message)), 6);
+        } elseif (ExampleEvent::FAILED === $event->getResult()) {
             $this->io->writeln(sprintf('<failed-bg>%s</failed-bg>', $title));
             $this->io->writeln(sprintf(
                 '<lineno>%4d</lineno>  <failed>✘ %s</failed>',
