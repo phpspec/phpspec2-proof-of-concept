@@ -7,5 +7,5 @@ use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
 interface CustomMatchersProviderInterface
 {
-    static public function getMatchers(PresenterInterface $presenter, ArgumentsUnwrapper $unwrapper);
+    static public function getMatchers();
 }

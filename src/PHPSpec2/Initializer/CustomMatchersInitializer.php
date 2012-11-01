@@ -9,15 +9,6 @@ use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 
 class CustomMatchersInitializer implements SpecificationInitializerInterface
 {
-    private $presenter;
-    private $unwrapper;
-
-    public function __construct(PresenterInterface $presenter, ArgumentsUnwrapper $unwrapper)
-    {
-        $this->presenter = $presenter;
-        $this->unwrapper = $unwrapper;
-    }
-
     public function getPriority()
     {
         return 0;
@@ -33,9 +24,7 @@ class CustomMatchersInitializer implements SpecificationInitializerInterface
     public function initialize(Specification $specification, MatchersCollection $collection)
     {
         $class    = $specification->getClass()->getName();
-        $matchers = $specification->getClass()->getMethod('getMatchers')->invoke(
-            $class, $this->presenter, $this->unwrapper
-        );
+        $matchers = $specification->getClass()->getMethod('getMatchers')->invokeArgs($class, array());
 
         foreach ($matchers as $matcher) {
             $collection->add($matcher);
