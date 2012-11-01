@@ -19,6 +19,10 @@ use PHPSpec2\Formatter\Presenter;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Prophet\DefaultSubjectGuesser;
 use PHPSpec2\Initializer;
+use PHPSpec2\Extension\Configuration;
+use PHPSpec2\Extension\ExtensionInterface;
+
+use InvalidArgumentException;
 
 class Application extends BaseApplication
 {
@@ -33,7 +37,7 @@ class Application extends BaseApplication
 
         $this->container = $c = new ServiceContainer;
 
-        $c->set('parameters.format', 'progress');
+        $c->set('format', 'progress');
 
         $c->set('console.commands', array());
         $c->set('io', $c->share(function($c) {
@@ -92,7 +96,7 @@ class Application extends BaseApplication
 
         $c->extend('event_dispatcher.listeners',
             $c->set('formatter', $c->share(function($c) {
-                if ('progress' === $c('parameters.format')) {
+                if ('progress' === $c('format')) {
                     $formatter = new Formatter\ProgressFormatter;
                 } else {
                     $formatter = new Formatter\PrettyFormatter;
@@ -194,7 +198,23 @@ class Application extends BaseApplication
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
-        // TODO: read configuration here
+        $configuration = new Configuration($this->container);
+        if (is_file('phpspec.yml')) {
+            $configuration->read('phpspec.yml');
+        }
+        if ($this->container->has('extensions')) {
+            foreach ($this->container->get('extensions') as $class) {
+                $extension = new $class;
+                if (!$extension instanceof ExtensionInterface) {
+                    throw new InvalidArgumentException(sprintf(
+                        'phpspec2 extensions should implement ExtensionInterface. "%s" does not.',
+                        $class
+                    ));
+                }
+
+                $extension->initialize($this->container);
+            }
+        }
 
         foreach ($this->container->get('console.commands') as $command) {
             $this->add($command);
