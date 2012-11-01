@@ -148,6 +148,13 @@ class Application extends BaseApplication implements ArrayAccess, ExtendableAppl
             );
         });
 
+        $this->extend('runner.specification_initializers', function($c) {
+            return new Initializer\CustomMatchersInitializer(
+                $c['value_presenter'],
+                $c['arguments_unwrapper']
+            );
+        });
+
         $this->extend('runner.example_initializers', function($c) {
             return new Initializer\ArgumentsProphetsInitializer(
                 $c['initializer.function_parameters_reader'],
