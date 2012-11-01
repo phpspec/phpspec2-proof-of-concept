@@ -8,9 +8,8 @@ class InlineMatcher implements MatcherInterface
 {
     private $name;
     private $checker;
-    private $message;
 
-    public function __construct($name, $message, $checker)
+    public function __construct($name, $checker)
     {
         if (!is_callable($checker)) {
             throw new \InvalidArgumentException(
@@ -20,7 +19,6 @@ class InlineMatcher implements MatcherInterface
 
         $this->name    = $name;
         $this->checker = $checker;
-        $this->message = $message;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -33,7 +31,7 @@ class InlineMatcher implements MatcherInterface
         array_unshift($arguments, $subject);
         if (!call_user_func_array($this->checker, $arguments)) {
             throw new FailureException(sprintf(
-                'Subject expected to %s, but it is not.', $this->message
+                'Subject expected to `%s`, but it is not.', $this->name
             ));
         }
     }
@@ -43,7 +41,7 @@ class InlineMatcher implements MatcherInterface
         array_unshift($arguments, $subject);
         if (call_user_func_array($this->checker, $arguments)) {
             throw new FailureException(sprintf(
-                'Subject expected not to %s, but it is.', $this->message
+                'Subject expected not to `%s`, but it is.', $this->name
             ));
         }
     }

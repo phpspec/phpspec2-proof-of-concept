@@ -10,9 +10,7 @@ class InlineMatcher extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith(
-            'haveResponse', 'Should have expected response.', function(){}
-        );
+        $this->beConstructedWith('haveResponse', function(){});
     }
 
     function it_should_be_matcher()
@@ -22,7 +20,7 @@ class InlineMatcher extends ObjectBehavior
 
     function it_should_not_accept_non_callables_as_checker()
     {
-        $this->shouldThrow()->during('__construct', array('name', 'message', 'checker'));
+        $this->shouldThrow()->during('__construct', array('name', 'checker'));
     }
 
     function it_should_not_support_any_alias()
@@ -37,48 +35,40 @@ class InlineMatcher extends ObjectBehavior
 
     function it_should_throw_exception_during_failed_positive_match()
     {
-        $this->beConstructedWith(
-            'haveResponse', 'have proper response', function($subject, $argument) {
-                return false;
-            }
-        );
+        $this->beConstructedWith('haveResponse', function($subject, $argument) {
+            return false;
+        });
 
         $this->shouldThrow(
-            new FailureException('Subject expected to have proper response, but it is not.')
+            new FailureException('Subject expected to `haveResponse`, but it is not.')
         )->duringPositiveMatch('haveResponse', 'object', array('arg1'));
     }
 
     function it_should_not_throw_exception_during_successfull_positive_match()
     {
-        $this->beConstructedWith(
-            'haveResponse', 'have proper response', function($subject, $argument) {
-                return true;
-            }
-        );
+        $this->beConstructedWith('haveResponse', function($subject, $argument) {
+            return true;
+        });
 
         $this->shouldNotThrow()->duringPositiveMatch('haveResponse', 'object', array('arg1'));
     }
 
     function it_should_throw_exception_during_failed_negative_match()
     {
-        $this->beConstructedWith(
-            'haveResponse', 'have proper response', function($subject, $argument) {
-                return true;
-            }
-        );
+        $this->beConstructedWith('haveResponse', function($subject, $argument) {
+            return true;
+        });
 
         $this->shouldThrow(
-            new FailureException('Subject expected not to have proper response, but it is.')
+            new FailureException('Subject expected not to `haveResponse`, but it is.')
         )->duringNegativeMatch('haveResponse', 'object', array('arg1'));
     }
 
     function it_should_not_throw_exception_during_successfull_negative_match()
     {
-        $this->beConstructedWith(
-            'haveResponse', 'have proper response', function($subject, $argument) {
-                return false;
-            }
-        );
+        $this->beConstructedWith('haveResponse', function($subject, $argument) {
+            return false;
+        });
 
         $this->shouldNotThrow()->duringNegativeMatch('haveResponse', 'object', array('arg1'));
     }
