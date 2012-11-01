@@ -6,6 +6,6 @@ class PendingException extends ExampleException
 {
     public function __construct($text = 'write pending example')
     {
-        parent::__construct(sprintf('TODO: %s', $text));
+        parent::__construct(sprintf('todo: %s', $text));
     }
 }
