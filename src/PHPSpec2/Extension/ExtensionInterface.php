@@ -6,5 +6,5 @@ use PHPSpec2\ServiceContainer;
 
 interface ExtensionInterface
 {
-    public function initialize(ServiceContainer $container, array $config);
+    public function initialize(ServiceContainer $container);
 }
