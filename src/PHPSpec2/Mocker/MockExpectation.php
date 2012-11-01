@@ -3,7 +3,7 @@
 namespace PHPSpec2\Mocker;
 
 use PHPSpec2\Mocker\MockerInterface;
-use PHPSpec2\Wrapper\Argumentsunwrapper;
+use PHPSpec2\Wrapper\ArgumentsUnwrapper;
 use PHPSpec2\Exception\MockException;
 
 use ArrayAccess;
@@ -18,7 +18,7 @@ class MockExpectation implements ArrayAccess
     private $unwrapper;
 
     public function __construct($mock, $method, MockerInterface $mocker,
-                                Argumentsunwrapper $unwrapper)
+                                ArgumentsUnwrapper $unwrapper)
     {
         $this->mock     = $mock;
         $this->method   = $method;
