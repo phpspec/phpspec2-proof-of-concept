@@ -34,22 +34,22 @@ class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->setFormatter(new Console\Formatter($output->isDecorated()));
-        $app = $this->getApplication();
+        $c = $this->getApplication()->getContainer();
 
-        $app['console.input']   = $input;
-        $app['console.output']  = $output;
-        $app['console.helpers'] = $this->getHelperSet();
+        $c->set('console.input', $input);
+        $c->set('console.output', $output);
+        $c->set('console.helpers', $this->getHelperSet());
 
-        $specs = $app['locator']->getSpecifications($input->getArgument('spec'));
-        $app['event_dispatcher']->dispatch('beforeSuite', new Event\SuiteEvent);
+        $specs = $c('locator')->getSpecifications($input->getArgument('spec'));
+        $c('event_dispatcher')->dispatch('beforeSuite', new Event\SuiteEvent);
 
         $result = 0;
         $startTime = microtime(true);
         foreach ($specs as $spec) {
-            $result = max($result, $app['runner']->runSpecification($spec));
+            $result = max($result, $c('runner')->runSpecification($spec));
         }
 
-        $app['event_dispatcher']->dispatch('afterSuite', new Event\SuiteEvent(
+        $c('event_dispatcher')->dispatch('afterSuite', new Event\SuiteEvent(
             microtime(true) - $startTime, $result
         ));
 

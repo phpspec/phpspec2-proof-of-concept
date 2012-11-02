@@ -33,4 +33,9 @@ class ObjectBehavior implements SpecificationInterface, SubjectWrapperInterface
     {
         return $this->object->$property;
     }
+
+    public function __invoke()
+    {
+        return call_user_func_array(array($this->object, '__invoke'), func_get_args());
+    }
 }
