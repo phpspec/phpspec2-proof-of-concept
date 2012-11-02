@@ -184,6 +184,11 @@ class ObjectProphet implements ProphetInterface
         return $this->callOnProphetSubject($method, $arguments);
     }
 
+    public function __invoke()
+    {
+        return $this->callOnProphetSubject('__invoke', func_get_args());
+    }
+
     public function __set($property, $value = null)
     {
         return $this->setToProphetSubject($property, $value);
