@@ -37,5 +37,6 @@ class DefaultMatchersInitializer implements SpecificationInitializerInterface
         $matchers->add(new Matcher\CountMatcher($this->presenter));
         $matchers->add(new Matcher\TypeMatcher($this->presenter));
         $matchers->add(new Matcher\ObjectStateMatcher($this->presenter));
+        $matchers->add(new Matcher\ScalarMatcher($this->presenter));
     }
 }
