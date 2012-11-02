@@ -2,6 +2,8 @@
 
 namespace PHPSpec2\Prophet;
 
+use ArrayAccess;
+
 use ReflectionMethod;
 use ReflectionProperty;
 
@@ -18,7 +20,7 @@ use PHPSpec2\Exception\BehaviorException;
 use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\PropertyNotFoundException;
 
-class ObjectProphet implements ProphetInterface
+class ObjectProphet implements ProphetInterface, ArrayAccess
 {
     private $subject;
     private $matchers;
@@ -167,6 +169,26 @@ class ObjectProphet implements ProphetInterface
         }
 
         return $this->subject;
+    }
+
+    public function offsetExists($offset)
+    {
+        return $this->callOnProphetSubject('offsetExists', array($offset));
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->callOnProphetSubject('offsetGet', array($offset));
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        return $this->callOnProphetSubject('offsetSet', array($offset, $value));
+    }
+
+    public function offsetUnset($offset)
+    {
+        return $this->callOnProphetSubject('offsetUnset', array($offset));
     }
 
     public function __call($method, array $arguments = array())
