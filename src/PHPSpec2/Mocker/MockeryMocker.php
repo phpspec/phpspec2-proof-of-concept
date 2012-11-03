@@ -3,9 +3,14 @@
 namespace PHPSpec2\Mocker;
 
 use Mockery;
-use PHPSpec2\Exception\Example\MockerException;
+use Mockery\CompositeExpectation;
 use Mockery\CountValidator\Exception as MockeryCountException;
+
+use PHPSpec2\Exception\Example\MockerException;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
+
+use ReflectionProperty;
+use Mockery\Expectation;
 
 class MockeryMocker implements MockerInterface
 {
@@ -84,11 +89,33 @@ class MockeryMocker implements MockerInterface
 
     public function shouldBeCalled($expectation)
     {
+        if ($expectation instanceof CompositeExpectation) {
+            $expectations = new ReflectionProperty($expectation, '_expectations');
+            $expectations->setAccessible(true);
+
+            foreach ($expectations->getValue($expectation) as $subExpectation) {
+                $this->clearExpectationValidators($subExpectation);
+            }
+        } else {
+            $this->clearExpectationValidators($expectation);
+        }
+
         $expectation->atLeast()->once();
     }
 
     public function shouldNotBeCalled($expectation)
     {
+        if ($expectation instanceof CompositeExpectation) {
+            $expectations = new ReflectionProperty($expectation, '_expectations');
+            $expectations->setAccessible(true);
+
+            foreach ($expectations->getValue($expectation) as $subExpectation) {
+                $this->clearExpectationValidators($subExpectation);
+            }
+        } else {
+            $this->clearExpectationValidators($expectation);
+        }
+
         $expectation->never();
     }
 
@@ -161,5 +188,12 @@ class MockeryMocker implements MockerInterface
 
             throw new MockerException($message);
         }
+    }
+
+    private function clearExpectationValidators(Expectation $expectation)
+    {
+        $property = new ReflectionProperty($expectation, '_countValidators');
+        $property->setAccessible(true);
+        $property->setValue($expectation, array());
     }
 }
