@@ -17,10 +17,13 @@ use PHPSpec2\Subject\LazyObject;
 use PHPSpec2\Exception\BehaviorException;
 use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\PropertyNotFoundException;
+use PHPSpec2\Exception\InterfaceNotImplementedException;
 
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
-class ObjectProphet implements ProphetInterface
+use ArrayAccess;
+
+class ObjectProphet implements ArrayAccess, ProphetInterface
 {
     private $subject;
     private $matchers;
@@ -183,6 +186,98 @@ class ObjectProphet implements ProphetInterface
         }
 
         return $this->subject;
+    }
+
+    public function offsetExists($key)
+    {
+        $subject = $this->getWrappedSubject();
+        $key     = $this->unwrapper->unwrapOne($key);
+
+        if (is_object($subject) && !($subject instanceof ArrayAccess)) {
+            throw new InterfaceNotImplementedException(
+                sprintf('%s does not implement %s interface, but should.',
+                    $this->presenter->presentValue($this->getWrappedSubject()),
+                    $this->presenter->presentString('ArrayAccess')
+                ),
+                $this->getWrappedSubject(),
+                'ArrayAccess'
+            );
+        } elseif (!is_array($subject)) {
+            throw new BehaviorException(sprintf(
+                'Can not use %s as array.', $this->presenter->presentValue($subject)
+            ));
+        }
+
+        return isset($subject[$key]);
+    }
+
+    public function offsetGet($key)
+    {
+        $subject = $this->getWrappedSubject();
+        $key     = $this->unwrapper->unwrapOne($key);
+
+        if (is_object($subject) && !($subject instanceof ArrayAccess)) {
+            throw new InterfaceNotImplementedException(
+                sprintf('%s does not implement %s interface, but should.',
+                    $this->presenter->presentValue($this->getWrappedSubject()),
+                    $this->presenter->presentString('ArrayAccess')
+                ),
+                $this->getWrappedSubject(),
+                'ArrayAccess'
+            );
+        } elseif (!is_array($subject)) {
+            throw new BehaviorException(sprintf(
+                'Can not use %s as array.', $this->presenter->presentValue($subject)
+            ));
+        }
+
+        return $subject[$key];
+    }
+
+    public function offsetSet($key, $value)
+    {
+        $subject = $this->getWrappedSubject();
+        $key     = $this->unwrapper->unwrapOne($key);
+
+        if (is_object($subject) && !($subject instanceof ArrayAccess)) {
+            throw new InterfaceNotImplementedException(
+                sprintf('%s does not implement %s interface, but should.',
+                    $this->presenter->presentValue($this->getWrappedSubject()),
+                    $this->presenter->presentString('ArrayAccess')
+                ),
+                $this->getWrappedSubject(),
+                'ArrayAccess'
+            );
+        } elseif (!is_array($subject)) {
+            throw new BehaviorException(sprintf(
+                'Can not use %s as array.', $this->presenter->presentValue($subject)
+            ));
+        }
+
+        $subject[$key] = $value;
+    }
+
+    public function offsetUnset($key)
+    {
+        $subject = $this->getWrappedSubject();
+        $key     = $this->unwrapper->unwrapOne($key);
+
+        if (is_object($subject) && !($subject instanceof ArrayAccess)) {
+            throw new InterfaceNotImplementedException(
+                sprintf('%s does not implement %s interface, but should.',
+                    $this->presenter->presentValue($this->getWrappedSubject()),
+                    $this->presenter->presentString('ArrayAccess')
+                ),
+                $this->getWrappedSubject(),
+                'ArrayAccess'
+            );
+        } elseif (!is_array($subject)) {
+            throw new BehaviorException(sprintf(
+                'Can not use %s as array.', $this->presenter->presentValue($subject)
+            ));
+        }
+
+        unset($subject[$key]);
     }
 
     public function __call($method, array $arguments = array())
