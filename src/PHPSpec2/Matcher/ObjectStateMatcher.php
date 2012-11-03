@@ -31,7 +31,7 @@ class ObjectStateMatcher implements MatcherInterface
         if (!method_exists($subject, $method)) {
             throw new MethodNotFoundException(sprintf(
                 'Method %s not found.',
-                $this->presenter->presentValue(array($subject, $method))
+                $this->presenter->presentString(get_class($subject).'::'.$method.'()')
             ), $subject, $method, $arguments);
         }
 
@@ -49,7 +49,7 @@ class ObjectStateMatcher implements MatcherInterface
         if (!method_exists($subject, $method)) {
             throw new MethodNotFoundException(sprintf(
                 'Method %s not found.',
-                $this->presenter->presentValue(array($subject, $method))
+                $this->presenter->presentString(get_class($subject).'::'.$method.'()')
             ), $subject, $method, $arguments);
         }
 

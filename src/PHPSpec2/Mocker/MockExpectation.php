@@ -4,6 +4,7 @@ namespace PHPSpec2\Mocker;
 
 use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Exception\MockException;
 
 use ArrayAccess;
@@ -16,14 +17,16 @@ class MockExpectation implements ArrayAccess
     private $mocker;
     private $expectation;
     private $unwrapper;
+    private $prophet;
 
     public function __construct($mock, $method, MockerInterface $mocker,
-                                ArgumentsUnwrapper $unwrapper)
+                                ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter)
     {
-        $this->mock     = $mock;
-        $this->method   = $method;
-        $this->mocker   = $mocker;
+        $this->mock      = $mock;
+        $this->method    = $method;
+        $this->mocker    = $mocker;
         $this->unwrapper = $unwrapper;
+        $this->presenter = $presenter;
     }
 
     public function shouldBeCalled()

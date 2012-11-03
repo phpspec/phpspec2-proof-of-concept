@@ -81,7 +81,7 @@ class Application extends BaseApplication
         }));
 
         $c->set('mocker', $c->share(function($c) {
-            return new Mocker\MockeryMocker;
+            return new Mocker\MockeryMocker($c('value_presenter'));
         }));
 
         $c->set('arguments_unwrapper', $c->share(function($c) {
@@ -164,7 +164,8 @@ class Application extends BaseApplication
             return new Initializer\ArgumentsProphetsInitializer(
                 $c('initializer.function_parameters_reader'),
                 $c('mocker'),
-                $c('arguments_unwrapper')
+                $c('arguments_unwrapper'),
+                $c('value_presenter')
             );
         });
 

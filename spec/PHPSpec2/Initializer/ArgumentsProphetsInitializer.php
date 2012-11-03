@@ -12,10 +12,11 @@ class ArgumentsProphetsInitializer extends ObjectBehavior
      * @param PHPSpec2\Initializer\FunctionParametersReader $parametersReader
      * @param PHPSpec2\Mocker\MockerInterface               $mocker
      * @param PHPSpec2\Wrapper\ArgumentsUnwrapper           $unwrapper
+     * @param PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
      */
-    function let($specification, $example, $parametersReader, $mocker, $unwrapper)
+    function let($specification, $example, $parametersReader, $mocker, $unwrapper, $presenter)
     {
-        $this->beConstructedWith($parametersReader, $mocker, $unwrapper);
+        $this->beConstructedWith($parametersReader, $mocker, $unwrapper, $presenter);
     }
 
     function it_should_implement_InitializerInterface()

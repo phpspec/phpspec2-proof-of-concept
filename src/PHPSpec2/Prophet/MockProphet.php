@@ -4,21 +4,23 @@ namespace PHPSpec2\Prophet;
 
 use PHPSpec2\Mocker\MockerInterface;
 use PHPSpec2\Mocker\MockExpectation;
-
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class MockProphet implements ProphetInterface
 {
     private $subject;
     private $mocker;
     private $unwrapper;
+    private $presenter;
 
     public function __construct($subject = null, MockerInterface $mocker,
-                                ArgumentsUnwrapper $unwrapper)
+                                ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter)
     {
         $this->subject   = $subject;
         $this->mocker    = $mocker;
         $this->unwrapper = $unwrapper;
+        $this->presenter = $presenter;
     }
 
     public function beAMockOf($classOrInterface)
@@ -28,7 +30,9 @@ class MockProphet implements ProphetInterface
 
     public function __get($method)
     {
-        return new MockExpectation($this->subject, $method, $this->mocker, $this->unwrapper);
+        return new MockExpectation(
+            $this->subject, $method, $this->mocker, $this->unwrapper, $this->presenter
+        );
     }
 
     public function __call($method, array $arguments)

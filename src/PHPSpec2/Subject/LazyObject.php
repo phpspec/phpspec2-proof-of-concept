@@ -58,7 +58,7 @@ class LazyObject implements LazySubjectInterface
 
         if (!class_exists($this->classname)) {
             throw new ClassNotFoundException(sprintf(
-                'Class %s does not exists.', $this->presentString($this->classname)
+                'Class %s does not exists.', $this->presenter->presentString($this->classname)
             ), $this->classname);
         }
 

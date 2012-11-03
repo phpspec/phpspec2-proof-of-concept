@@ -5,9 +5,17 @@ namespace PHPSpec2\Mocker;
 use Mockery;
 use PHPSpec2\Exception\Example\MockerException;
 use Mockery\CountValidator\Exception as MockeryCountException;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class MockeryMocker implements MockerInterface
 {
+    private $presenter;
+
+    public function __construct(PresenterInterface $presenter)
+    {
+        $this->presenter = $presenter;
+    }
+
     public function mock($classOrInterface)
     {
         $mock = Mockery::mock($classOrInterface);

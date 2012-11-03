@@ -11,6 +11,8 @@ class ObjectStateMatcher extends ObjectBehavior
      */
     function let($presenter)
     {
+        $presenter->presentString(ANY_ARGUMENTS)->willReturn('str1');
+        $presenter->presentString(ANY_ARGUMENTS)->willReturn('str2');
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val1');
         $presenter->presentValue(ANY_ARGUMENTS)->willReturn('val2');
 

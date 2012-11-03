@@ -122,7 +122,7 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
 
         throw new MethodNotFoundException(sprintf(
             'Method %s not found.',
-            $this->presenter->presentValue(array($subject, $method))
+            $this->presenter->presentString(get_class($subject).'::'.$method.'()')
         ), $subject, $method, $arguments);
     }
 
