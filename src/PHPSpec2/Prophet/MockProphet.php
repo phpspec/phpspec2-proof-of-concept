@@ -30,6 +30,10 @@ class MockProphet implements ProphetInterface
 
     public function __get($method)
     {
+        if (null === $this->subject) {
+            $this->beAMockOf('stdClass');
+        }
+
         return new MockExpectation(
             $this->subject, $method, $this->mocker, $this->unwrapper, $this->presenter
         );
@@ -37,6 +41,10 @@ class MockProphet implements ProphetInterface
 
     public function __call($method, array $arguments)
     {
+        if (null === $this->subject) {
+            $this->beAMockOf('stdClass');
+        }
+
         return call_user_func_array($this->$method, $arguments);
     }
 
