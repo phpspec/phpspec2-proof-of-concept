@@ -15,6 +15,17 @@ class Example extends ObjectBehavior
         $this->beConstructedWith('test example', $function);
     }
 
+    function it_should_not_be_pending_by_default()
+    {
+        $this->shouldNotBePending();
+    }
+
+    function it_should_be_pending_if_loader_said_so()
+    {
+        $this->setAsPending(true);
+        $this->shouldBePending();
+    }
+
     function it_should_have_title()
     {
         $this->getTitle()->shouldReturn('test example');

@@ -48,6 +48,10 @@ class SpecificationsClassLoader implements LoaderInterface
                 array_map(array($example, 'addPreFunction'), $preFunctions);
                 array_map(array($example, 'addPostFunction'), $postFunctions);
 
+                if ($this->methodIsEmpty($method)) {
+                    $example->setAsPending();
+                }
+
                 $specification->addChild($example);
             }
 
@@ -62,5 +66,20 @@ class SpecificationsClassLoader implements LoaderInterface
     private function lineIsInsideMethod($line, ReflectionMethod $method)
     {
         return $line >= $method->getStartLine() && $line <= $method->getEndLine();
+    }
+
+    private function methodIsEmpty(ReflectionMethod $method)
+    {
+        $filename = $method->getFileName();
+        $lines    = explode("\n", file_get_contents($filename));
+        $function = trim(implode("\n",
+            array_slice($lines, $method->getStartLine() - 1, $method->getEndLine() - $method->getStartLine())
+        ));
+
+        $function = trim(preg_replace(
+            array('|^[^}]*{|', '|}$|', '|//[^\n]*|s', '|/\*.*\*/|s'), '', $function
+        ));
+
+        return '' === $function;
     }
 }

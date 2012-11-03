@@ -15,6 +15,7 @@ use PHPSpec2\Initializer;
 use PHPSpec2\Exception\Example as ExampleException;
 use PHPSpec2\SpecificationInterface;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Exception\Example\PendingException;
 
 class Runner
 {
@@ -157,6 +158,10 @@ class Runner
         $startTime = microtime(true);
 
         try {
+            if ($example->isPending()) {
+                throw new PendingException;
+            }
+
             foreach ($example->getPreFunctions() as $preFunction) {
                 $this->invoke($context, $preFunction, $collaborators);
             }

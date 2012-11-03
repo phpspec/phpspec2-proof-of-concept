@@ -8,6 +8,7 @@ class Example extends Node
 {
     private $title;
     private $function;
+    private $pending = false;
     private $preFunctions  = array();
     private $postFunctions = array();
 
@@ -20,6 +21,16 @@ class Example extends Node
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setAsPending($pending = true)
+    {
+        $this->pending = $pending;
+    }
+
+    public function isPending()
+    {
+        return $this->pending;
     }
 
     public function getFunction()
