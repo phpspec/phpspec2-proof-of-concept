@@ -14,11 +14,13 @@ use PHPSpec2\Matcher;
 use PHPSpec2\Initializer;
 use PHPSpec2\Exception\Example as ExampleException;
 use PHPSpec2\SpecificationInterface;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class Runner
 {
     private $eventDispatcher;
     private $mocker;
+    private $presenter;
 
     private $guessers = array();
     private $guessersSorted = false;
@@ -27,10 +29,12 @@ class Runner
     private $exampleInitializers = array();
     private $exampleInitializersSorted = false;
 
-    public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker)
+    public function __construct(EventDispatcherInterface $dispatcher, MockerInterface $mocker,
+                                PresenterInterface $presenter)
     {
         $this->eventDispatcher = $dispatcher;
         $this->mocker          = $mocker;
+        $this->presenter       = $presenter;
     }
 
     public function registerSpecificationInitializer(Initializer\SpecificationInitializerInterface $initializer)
@@ -101,7 +105,7 @@ class Runner
         }
         $oldHandler = set_error_handler(array($this, 'errorHandler'), $errorLevel);
 
-        $matchers = new Matcher\MatchersCollection;
+        $matchers = new Matcher\MatchersCollection($this->presenter);
         foreach ($this->getSpecificationInitializers() as $initializer) {
             if ($initializer->supports($specification)) {
                 $initializer->initialize($specification, $matchers);
@@ -132,7 +136,7 @@ class Runner
     public function runExample(Node\Example $example, Matcher\MatchersCollection $matchers)
     {
         $context       = $example->getFunction()->getDeclaringClass()->newInstance();
-        $collaborators = new Prophet\CollaboratorsCollection;
+        $collaborators = new Prophet\CollaboratorsCollection($this->presenter);
 
         foreach ($this->getExampleInitializers() as $initializer) {
             if ($initializer->supports($context, $example)) {

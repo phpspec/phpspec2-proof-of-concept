@@ -125,7 +125,8 @@ class Application extends BaseApplication
         $c->set('runner', $c->share(function($c) {
             $runner = new Runner\Runner(
                 $c('event_dispatcher'),
-                $c('mocker')
+                $c('mocker'),
+                $c('value_presenter')
             );
 
             foreach ($c('runner.subject_guessers') as $guesser) {
@@ -142,7 +143,7 @@ class Application extends BaseApplication
         }));
 
         $c->extend('runner.subject_guessers', function($c) {
-            return new DefaultSubjectGuesser($c('arguments_unwrapper'));
+            return new DefaultSubjectGuesser($c('arguments_unwrapper'), $c('value_presenter'));
         });
 
         $c->extend('runner.specification_initializers', function($c) {

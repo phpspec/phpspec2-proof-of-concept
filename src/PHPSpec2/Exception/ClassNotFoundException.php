@@ -6,14 +6,11 @@ class ClassNotFoundException extends Exception
 {
     private $classname;
 
-    public function __construct($classname)
+    public function __construct($message, $classname)
     {
-        $this->classname = $classname;
+        parent::__construct($message);
 
-        parent::__construct(sprintf(
-            'Class <value>%s</value> does not exist.',
-            $classname
-        ));
+        $this->classname = $classname;
     }
 
     public function getClassname()

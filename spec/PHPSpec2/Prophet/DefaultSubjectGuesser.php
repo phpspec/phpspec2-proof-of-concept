@@ -8,10 +8,11 @@ class DefaultSubjectGuesser extends ObjectBehavior
 {
     /**
      * @param PHPSpec2\Wrapper\ArgumentsUnwrapper $unwrapper
+     * @param PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
      */
-    function let($unwrapper)
+    function let($unwrapper, $presenter)
     {
-        $this->beConstructedWith($unwrapper);
+        $this->beConstructedWith($unwrapper, $presenter);
     }
 
     function it_should_be_initializable()

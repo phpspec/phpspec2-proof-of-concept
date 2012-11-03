@@ -7,10 +7,22 @@ use PHPSpec2\Exception\MatcherNotFoundException;
 
 class MatchersCollection extends ObjectBehavior
 {
+    /**
+     * @param PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
+     */
+    function let($presenter)
+    {
+        $presenter->presentValue(ANY_ARGUMENT)->willReturn('val');
+        $presenter->presentString(ANY_ARGUMENT)->willReturn('string');
+
+        $this->beConstructedWith($presenter);
+    }
+
     function it_will_complain_if_no_matchers_registered()
     {
-        $this->shouldThrow(new MatcherNotFoundException('crazy_alias', 42, array()))
-            ->duringFind('crazy_alias', 42, array());
+        $this->shouldThrow(new MatcherNotFoundException(
+            'No string(val) matcher found for val.', 'crazy_alias', 42, array()
+        ))->duringFind('crazy_alias', 42, array());
     }
 
     /**
@@ -19,8 +31,9 @@ class MatchersCollection extends ObjectBehavior
     function it_will_complain_if_matcher_is_not_found($matcher)
     {
         $this->add($matcher);
-        $this->shouldThrow(new MatcherNotFoundException('crazy_alias', 42, array()))
-            ->duringFind('crazy_alias', 42, array());
+        $this->shouldThrow(new MatcherNotFoundException(
+            'No string(val) matcher found for val.', 'crazy_alias', 42, array()
+        ))->duringFind('crazy_alias', 42, array());
     }
 
     /**

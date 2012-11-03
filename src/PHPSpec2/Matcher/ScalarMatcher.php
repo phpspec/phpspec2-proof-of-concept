@@ -6,10 +6,8 @@ use PHPSpec2\Formatter\Presenter\PresenterInterface;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Exception\FunctionNotFoundException;
 
-
 class ScalarMatcher implements MatcherInterface
 {
-
     /**
      * @var \PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
      */
@@ -18,7 +16,7 @@ class ScalarMatcher implements MatcherInterface
     /**
      * @var string $regex
      */
-    private $regex = '/(be)(.+)/';
+    private $regex = '/be(.+)/';
 
     /**
      * @param \PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
@@ -41,8 +39,7 @@ class ScalarMatcher implements MatcherInterface
     {
         $checkerName = $this->getCheckerName($name);
 
-        return $checkerName !== false
-               && function_exists($checkerName);
+        return $checkerName && function_exists($checkerName);
     }
 
     /**
@@ -58,13 +55,15 @@ class ScalarMatcher implements MatcherInterface
      */
     public function positiveMatch($name, $subject, array $arguments)
     {
-        $checkerName = $this->getCheckerName($name);
+        $checker = $this->getCheckerName($name);
 
-        if (false === call_user_func_array($checkerName, array($subject))) {
+        if (!call_user_func($checker, $subject)) {
             throw new FailureException(sprintf(
-                'Expected %s, but got %s.',
-                substr($checkerName, 3),
-                gettype($subject)
+                '%s expected to return %s, but it did not.',
+                $this->presenter->presentString(sprintf('%s(%s)',
+                    $checker, $this->presenter->presentValue($subject)
+                )),
+                $this->presenter->presentValue(true)
             ));
         }
     }
@@ -82,13 +81,15 @@ class ScalarMatcher implements MatcherInterface
      */
     public function negativeMatch($name, $subject, array $arguments)
     {
-        $checkerName = $this->getCheckerName($name);
+        $checker = $this->getCheckerName($name);
 
-        if (true === call_user_func_array($checkerName, array($subject))) {
+        if (call_user_func($checker, $subject)) {
             throw new FailureException(sprintf(
-                'Expected %s, but got %s.',
-                substr($checkerName, 3),
-                gettype($subject)
+                '%s not expected to return %s, but it did.',
+                $this->presenter->presentString(sprintf('%s(%s)',
+                    $checker, $this->presenter->presentValue($subject)
+                )),
+                $this->presenter->presentValue(true)
             ));
         }
     }
@@ -100,7 +101,7 @@ class ScalarMatcher implements MatcherInterface
      */
     public function getPriority()
     {
-        return 50;
+        return 100;
     }
 
     /**
@@ -110,16 +111,14 @@ class ScalarMatcher implements MatcherInterface
      */
     private function getCheckerName($name)
     {
-        $isSupported = preg_match($this->regex, $name, $matches);
-        if ($isSupported) {
-            $expected = strtolower($matches[2]);
+        if (preg_match($this->regex, $name, $matches)) {
+            $expected = strtolower($matches[1]);
 
             if ($expected == 'boolean') {
                 return 'is_bool';
             }
+
             return 'is_' . $expected;
         }
-        return false;
     }
-
 }

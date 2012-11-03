@@ -6,11 +6,11 @@ class CollaboratorNotFoundException extends Exception
 {
     private $name;
 
-    public function __construct($name)
+    public function __construct($message, $name)
     {
-        $this->name = $name;
+        parent::__construct($message);
 
-        parent::__construct(sprintf('Collaborator <value>%s</value> not found.', $name));
+        $this->name = $name;
     }
 
     public function getName()

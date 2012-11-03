@@ -4,12 +4,31 @@ namespace PHPSpec2\Exception;
 
 class MatcherNotFoundException extends Exception
 {
-    public function __construct($matcher, $subject, array $arguments)
+    private $keyword;
+    private $subject;
+    private $arguments;
+
+    public function __construct($message, $keyword, $subject, array $arguments)
     {
-        parent::__construct(sprintf(
-            'Matcher <value>%s</value> not found for <value>%s</value>. Have you registered it properly?',
-            $matcher,
-            gettype($subject)
-        ));
+        parent::__construct($message);
+
+        $this->keyword   = $keyword;
+        $this->subject   = $subject;
+        $this->arguments = $arguments;
+    }
+
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 }

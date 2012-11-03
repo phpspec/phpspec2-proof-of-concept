@@ -7,6 +7,16 @@ use PHPSpec2\Exception\CollaboratorNotFoundException;
 
 class CollaboratorsCollection extends ObjectBehavior
 {
+    /**
+     * @param PHPSpec2\Formatter\Presenter\PresenterInterface $presenter
+     */
+    function let($presenter)
+    {
+        $presenter->presentString(ANY_ARGUMENT)->willReturnArgument();
+
+        $this->beConstructedWith($presenter);
+    }
+
     function it_should_have_no_collaborators_by_default()
     {
         $this->getAll()->shouldHaveCount(0);
@@ -63,7 +73,8 @@ class CollaboratorsCollection extends ObjectBehavior
 
     function it_should_throw_exception_if_collaborator_not_found()
     {
-        $this->shouldThrow(new CollaboratorNotFoundException('unexistent'))
-            ->duringGet('unexistent');
+        $this->shouldThrow(
+            new CollaboratorNotFoundException('Collaborator unexistent not found.', 'unexistent')
+        )->duringGet('unexistent');
     }
 }

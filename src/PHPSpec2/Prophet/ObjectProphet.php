@@ -18,18 +18,22 @@ use PHPSpec2\Exception\BehaviorException;
 use PHPSpec2\Exception\MethodNotFoundException;
 use PHPSpec2\Exception\PropertyNotFoundException;
 
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
+
 class ObjectProphet implements ProphetInterface
 {
     private $subject;
     private $matchers;
     private $unwrapper;
+    private $presenter;
 
     public function __construct($subject = null, MatchersCollection $matchers,
-                                ArgumentsUnwrapper $unwrapper)
+                                ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter)
     {
-        $this->subject  = $subject;
-        $this->matchers = $matchers;
+        $this->subject   = $subject;
+        $this->matchers  = $matchers;
         $this->unwrapper = $unwrapper;
+        $this->presenter = $presenter;
     }
 
     public function beAnInstanceOf($classname, array $constructorArguments = array())
@@ -40,8 +44,8 @@ class ObjectProphet implements ProphetInterface
 
         if (!is_string($classname)) {
             throw new BehaviorException(sprintf(
-                'Behavior subject classname should be string, <value>%s</value> given.',
-                $this->presenter->representValue($classname)
+                'Behavior subject classname should be string, %s given.',
+                $this->presenter->presentValue($classname)
             ));
         }
 
@@ -52,9 +56,10 @@ class ObjectProphet implements ProphetInterface
     public function beConstructedWith()
     {
         if (null === $this->subject) {
-            throw new BehaviorException(
-                'You can not set object arguments. Behavior subject is null.'
-            );
+            throw new BehaviorException(sprintf(
+                'You can not set object arguments. Behavior subject is %s.',
+                $this->presenter->presentValue(null)
+            ));
         }
 
         if (!$this->subject instanceof LazySubjectInterface) {
@@ -96,8 +101,8 @@ class ObjectProphet implements ProphetInterface
     {
         if (null === $this->getWrappedSubject()) {
             throw new BehaviorException(sprintf(
-                'Call to a member function <value>%s()</value> on a non-object.',
-                $method
+                'Call to a member function %s on a non-object.',
+                $this->presenter->presentString($method.'()')
             ));
         }
 
@@ -109,17 +114,21 @@ class ObjectProphet implements ProphetInterface
         if ($this->isSubjectMethodAccessible($method)) {
             $returnValue = call_user_func_array(array($subject, $method), $arguments);
 
-            return new static($returnValue, $this->matchers, $this->unwrapper);
+            return new static($returnValue, $this->matchers, $this->unwrapper, $this->presenter);
         }
 
-        throw new MethodNotFoundException($subject, $method);
+        throw new MethodNotFoundException(sprintf(
+            'Method %s not found.',
+            $this->presenter->presentValue(array($subject, $method))
+        ), $subject, $method, $arguments);
     }
 
     public function setToProphetSubject($property, $value = null)
     {
         if (null === $this->getWrappedSubject()) {
             throw new BehaviorException(sprintf(
-                'Setting property <value>%s</value> on a non-object.', $property
+                'Setting property %s on a non-object.',
+                $this->presenter->presentString($property)
             ));
         }
 
@@ -129,7 +138,10 @@ class ObjectProphet implements ProphetInterface
             return $this->getWrappedSubject()->$property = $value;
         }
 
-        throw new PropertyNotFoundException($this->getWrappedSubject(), $property);
+        throw new PropertyNotFoundException(sprintf(
+            'Property %s not found.',
+            $this->presenter->presentString(get_class($this->getWrappedSubject()).'::'.$property)
+        ), $this->getWrappedSubject(), $property);
     }
 
     public function getFromProphetSubject($property)
@@ -147,17 +159,21 @@ class ObjectProphet implements ProphetInterface
 
         if (null === $this->getWrappedSubject()) {
             throw new BehaviorException(sprintf(
-                'Getting property <value>%s</value> from a non-object.', $property
+                'Getting property %s from a non-object.',
+                $this->presentString($property)
             ));
         }
 
         if ($this->isSubjectPropertyAccessible($property)) {
             $returnValue = $this->getWrappedSubject()->$property;
 
-            return new static($returnValue, $this->matchers, $this->unwrapper);
+            return new static($returnValue, $this->matchers, $this->unwrapper, $this->presenter);
         }
 
-        throw new PropertyNotFoundException($this->getWrappedSubject(), $property);
+        throw new PropertyNotFoundException(sprintf(
+            'Property %s not found.',
+            $this->presenter->presentString(get_class($this->getWrappedSubject()).'::'.$property)
+        ), $this->getWrappedSubject(), $property);
     }
 
     public function getWrappedSubject()
@@ -201,7 +217,7 @@ class ObjectProphet implements ProphetInterface
 
     protected function createLazySubject()
     {
-        return new LazyObject;
+        return new LazyObject(null, array(), $this->presenter);
     }
 
     private function isSubjectMethodAccessible($method)

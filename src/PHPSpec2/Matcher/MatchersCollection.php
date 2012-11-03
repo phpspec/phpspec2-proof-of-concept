@@ -3,11 +3,18 @@
 namespace PHPSpec2\Matcher;
 
 use PHPSpec2\Exception\MatcherNotFoundException;
+use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class MatchersCollection
 {
+    private $presenter;
     private $matchers = array();
     private $sorted   = false;
+
+    public function __construct(PresenterInterface $presenter)
+    {
+        $this->presenter = $presenter;
+    }
 
     public function add(MatcherInterface $matcher)
     {
@@ -23,7 +30,14 @@ class MatchersCollection
             }
         }
 
-        throw new MatcherNotFoundException($keyword, $subject, $arguments);
+        throw new MatcherNotFoundException(
+            sprintf('No %s(%s) matcher found for %s.',
+                $this->presenter->presentString($keyword),
+                $this->presenter->presentValue($arguments),
+                $this->presenter->presentValue($subject)
+            ),
+            $keyword, $subject, $arguments
+        );
     }
 
     public function getAll()

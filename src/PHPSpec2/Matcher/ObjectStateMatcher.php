@@ -29,7 +29,10 @@ class ObjectStateMatcher implements MatcherInterface
         $method = ('be' === $matches[1] ? 'is' : 'has').$matches[2];
 
         if (!method_exists($subject, $method)) {
-            throw new MethodNotFoundException($subject, $method);
+            throw new MethodNotFoundException(sprintf(
+                'Method %s not found.',
+                $this->presenter->presentValue(array($subject, $method))
+            ), $subject, $method, $arguments);
         }
 
         $callable = array($subject, $method);
@@ -44,7 +47,10 @@ class ObjectStateMatcher implements MatcherInterface
         $method = ('be' === $matches[1] ? 'is' : 'has').$matches[2];
 
         if (!method_exists($subject, $method)) {
-            throw new MethodNotFoundException($subject, $method);
+            throw new MethodNotFoundException(sprintf(
+                'Method %s not found.',
+                $this->presenter->presentValue(array($subject, $method))
+            ), $subject, $method, $arguments);
         }
 
         $callable = array($subject, $method);

@@ -9,11 +9,11 @@ class Runner extends ObjectBehavior
     /**
      * @param Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
      * @param PHPSpec2\Mocker\MockerInterface                            $mocker
-     * @param PHPSpec2\Wrapper\ArgumentsUnwrapper                        $unwrapper
+     * @param PHPSpec2\Formatter\Presenter\PresenterInterface            $presenter
      */
-    function let($dispatcher, $mocker, $unwrapper)
+    function let($dispatcher, $mocker, $unwrapper, $presenter)
     {
-        $this->beConstructedWith($dispatcher, $mocker, $unwrapper);
+        $this->beConstructedWith($dispatcher, $mocker, $presenter);
     }
 
     function it_should_not_have_initializers_registered_by_default()

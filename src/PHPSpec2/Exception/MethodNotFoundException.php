@@ -6,17 +6,15 @@ class MethodNotFoundException extends Exception
 {
     private $subject;
     private $method;
+    private $arguments;
 
-    public function __construct($subject, $method)
+    public function __construct($message, $subject, $method, array $arguments = array())
     {
-        $this->subject = $subject;
-        $this->method  = $method;
+        parent::__construct($message);
 
-        parent::__construct(sprintf(
-            'Method <value>%s::%s()</value> not found.',
-            is_object($subject) ? get_class($subject) : $subject,
-            $method
-        ));
+        $this->subject   = $subject;
+        $this->method    = $method;
+        $this->arguments = $arguments;
     }
 
     public function getSubject()
@@ -27,5 +25,10 @@ class MethodNotFoundException extends Exception
     public function getMethod()
     {
         return $this->method;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 }
