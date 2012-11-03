@@ -17,7 +17,7 @@ class MockExpectation implements ArrayAccess
     private $mocker;
     private $expectation;
     private $unwrapper;
-    private $prophet;
+    private $presenter;
 
     public function __construct($mock, $method, MockerInterface $mocker,
                                 ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter)
@@ -96,7 +96,8 @@ class MockExpectation implements ArrayAccess
     {
         if (!$this->offsetExists($offset)) {
             throw new MockException(sprintf(
-                'Expectation with <value>%d</value> offset not found.', $offset
+                'Expectation with %s offset not found.',
+                $this->presenter->presentValue($offset)
             ));
         }
 
