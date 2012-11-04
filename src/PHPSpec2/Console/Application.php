@@ -37,8 +37,6 @@ class Application extends BaseApplication
 
         $this->container = $c = new ServiceContainer;
 
-        $c->set('format', 'progress');
-
         $c->set('console.commands', array());
         $c->set('io', $c->share(function($c) {
             return new Console\IO(

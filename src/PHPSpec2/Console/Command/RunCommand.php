@@ -24,7 +24,8 @@ class RunCommand extends Command
 
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
-            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'progress'),
+            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter {pretty|progress}', 'progress'),
+            new InputOption('bootstrap', 'b', InputOption::VALUE_OPTIONAL, 'Path to bootstrap file'),
         ));
     }
 
@@ -33,9 +34,11 @@ class RunCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        //$output->setBootstrapper(new Console\Formatter($output->isDecorated()));
         $output->setFormatter(new Console\Formatter($output->isDecorated()));
         $c = $this->getApplication()->getContainer();
 
+        $c->set('format', $input->getOption('format'));
         $c->set('console.input', $input);
         $c->set('console.output', $output);
         $c->set('console.helpers', $this->getHelperSet());
@@ -45,6 +48,7 @@ class RunCommand extends Command
 
         $result = 0;
         $startTime = microtime(true);
+        $c('runner')->runBootstrap($input->getOption('bootstrap'));
         foreach ($specs as $spec) {
             $result = max($result, $c('runner')->runSpecification($spec));
         }

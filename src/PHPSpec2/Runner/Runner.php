@@ -97,6 +97,13 @@ class Runner
         return $this->eventDispatcher;
     }
 
+    public function runBootstrap($path)
+    {
+        if (is_file($path) || is_file($path = $path.'.php')) {
+            require_once($path);
+        }
+    }
+
     public function runSpecification(Node\Specification $specification)
     {
         if (defined('PHPSPEC_ERROR_REPORTING')) {
