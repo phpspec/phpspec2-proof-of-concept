@@ -59,18 +59,28 @@ class ProgressFormatter implements FormatterInterface
             $length = ($size - $length) >= 0 ? $length : $size;
             $size   = $size - $length;
 
-            if ($length > strlen($text) + 2) {
-                $text = str_pad($text, $length, ' ', STR_PAD_BOTH);
-            } else {
-                $text = str_pad('', $length, ' ');
-            }
+            if ($this->io->isDecorated()) {
+                if ($length > strlen($text) + 2) {
+                    $text = str_pad($text, $length, ' ', STR_PAD_BOTH);
+                } else {
+                    $text = str_pad('', $length, ' ');
+                }
 
-            $progress[$status] = sprintf("<$status-bg>%s</$status-bg>", $text);
+                $progress[$status] = sprintf("<$status-bg>%s</$status-bg>", $text);
+            } else {
+                $progress[$status] = str_pad(
+                    sprintf('%s: %s', $status, $text), 15, ' ', STR_PAD_BOTH
+                );
+            }
         }
         krsort($progress);
 
         $this->printException($event, 2);
-        $this->io->writeTemp(implode('', $progress).' '.$total);
+        if ($this->io->isDecorated()) {
+            $this->io->writeTemp(implode('', $progress).' '.$total);
+        } else {
+            $this->io->writeTemp('/'.implode('/', $progress).'/  '.$total.' exampes');
+        }
     }
 
     public function afterSuite(SuiteEvent $event)
@@ -108,7 +118,7 @@ class ProgressFormatter implements FormatterInterface
         if ($exception instanceof PendingException) {
             $this->io->writeln(sprintf('<pending-bg>%s</pending-bg>', $title));
             $this->io->writeln(sprintf(
-                '<lineno>%4d</lineno>  <pending>✘ %s</pending>',
+                '<lineno>%4d</lineno>  <pending>- %s</pending>',
                 $event->getExample()->getFunction()->getStartLine(),
                 $event->getExample()->getTitle()
             ));
