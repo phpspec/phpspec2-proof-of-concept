@@ -222,7 +222,9 @@ class Application extends BaseApplication
             $this->add($command);
         }
 
-        if (!($name = $this->getCommandName($input))) {
+        if (!($name = $this->getCommandName($input))
+         && !$input->hasParameterOption('-h')
+         && !$input->hasParameterOption('--help')) {
             $input = new ArrayInput(array('command' => 'run'));
         }
 
