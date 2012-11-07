@@ -231,7 +231,7 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
             ));
         }
 
-        return $subject[$key];
+        return new static($subject[$key], $this->matchers, $this->unwrapper, $this->presenter);
     }
 
     public function offsetSet($key, $value)
