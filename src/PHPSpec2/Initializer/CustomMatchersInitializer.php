@@ -24,7 +24,7 @@ class CustomMatchersInitializer implements SpecificationInitializerInterface
     public function initialize(Specification $specification, MatchersCollection $collection)
     {
         $class    = $specification->getClass()->getName();
-        $matchers = $specification->getClass()->getMethod('getMatchers')->invokeArgs($class, array());
+        $matchers = $specification->getClass()->getMethod('getMatchers')->invokeArgs(null, array());
 
         foreach ($matchers as $matcher) {
             $collection->add($matcher);

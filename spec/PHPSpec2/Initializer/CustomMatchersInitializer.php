@@ -47,7 +47,7 @@ class CustomMatchersInitializer extends ObjectBehavior
                                                          $matchers, $matcher1, $matcher2)
     {
         $class->getMethod('getMatchers')->willReturn($method);
-        $method->invokeArgs('Custom\Specification', array())->willReturn(array($matcher1, $matcher2));
+        $method->invokeArgs(null, array())->willReturn(array($matcher1, $matcher2));
 
         $matchers->add($matcher1)->shouldBeCalled();
         $matchers->add($matcher2)->shouldBeCalled();
