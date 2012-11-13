@@ -30,7 +30,11 @@ class MockProphet implements ProphetInterface
 
     public function __set($property, $value)
     {
-        $this->getWrappedSubject()->$property = $value;
+        if (null === $this->subject) {
+            $this->beAMockOf('stdClass');
+        }
+
+        $this->getWrappedSubject()->$property = $this->unwrapper->unwrapOne($value);
     }
 
     public function __get($method)
