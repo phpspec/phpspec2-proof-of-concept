@@ -24,7 +24,7 @@ class RunCommand extends Command
 
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
-            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'progress'),
+            new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter'),
         ));
     }
 
@@ -35,6 +35,10 @@ class RunCommand extends Command
     {
         $output->setFormatter(new Console\Formatter($output->isDecorated()));
         $c = $this->getApplication()->getContainer();
+
+        if ($format = $input->getOption('format')) {
+            $c->set('format', $format);
+        }
 
         $c->set('console.input', $input);
         $c->set('console.output', $output);
