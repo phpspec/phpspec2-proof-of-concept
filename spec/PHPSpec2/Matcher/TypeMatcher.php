@@ -23,6 +23,7 @@ class TypeMatcher extends ObjectBehavior
         $this->supports('beAnInstanceOf', '', array(''))->shouldReturn(true);
         $this->supports('returnAnInstanceOf', '', array(''))->shouldReturn(true);
         $this->supports('haveType', '', array(''))->shouldReturn(true);
+        $this->supports('implement', '', array(''))->shouldReturn(true);
     }
 
     /**
