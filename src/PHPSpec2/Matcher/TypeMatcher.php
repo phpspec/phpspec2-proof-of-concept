@@ -16,7 +16,7 @@ class TypeMatcher extends BasicMatcher
 
     public function supports($name, $subject, array $arguments)
     {
-        return in_array($name, array('beAnInstanceOf', 'returnAnInstanceOf', 'haveType'))
+        return in_array($name, array('beAnInstanceOf', 'returnAnInstanceOf', 'haveType', 'implement'))
             && 1 == count($arguments)
         ;
     }
