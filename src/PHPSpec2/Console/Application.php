@@ -235,33 +235,41 @@ class Application extends BaseApplication
         foreach ($this->container->get('console.definitions') as $definition) {
             $parent_definition->addOption($definition);
         }
+        
+        // bootstrap
+        
+        // incorrect parameter
+        if(is_null($input->getParameterOption('--bootstrap'))) {
+            throw new InvalidArgumentException('The --bootstrap option needs a value');
+        }
+        
+        // get bootstrap file
+        $file = $input->getParameterOption('--bootstrap');
+        
+        if(!$file && $this->container->has("bootstrap")){
+            $file = $this->container->get("bootstrap");
+        }
+        
+        if($file){
+            $file = realpath($file);
+            
+            if(!is_file($file)){
+                throw new InvalidArgumentException("The bootstrap file ({$file}) doesn't exist");
+            }  
+            elseif(pathinfo($file, PATHINFO_EXTENSION) !== "php"){
+                throw new InvalidArgumentException("The bootstrap file ({$file}) isn't a valid php file");
+            } 
+            else require $file;
+        }
+        // end bootstap
 
-        if (!($name = $this->getCommandName($input)) && !$input->hasParameterOption('-h') && !$input->hasParameterOption('--help')) {
-            $this->loadBootstrap($input, $output);
-            $input = new ArrayInput(array('command' => 'run'));
+        if (!($name = $this->getCommandName($input))
+         && !$input->hasParameterOption('-h')
+         && !$input->hasParameterOption('--help')) {
+             $input = new ArrayInput(array('command' => 'run'));
         }
         
         parent::doRun($input, $output);
-    }
-    
-    private function loadBootstrap(InputInterface $input, OutputInterface $output){
-        $bootstrap_file = $input->getParameterOption('--bootstrap');
-        
-        if (is_null($bootstrap_file)){
-          throw new InvalidArgumentException('The --bootstrap option needs a value');
-        }
-        $path = (false === $bootstrap_file) ? "" : $bootstrap_file;
-        
-        // TODO check the .yml file for a bootstrap directive
-        if(empty($path)) $path = $_SERVER["PWD"] . "/bootstrap.php"; //if you create a bootstrap.php file on your test folder will automatically load it
-        
-        if(!is_file($path)){
-            throw new InvalidArgumentException("The bootstrap file ({$path}) doesn't exist");
-        }  
-        elseif(pathinfo($path, PATHINFO_EXTENSION) !== "php"){
-            throw new InvalidArgumentException("The bootstrap file ({$path}) isn't a valid php file");
-        } 
-        else require $path;
     }
     
 }
