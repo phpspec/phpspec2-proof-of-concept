@@ -238,28 +238,30 @@ class Application extends BaseApplication
         
         // bootstrap
         
+        $has_param = $input->getParameterOption('--bootstrap'); 
+        
         // incorrect parameter
-        if(is_null($input->getParameterOption('--bootstrap'))) {
+        if(is_null($has_param)) {
             throw new InvalidArgumentException('The --bootstrap option needs a value');
         }
         
-        // get bootstrap file
-        $file = $input->getParameterOption('--bootstrap');
-        
-        if(!$file && $this->container->has("bootstrap")){
+        if(!$has_param && $this->container->has("bootstrap")){
             $file = $this->container->get("bootstrap");
+        }
+        else{
+            $file = $has_param;
         }
         
         if($file){
-            $file = realpath($file);
+            $realfile = realpath($file);
             
-            if(!is_file($file)){
+            if(!is_file($realfile)){
                 throw new InvalidArgumentException("The bootstrap file ({$file}) doesn't exist");
             }  
-            elseif(pathinfo($file, PATHINFO_EXTENSION) !== "php"){
+            elseif(pathinfo($realfile, PATHINFO_EXTENSION) !== "php"){
                 throw new InvalidArgumentException("The bootstrap file ({$file}) isn't a valid php file");
             } 
-            else require $file;
+            else require $realfile;
         }
         // end bootstap
 
