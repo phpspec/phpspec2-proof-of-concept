@@ -43,6 +43,7 @@ class FunctionParametersReader
     {
         $parameters = array();
         if ($comment = $function->getDocComment()) {
+            $comment = str_replace("\r\n", "\n", $comment);
             foreach (explode("\n", trim($comment)) as $line) {
                 if (preg_match('#@param *([^ ]*) *\$([^ ]*)#', $line, $match)) {
                     $parameters[$match[2]] = $match[1];
