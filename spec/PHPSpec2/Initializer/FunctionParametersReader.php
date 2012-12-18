@@ -53,6 +53,22 @@ class FunctionParametersReader extends ObjectBehavior
     }
 
     /**
+     * @param ReflectionFunction  $function
+     * @param ReflectionParameter $param1
+     */
+    function it_should_allow_the_use_of_windows_line_breaks_in_doc_blocks($example, $function, $param1)
+    {
+        $example->getFunction[-1]->willReturn($function)->shouldBeCalled();
+
+        $function->getParameters->willReturn(array($param1));
+        $function->getDocComment()->willReturn("/**\r\n * @param class \$param1\r\n */");
+
+        $param1->getName()->willReturn('param1');
+
+        $this->getParameters($example)->shouldReturn(array('param1' => 'class'));
+    }
+
+    /**
      * @param ReflectionFunction  $func1
      * @param ReflectionFunction  $func2
      * @param ReflectionParameter $param1
