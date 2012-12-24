@@ -76,8 +76,18 @@ class Application extends BaseApplication
             }))
         );
 
+        $c->extend('differ.engines',
+            $c->set('differ.engines.array', $c->share(function($c) {
+                return new Presenter\Differ\ArrayEngine();
+            }))
+        );
+
         $c->set('value_presenter', $c->share(function($c) {
-            return new Presenter\TaggedPresenter($c('differ'));
+            return new Presenter\TaggedValuePresenter();
+        }));
+
+        $c->set('exception_presenter', $c->share(function($c) {
+            return new Presenter\ExceptionPresenter($c('value_presenter'), $c('differ'));
         }));
 
         $c->set('mocker', $c->share(function($c) {
@@ -103,7 +113,7 @@ class Application extends BaseApplication
                 }
 
                 $formatter->setIO($c('io'));
-                $formatter->setPresenter($c('value_presenter'));
+                $formatter->setExceptionPresenter($c('exception_presenter'));
                 $formatter->setStatisticsCollector($c('statistics_collector'));
 
                 return $formatter;

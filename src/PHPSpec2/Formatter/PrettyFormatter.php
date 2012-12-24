@@ -3,7 +3,7 @@
 namespace PHPSpec2\Formatter;
 
 use PHPSpec2\Console\IO;
-use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\ExceptionPresenterInterface;
 use PHPSpec2\Listener\StatisticsCollector;
 
 use PHPSpec2\Event\SuiteEvent;
@@ -13,7 +13,7 @@ use PHPSpec2\Event\ExampleEvent;
 class PrettyFormatter implements FormatterInterface
 {
     private $io;
-    private $presenter;
+    private $exceptionPresenter;
     private $stats;
 
     public static function getSubscribedEvents()
@@ -28,9 +28,9 @@ class PrettyFormatter implements FormatterInterface
         $this->io = $io;
     }
 
-    public function setPresenter(PresenterInterface $presenter)
+    public function setExceptionPresenter(ExceptionPresenterInterface $exceptionPresenter)
     {
-        $this->presenter = $presenter;
+        $this->exceptionPresenter = $exceptionPresenter;
     }
 
     public function setStatisticsCollector(StatisticsCollector $stats)
@@ -126,10 +126,9 @@ class PrettyFormatter implements FormatterInterface
             return;
         }
 
-        // TODO: add cause to exception interface
-        $exception->cause = $event->getExample()->getFunction();
+        $exception->setCause($event->getExample()->getFunction());
         $depth = $depth ?: (($event->getExample()->getDepth() * 2) + 6);
-        $message = $this->presenter->presentException($exception, $this->io->isVerbose());
+        $message = $this->exceptionPresenter->presentException($exception, $this->io->isVerbose());
 
         if (ExampleEvent::FAILED === $event->getResult()) {
             $this->io->writeln(sprintf('<failed>%s</failed>', lcfirst($message)), $depth);

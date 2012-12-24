@@ -7,7 +7,7 @@ use PHPSpec2\ObjectBehavior;
 class ScalarMatcher extends ObjectBehavior
 {
     /**
-     * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
+     * @param PHPSpec2\Formatter\Presenter\ValuePresenter $presenter
      */
     public function let($presenter)
     {

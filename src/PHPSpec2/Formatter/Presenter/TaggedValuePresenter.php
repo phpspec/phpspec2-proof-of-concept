@@ -2,11 +2,11 @@
 
 namespace PHPSpec2\Formatter\Presenter;
 
-class TaggedPresenter extends StringPresenter
+class TaggedValuePresenter extends ValuePresenter
 {
     public function presentString($string)
     {
-        return '<value>'.parent::presentString($string).'</value>';
+        return '<value>' . parent::presentString($string) . '</value>';
     }
 
     protected function presentCodeLine($number, $line)
@@ -16,7 +16,7 @@ class TaggedPresenter extends StringPresenter
 
     protected function presentHighlight($line)
     {
-        return '<hl>'.$line.'</hl>';
+        return '<hl>' . $line . '</hl>';
     }
 
     protected function presentExceptionTraceHeader($header)
@@ -29,8 +29,8 @@ class TaggedPresenter extends StringPresenter
         $args = array_map(array($this, 'presentValue'), $args);
 
         return sprintf(
-            "   <trace><trace-class>%s</trace-class><trace-type>%s</trace-type>".
-            "<trace-func>%s</trace-func>(<trace-args>%s</trace-args>)</trace>\n",
+            "   <trace><trace-class>%s</trace-class><trace-type>%s</trace-type>" .
+                "<trace-func>%s</trace-func>(<trace-args>%s</trace-args>)</trace>\n",
             $class, $type, $method, implode(', ', $args)
         );
     }

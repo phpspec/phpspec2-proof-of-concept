@@ -7,7 +7,7 @@ use PHPSpec2\ObjectBehavior;
 class ObjectStateMatcher extends ObjectBehavior
 {
     /**
-     * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
+     * @param PHPSpec2\Formatter\Presenter\ValuePresenter $presenter
      */
     function let($presenter)
     {
