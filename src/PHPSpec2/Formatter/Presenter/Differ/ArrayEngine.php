@@ -4,7 +4,7 @@ namespace PHPSpec2\Formatter\Presenter\Differ;
 
 class ArrayEngine implements EngineInterface
 {
-    CONST DEFAULT_SEPARATOR = '"]["';
+    CONST ARRAY_VARIABLE_NAME = '$expected';
     CONST VALUE_NOT_EXPECTED_TO_BE = 1;
     CONST VALUE_EXPECTED_TO_BE = 2;
     CONST VALUE_EXPECTED_TO_BE_DIFFERENT = 3;
@@ -28,6 +28,43 @@ class ArrayEngine implements EngineInterface
     }
 
     /**
+     * Add the square bracket to the key, if is a string add the double quotation
+     *
+     * @param int|String $key
+     * @return string  
+     */
+    private function roundKeyWithSeparator($key) 
+    {
+        if (!is_numeric($key)) {
+                $key = sprintf('"%s"', $key);
+        }
+        return sprintf("[%s]", $key);
+    }
+
+    /**
+     * Convert an array into a string that will look like an array
+     * 
+     *
+     * @param array $key_path
+     * @param mixed $current_key
+     * @return string   
+     */
+    private function explodeKeyPath($key_path, $current_key, $variable_name = self::ARRAY_VARIABLE_NAME) 
+    {
+        $exploded = '';
+        foreach ($key_path as $key) {
+            $exploded .= $this->roundKeyWithSeparator($key);
+        }
+        $currentKey = $this->roundKeyWithSeparator($current_key);
+        if (empty($exploded)) {
+            $exploded = sprintf("%s%s", $variable_name, $currentKey);
+        } else {
+            $exploded = sprintf("%s%s%s", $variable_name, $exploded, $currentKey);
+        }
+        return $exploded;
+    }
+
+    /**
      * function that responses with an array key=>'output string'
      *
      * @param array $key_path array of the keys of the current values
@@ -36,7 +73,7 @@ class ArrayEngine implements EngineInterface
      * @param int $value_expectation could be (VALUE_NOT_EXPECTED_TO_BE, VALUE_EXPECTED_TO_BE_DIFFERENT)
      * @return array
      */
-    function makeResponse($key_path, $expected, $actual, $expectation = self::VALUE_NOT_EXPECTED_TO_BE, $separator = self::DEFAULT_SEPARATOR)
+    private function makeResponse($key_path, $expected, $actual, $expectation = self::VALUE_NOT_EXPECTED_TO_BE)
     {
        
         $currentKey = array_pop($key_path);
@@ -47,13 +84,8 @@ class ArrayEngine implements EngineInterface
         } elseif ($expectation == self::VALUE_EXPECTED_TO_BE_DIFFERENT) {
             $expectation =  sprintf("is \"%s\", but expected to be \"%s\"", $expected, $actual);
         }
-        $keyPath = implode(self::DEFAULT_SEPARATOR, $key_path);
-        if (null == $keyPath) {
-            $key = sprintf("\$expected[\"%s\"]", $currentKey);
-        } else {
-            $key = sprintf("\$expected[\"%s\"][\"%s\"]", $keyPath, $currentKey);
-        }
         
+        $key = $this->explodeKeyPath($key_path, $currentKey);
         return array($key => $expectation);
     }
 
@@ -66,7 +98,7 @@ class ArrayEngine implements EngineInterface
      * @param array $key_path array of the keys of the current values
      * @return array an associative array of difference
      */
-    function doComparison($expected, $actual, $value_expectation = 1, $key_path = array())
+    private function doComparison($expected, $actual, $value_expectation = 1, $key_path = array())
     {
         
         if ($expected == $actual) {
