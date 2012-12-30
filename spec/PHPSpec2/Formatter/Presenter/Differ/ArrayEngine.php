@@ -15,7 +15,7 @@ class ArrayEngine extends ObjectBehavior
     {
         $this->compare(array('first'), array('second'))->shouldReturn(<<<STRING
 <code>
-0 is "first", but expected to be "second"
+\$expected["0"] is "first", but expected to be "second"
 </code>
 STRING
         );
@@ -26,7 +26,7 @@ STRING
     {
         $this->compare(array('a' => 'first'), array('a' => 'second'))->shouldReturn(<<<STRING
 <code>
-a is "first", but expected to be "second"
+\$expected["a"] is "first", but expected to be "second"
 </code>
 STRING
         );
@@ -60,7 +60,7 @@ STRING
 
         $this->compare($arrayExpected, $arrayActual)->shouldReturn(<<<STRING
 <code>
-a1->a2->a3 a4b is "102", but expected to be "104"
+\$expected["a1"]["a2"]["a3"]["a4b"] is "102", but expected to be "104"
 </code>
 STRING
         );
@@ -104,10 +104,10 @@ STRING
 
         $this->compare($arrayExpected, $arrayActual)->shouldReturn(<<<STRING
 <code>
-0 is "b", but expected to be "d"
-c1 Array does not exists, but expected to be
-1->0->0 0 is "d", but expected to be "s"
-c Array exists, but expected not to be
+\$expected["0"] is "b", but expected to be "d"
+\$expected["c1"] Array does not exists, but expected to be
+\$expected["1"]["0"]["0"]["0"] is "d", but expected to be "s"
+\$expected["c"] Array exists, but expected not to be
 </code>
 STRING
         );

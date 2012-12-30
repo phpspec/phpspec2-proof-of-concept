@@ -4,7 +4,7 @@ namespace PHPSpec2\Formatter\Presenter\Differ;
 
 class ArrayEngine implements EngineInterface
 {
-    CONST DEFAULT_SEPARATOR = '->';
+    CONST DEFAULT_SEPARATOR = '"]["';
     CONST VALUE_NOT_EXPECTED_TO_BE = 1;
     CONST VALUE_EXPECTED_TO_BE = 2;
     CONST VALUE_EXPECTED_TO_BE_DIFFERENT = 3;
@@ -47,7 +47,13 @@ class ArrayEngine implements EngineInterface
         } elseif ($expectation == self::VALUE_EXPECTED_TO_BE_DIFFERENT) {
             $expectation =  sprintf("is \"%s\", but expected to be \"%s\"", $expected, $actual);
         }
-        $key = sprintf("%s %s", implode($separator, $key_path), $currentKey);
+        $keyPath = implode(self::DEFAULT_SEPARATOR, $key_path);
+        if (null == $keyPath) {
+            $key = sprintf("\$expected[\"%s\"]", $currentKey);
+        } else {
+            $key = sprintf("\$expected[\"%s\"][\"%s\"]", $keyPath, $currentKey);
+        }
+        
         return array($key => $expectation);
     }
 
