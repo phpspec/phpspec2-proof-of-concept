@@ -202,7 +202,7 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
                 $this->getWrappedSubject(),
                 'ArrayAccess'
             );
-        } elseif (!is_array($subject)) {
+        } elseif (!($subject instanceof ArrayAccess) && !is_array($subject)) {
             throw new BehaviorException(sprintf(
                 'Can not use %s as array.', $this->presenter->presentValue($subject)
             ));
@@ -225,12 +225,11 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
                 $this->getWrappedSubject(),
                 'ArrayAccess'
             );
-        } elseif (!is_array($subject)) {
+        } elseif (!($subject instanceof ArrayAccess) && !is_array($subject)) {
             throw new BehaviorException(sprintf(
                 'Can not use %s as array.', $this->presenter->presentValue($subject)
             ));
         }
-
         return new static($subject[$key], $this->matchers, $this->unwrapper, $this->presenter);
     }
 
@@ -248,7 +247,7 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
                 $this->getWrappedSubject(),
                 'ArrayAccess'
             );
-        } elseif (!is_array($subject)) {
+        } elseif (!($subject instanceof ArrayAccess) && !is_array($subject)) {
             throw new BehaviorException(sprintf(
                 'Can not use %s as array.', $this->presenter->presentValue($subject)
             ));
@@ -271,7 +270,7 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
                 $this->getWrappedSubject(),
                 'ArrayAccess'
             );
-        } elseif (!is_array($subject)) {
+        } elseif (!($subject instanceof ArrayAccess) && !is_array($subject)) {
             throw new BehaviorException(sprintf(
                 'Can not use %s as array.', $this->presenter->presentValue($subject)
             ));
