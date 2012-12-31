@@ -73,6 +73,13 @@ class MockExpectation implements ArrayAccess
         return $this;
     }
 
+    public function willReturnSelf()
+    {
+        $this->willReturn($this->mock);
+
+        return $this;
+    }
+
     public function willThrow($exception, $message = '')
     {
         if ($exception instanceof \Exception) {
