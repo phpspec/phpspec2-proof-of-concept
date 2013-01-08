@@ -178,6 +178,10 @@ class Application extends BaseApplication
         });
 
         $c->extend('event_dispatcher.listeners', function($c) {
+            return new Listener\FactoryMethodNotFoundListener($c('io'));
+        });
+
+        $c->extend('event_dispatcher.listeners', function($c) {
             return new Listener\MethodNotFoundListener($c('io'));
         });
 
