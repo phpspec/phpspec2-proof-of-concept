@@ -14,7 +14,7 @@ class LazyObject implements LazySubjectInterface
     private $arguments;
     private $presenter;
     private $instance;
-    private $factoryMethod;
+    private $factory = '__construct';
 
     public function __construct($classname = null, array $arguments = array(),
                                 PresenterInterface $presenter)
@@ -63,22 +63,20 @@ class LazyObject implements LazySubjectInterface
             ), $this->classname);
         }
 
-        $reflection = new ReflectionClass($this->classname);
-
-        if ($this->factoryMethod) {
-            $this->instance = call_user_func_array($this->factoryMethod, $this->arguments);
-        } elseif (empty($this->arguments)) {
-            $this->instance = $reflection->newInstance();
-        } else {
+        if ($this->factory == '__construct') {
+            $reflection = new ReflectionClass($this->classname);
             $this->instance = $reflection->newInstanceArgs($this->arguments);
+        } elseif (is_string($this->factory)) {
+            $this->instance = call_user_func_array(array($this->classname, $this->factory), $this->arguments);
+        } elseif (is_callable($this->factory)) {
+            $this->instance = call_user_func_array($this->factory, $this->arguments);
         }
 
         return $this->instance;
     }
 
-    public function setFactoryMethod(Callable $factoryMethod, $arguments)
+    public function setFactory($factory)
     {
-        $this->factoryMethod = $factoryMethod;
-        $this->arguments = $arguments;
+        $this->factory = $factory;
     }
 }
