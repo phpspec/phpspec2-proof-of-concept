@@ -47,9 +47,7 @@ class MockProphet implements ProphetInterface
             $this->beAMockOf('stdClass');
         }
 
-        return new MockExpectation(
-            $this->subject, $method, $this->mocker, $this->unwrapper, $this->presenter
-        );
+        return $this->createMethodMockExpectation($method);
     }
 
     public function __call($method, array $arguments)
@@ -58,11 +56,18 @@ class MockProphet implements ProphetInterface
             $this->beAMockOf('stdClass');
         }
 
-        return call_user_func_array($this->$method, $arguments);
+        return call_user_func_array($this->createMethodMockExpectation($method), $arguments);
     }
 
     public function getWrappedSubject()
     {
         return $this->subject;
+    }
+
+    protected function createMethodMockExpectation($method)
+    {
+        return new MockExpectation(
+            $this->subject, $method, $this->mocker, $this->unwrapper, $this->presenter
+        );
     }
 }
