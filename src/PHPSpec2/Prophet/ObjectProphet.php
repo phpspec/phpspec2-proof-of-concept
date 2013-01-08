@@ -25,7 +25,11 @@ use ArrayAccess;
 
 class ObjectProphet implements ArrayAccess, ProphetInterface
 {
+    /**
+     * @var \PHPSpec2\Subject\LazySubjectInterface
+     */
     private $subject;
+
     private $matchers;
     private $unwrapper;
     private $presenter;
@@ -72,6 +76,11 @@ class ObjectProphet implements ArrayAccess, ProphetInterface
         }
 
         $this->subject->setConstructorArguments($this->unwrapper->unwrapAll(func_get_args()));
+    }
+
+    public function beCreatedStaticallyWith(Callable $factoryCallable, array $arguments = array())
+    {
+        $this->subject->setFactoryMethod($factoryCallable, $arguments);
     }
 
     public function should($name = null, array $arguments = array())
