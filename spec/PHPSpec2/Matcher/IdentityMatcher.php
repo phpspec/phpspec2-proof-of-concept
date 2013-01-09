@@ -28,78 +28,78 @@ class IdentityMatcher extends ObjectBehavior
 
     function it_matches_empty_strings()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('be', '', array(''));
+        $this->shouldNotThrow()->during()->positiveMatch('be', '', array(''));
     }
 
     function it_matches_not_empty_strings()
     {
-        $this->shouldNotThrow()->duringPositiveMatch('be', 'chuck', array('chuck'));
+        $this->shouldNotThrow()->during()->positiveMatch('be', 'chuck', array('chuck'));
     }
 
     function it_does_not_matches_empty_string_with_emptish_values()
     {
         $this->shouldThrow(new FailureException('Expected val1, but got val2.'))
-            ->duringPositiveMatch('be', '', array(false));
+            ->during()->positiveMatch('be', '', array(false));
     }
 
     function it_does_not_matches_zero_with_emptish_values()
     {
         $this->shouldThrow(new FailureException('Expected val1, but got val2.'))
-            ->duringPositiveMatch('be', 0, array(false));
+            ->during()->positiveMatch('be', 0, array(false));
     }
 
     function it_does_not_matches_null_with_emptish_values()
     {
         $this->shouldThrow(new FailureException('Expected val1, but got val2.'))
-            ->duringPositiveMatch('be', null, array(false));
+            ->during()->positiveMatch('be', null, array(false));
     }
 
     function it_does_not_matches_false_with_emptish_values()
     {
         $this->shouldThrow(new FailureException('Expected val1, but got val2.'))
-            ->duringPositiveMatch('be', false, array(''));
+            ->during()->positiveMatch('be', false, array(''));
     }
 
     function it_does_not_matches_non_empty_different_value()
     {
         $this->shouldThrow(new FailureException('Expected val1, but got val2.'))
-            ->duringPositiveMatch('be', 'one', array('two'));
+            ->during()->positiveMatch('be', 'one', array('two'));
     }
 
     function it_mismatches_empty_string()
     {
         $this->shouldThrow(new FailureException('Not expected val1, but got one.'))
-            ->duringNegativeMatch('be', '', array(''));
+            ->during()->negativeMatch('be', '', array(''));
     }
 
     function it_mismatches_not_empty_string($matcher)
     {
         $this->shouldThrow(new FailureException('Not expected val1, but got one.'))
-            ->duringNegativeMatch('be', 'chuck', array('chuck'));
+            ->during()->negativeMatch('be', 'chuck', array('chuck'));
     }
 
     function it_mismatches_empty_string_with_emptish_values()
     {
-        $this->shouldNotThrow()->duringNegativeMatch('be', '', array(false));
+        $this->shouldNotThrow()->during()->negativeMatch('be', '', array(false));
     }
 
     function it_mismatches_zero_with_emptish_values_using_identity_operator()
     {
-        $this->shouldNotThrow()->duringNegativeMatch('be', 0, array(false));
+        $this->shouldNotThrow()->during()->negativeMatch('be', 0, array(false));
     }
 
     function it_mismatches_null_with_emptish_values_using_identity_operator()
     {
-        $this->shouldNotThrow()->duringNegativeMatch('be', null, array(false));
+        $this->shouldNotThrow()->during()->negativeMatch('be', null, array(false));
     }
 
     function it_mismatches_false_with_emptish_values_using_identity_operator()
     {
-        $this->shouldNotThrow()->duringNegativeMatch('be', false, array(''));
+        $this->shouldNotThrow()->during()->negativeMatch('be', false, array(''));
     }
 
     function it_mismatches_on_non_empty_different_value()
     {
-        $this->shouldNotThrow()->duringNegativeMatch('be', 'one', array('two'));
+        $this->shouldNotThrow()->during()->negativeMatch('be', 'one', array('two'));
     }
 }
