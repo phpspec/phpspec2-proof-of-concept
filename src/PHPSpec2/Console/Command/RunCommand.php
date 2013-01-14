@@ -57,6 +57,6 @@ class RunCommand extends Command
             microtime(true) - $startTime, $result
         ));
 
-        return intval(Event\ExampleEvent::PASSED !== $result);
+        return intval($result > Event\ExampleEvent::PENDING);
     }
 }
