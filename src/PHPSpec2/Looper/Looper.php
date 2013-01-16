@@ -6,7 +6,7 @@ class Looper
 {
     private $callable;
 
-    public function __construct($callable)
+    public function __construct($callable = null)
     {
         $this->callable = $callable;
     }

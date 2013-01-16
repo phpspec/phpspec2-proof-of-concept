@@ -101,24 +101,34 @@ class ThrowMatcher implements MatcherInterface
         list($class, $message) = $this->getExceptionInformation($arguments);
         $unwrapper = $this->unwrapper;
 
-        return new Looper(
-            function($method, $arguments) use($check, $subject, $class, $message, $unwrapper) {
-                $arguments = $unwrapper->unwrapAll($arguments);
+        $looper = new Looper();
 
-                if (preg_match('/^during(.+)$/', $method, $matches)) {
-                    $callable = lcfirst($matches[1]);
-                } elseif (isset($arguments[0])) {
-                    $callable  = $arguments[0];
+        $callback = function($method, $arguments) use ($check, $subject, $class, $message, $unwrapper, $looper) {
+            $arguments = $unwrapper->unwrapAll($arguments);
+
+            if (preg_match('/^during(.+)$/', $method, $matches)) {
+                $callable = lcfirst($matches[1]);
+            } elseif ($method === 'during') {
+                if (count($arguments) === 0) {
+                    return $looper;
+                } elseif (count($arguments) === 2) {
+                    $callable = $arguments[0];
                     $arguments = $arguments[1];
                 } else {
                     throw new MatcherException('Provide callable to be checked for throwing.');
                 }
-
-                $callable = is_string($callable) ? array($subject, $callable) : $callable;
-
-                return call_user_func($check, $callable, $arguments, $class, $message);
+            } else {
+                $callable = $method;
             }
-        );
+
+            $callable = is_string($callable) ? array($subject, $callable) : $callable;
+
+            return call_user_func($check, $callable, $arguments, $class, $message);
+        };
+
+        $looper->__construct($callback);
+
+        return $looper;
     }
 
     private function getExceptionInformation(array $arguments)
