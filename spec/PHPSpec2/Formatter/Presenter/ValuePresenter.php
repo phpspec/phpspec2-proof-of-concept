@@ -4,15 +4,8 @@ namespace spec\PHPSpec2\Formatter\Presenter;
 
 use PHPSpec2\ObjectBehavior;
 
-class StringPresenter extends ObjectBehavior
+class ValuePresenter extends ObjectBehavior
 {
-    /**
-     * @param PHPSpec2\Formatter\Presenter\Differ\Differ $differ
-     */
-    function let($differ)
-    {
-        $this->beConstructedWith($differ);
-    }
 
     function it_should_present_short_string_in_quotes()
     {
@@ -56,14 +49,14 @@ class StringPresenter extends ObjectBehavior
         $this->presentValue(function(){})->shouldReturn('[closure]');
     }
 
+    function it_should_present_string_as_string()
+    {
+        $this->presentString('some string')->shouldReturn('some string');
+    }
+
     function it_should_present_exception_as_class_with_constructor()
     {
         $this->presentValue(new \RuntimeException('message'))
             ->shouldReturn('[exc:RuntimeException("message")]');
-    }
-
-    function it_should_present_string_as_string()
-    {
-        $this->presentString('some string')->shouldReturn('some string');
     }
 }

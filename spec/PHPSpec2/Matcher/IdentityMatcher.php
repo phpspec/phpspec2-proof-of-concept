@@ -8,7 +8,7 @@ use PHPSpec2\Exception\Example\FailureException;
 class IdentityMatcher extends ObjectBehavior
 {
     /**
-     * @param PHPSpec2\Formatter\Presenter\StringPresenter $presenter
+     * @param PHPSpec2\Formatter\Presenter\ValuePresenter $presenter
      */
     function let($presenter)
     {

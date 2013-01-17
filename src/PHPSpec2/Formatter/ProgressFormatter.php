@@ -3,7 +3,7 @@
 namespace PHPSpec2\Formatter;
 
 use PHPSpec2\Console\IO;
-use PHPSpec2\Formatter\Presenter\PresenterInterface;
+use PHPSpec2\Formatter\Presenter\ExceptionPresenterInterface;
 use PHPSpec2\Listener\StatisticsCollector;
 
 use PHPSpec2\Event\SuiteEvent;
@@ -14,7 +14,7 @@ use PHPSpec2\Exception\Example\PendingException;
 class ProgressFormatter implements FormatterInterface
 {
     private $io;
-    private $presenter;
+    private $exceptionPresenter;
     private $stats;
 
     public static function getSubscribedEvents()
@@ -29,9 +29,9 @@ class ProgressFormatter implements FormatterInterface
         $this->io = $io;
     }
 
-    public function setPresenter(PresenterInterface $presenter)
+    public function setExceptionPresenter(ExceptionPresenterInterface $exceptionPresenter)
     {
-        $this->presenter = $presenter;
+        $this->exceptionPresenter = $exceptionPresenter;
     }
 
     public function setStatisticsCollector(StatisticsCollector $stats)
@@ -112,8 +112,8 @@ class ProgressFormatter implements FormatterInterface
 
         $title = str_replace('\\', DIRECTORY_SEPARATOR, $event->getSpecification()->getTitle());
         $title = str_pad($title, 50, ' ', STR_PAD_RIGHT);
-        $exception->cause = $event->getExample()->getFunction();
-        $message = $this->presenter->presentException($exception, $this->io->isVerbose());
+        $exception->setCause($event->getExample()->getFunction());
+        $message = $this->exceptionPresenter->presentException($exception, $this->io->isVerbose());
 
         if ($exception instanceof PendingException) {
             $this->io->writeln(sprintf('<pending-bg>%s</pending-bg>', $title));
