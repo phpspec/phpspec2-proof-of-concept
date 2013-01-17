@@ -14,7 +14,7 @@ use PHPSpec2\Exception\Example\PendingException;
 class ProgressFormatter implements FormatterInterface
 {
     private $io;
-    private $presenter;
+    private $exceptionPresenter;
     private $stats;
 
     public static function getSubscribedEvents()
@@ -29,7 +29,7 @@ class ProgressFormatter implements FormatterInterface
         $this->io = $io;
     }
 
-    public function setExceptionPresenter(ExceptionPresenterInterface $presenter)
+    public function setExceptionPresenter(ExceptionPresenterInterface $exceptionPresenter)
     {
         $this->exceptionPresenter = $exceptionPresenter;
     }
