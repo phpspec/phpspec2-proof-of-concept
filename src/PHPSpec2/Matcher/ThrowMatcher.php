@@ -109,7 +109,7 @@ class ThrowMatcher implements MatcherInterface
                     $callable = lcfirst($matches[1]);
                 } elseif (isset($arguments[0])) {
                     $callable  = $arguments[0];
-                    $arguments = $arguments[1];
+                    $arguments = isset($arguments[1]) ? $arguments[1] : array();
                 } else {
                     throw new MatcherException('Provide callable to be checked for throwing.');
                 }
