@@ -3,8 +3,11 @@
 namespace spec\PHPSpec2\Formatter\Presenter;
 
 use PHPSpec2\ObjectBehavior;
+use PHPSpec2\Exception\Exception as PHPSpec2Exception;
+use PHPSpec2\Matcher\CustomMatchersProviderInterface;
+use PHPSpec2\Matcher\InlineMatcher;
 
-class StringPresenter extends ObjectBehavior
+class StringPresenter extends ObjectBehavior implements CustomMatchersProviderInterface
 {
     /**
      * @param PHPSpec2\Formatter\Presenter\Differ\Differ $differ
@@ -65,5 +68,44 @@ class StringPresenter extends ObjectBehavior
     function it_should_present_string_as_string()
     {
         $this->presentString('some string')->shouldReturn('some string');
+    }
+
+    function it_should_present_exception_without_cause()
+    {
+        $exception = new PHPSpec2Exception('message');
+
+        $this->presentException($exception)
+            ->shouldReturn('message');
+    }
+
+    function it_should_present_exception_with_cause()
+    {
+        $reflection = new \ReflectionClass(__CLASS__);
+
+        $exception = new PHPSpec2Exception('message');
+        $exception->setCause($reflection);
+
+        $this->presentException($exception)
+            ->shouldReturn('message');
+    }
+
+    function it_should_present_exception_with_cause_if_verbose()
+    {
+        $reflection = new \ReflectionClass(__CLASS__);
+
+        $exception = new PHPSpec2Exception('message');
+        $exception->setCause($reflection);
+
+        $this->presentException($exception, true)
+            ->shouldStartWith("message\n\n");
+    }
+
+    public static function getMatchers()
+    {
+        return array(
+            new InlineMatcher('startWith', function ($subject, $beginning) {
+                return strpos($subject, $beginning) === 0;
+            })
+        );
     }
 }
