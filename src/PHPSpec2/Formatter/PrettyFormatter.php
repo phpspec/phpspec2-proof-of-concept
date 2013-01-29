@@ -126,8 +126,9 @@ class PrettyFormatter implements FormatterInterface
             return;
         }
 
-        // TODO: add cause to exception interface
-        $exception->cause = $event->getExample()->getFunction();
+        if ($exception instanceof PHPSpec2Exception) {
+            $exception->setCause($event->getExample()->getFunction());
+        }
         $depth = $depth ?: (($event->getExample()->getDepth() * 2) + 6);
         $message = $this->presenter->presentException($exception, $this->io->isVerbose());
 
