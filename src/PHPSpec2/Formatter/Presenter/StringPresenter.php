@@ -211,13 +211,13 @@ class StringPresenter implements PresenterInterface
 
     protected function getExceptionExamplePosition(Exception $exception)
     {
-        $refl = $exception->cause;
+        $refl = $exception->getCause();
         foreach ($exception->getTrace() as $call) {
             if (!isset($call['file'])) {
                 continue;
             }
 
-            if ($refl->getFilename() === $call['file']) {
+            if (!empty($refl) && $refl->getFilename() === $call['file']) {
                 return array($call['file'], $call['line']);
             }
         }
