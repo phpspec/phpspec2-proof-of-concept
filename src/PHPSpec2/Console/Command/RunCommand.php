@@ -36,6 +36,7 @@ class RunCommand extends Command
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
             new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'progress'),
+            new InputOption('src-path', null, InputOption::VALUE_REQUIRED, 'Source path', 'src'),
         ));
     }
 
@@ -57,7 +58,7 @@ class RunCommand extends Command
         $specifications = $this->createLocator()->getSpecifications($input->getArgument('spec'));
         $runner         = $this->createRunner($matchers, $mocker, $unwrapper);
 
-        $this->configureAdditionalListeners();
+        $this->configureAdditionalListeners($input->getOption('src-path'));
         $this->dispatcher->dispatch('beforeSuite', new Event\SuiteEvent($collector));
 
         $result = 0;
@@ -143,9 +144,9 @@ class RunCommand extends Command
         return $formatter;
     }
 
-    protected function configureAdditionalListeners()
+    protected function configureAdditionalListeners($srcPath)
     {
-        $this->dispatcher->addSubscriber(new Listener\ClassNotFoundListener($this->io));
+        $this->dispatcher->addSubscriber(new Listener\ClassNotFoundListener($this->io, $srcPath));
         $this->dispatcher->addSubscriber(new Listener\MethodNotFoundListener($this->io));
     }
 }

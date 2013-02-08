@@ -15,10 +15,16 @@ class ClassNotFoundListener implements EventSubscriberInterface
     private $path;
     private $proposedClasses = array();
 
-    public function __construct(IO $io, $path = 'src')
+    public function __construct(IO $io, $path)
     {
         $this->io   = $io;
-        $this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+        if ($path == '') {
+            $this->path =  $path;
+        } else {
+            $this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+        }
+
     }
 
     public static function getSubscribedEvents()
