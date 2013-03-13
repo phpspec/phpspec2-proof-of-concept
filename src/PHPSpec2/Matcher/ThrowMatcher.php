@@ -8,16 +8,18 @@ use PHPSpec2\Exception\Example\MatcherException;
 use PHPSpec2\Exception\Example\FailureException;
 use PHPSpec2\Exception\Example\NotEqualException;
 use PHPSpec2\Wrapper\ArgumentsUnwrapper;
+use PHPSpec2\Factory\ReflectionFactory;
 
 class ThrowMatcher implements MatcherInterface
 {
     private $unwrapper;
     private $presenter;
 
-    public function __construct(ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter)
+    public function __construct(ArgumentsUnwrapper $unwrapper, PresenterInterface $presenter, ReflectionFactory $factory = null)
     {
         $this->unwrapper = $unwrapper;
         $this->presenter = $presenter;
+        $this->factory   = $factory ?: new ReflectionFactory;
     }
 
     public function supports($name, $subject, array $arguments)
@@ -35,29 +37,40 @@ class ThrowMatcher implements MatcherInterface
         return $this->getLooper(array($this, 'verifyNegative'), $subject, $arguments);
     }
 
-    public function verifyPositive($callable, array $arguments, $class = null, $message = null)
+    public function verifyPositive($callable, array $arguments, $exception = null)
     {
         try {
             call_user_func_array($callable, $arguments);
         } catch (\Exception $e) {
-            if (null === $class) {
+            if (null === $exception) {
                 return;
             }
 
-            if (!$e instanceof $class) {
+            if (!$e instanceof $exception) {
                 throw new FailureException(sprintf(
                     'Expected exception of class %s, but got %s.',
-                    $this->presenter->presentString($class),
+                    $this->presenter->presentValue($exception),
                     $this->presenter->presentValue($e)
                 ));
             }
 
-            if (null !== $message && $e->getMessage() !== $message) {
-                throw new NotEqualException(sprintf(
-                    'Expected exception message %s, but got %s.',
-                    $this->presenter->presentValue($message),
-                    $this->presenter->presentValue($e->getMessage())
-                ), $message, $e->getMessage());
+            if (is_object($exception)) {
+                $exceptionRefl = $this->factory->create($exception);
+                foreach ($exceptionRefl->getProperties() as $property) {
+                    if (in_array($property->getName(), array('file', 'line'))) {
+                        continue;
+                    }
+                    $property->setAccessible(true);
+
+                    if (null !== $property->getValue($exception) && $property->getValue($e) !== $property->getValue($exception)) {
+                        throw new NotEqualException(sprintf(
+                            'Expected exception %s %s, but got %s.',
+                            $property->getName(),
+                            $this->presenter->presentValue($property->getValue($exception)),
+                            $this->presenter->presentValue($property->getValue($e))
+                        ), $property->getValue($exception), $property->getValue($e));
+                    }
+                }
             }
 
             return;
@@ -66,31 +79,49 @@ class ThrowMatcher implements MatcherInterface
         throw new FailureException('Expected to get exception, none got.');
     }
 
-    public function verifyNegative($callable, array $arguments, $class = null, $message = null)
+    public function verifyNegative($callable, array $arguments, $exception = null)
     {
         try {
             call_user_func_array($callable, $arguments);
         } catch (\Exception $e) {
-            if (null === $class) {
+            if (null === $exception) {
                 throw new FailureException(sprintf(
                     'Expected to not throw any exceptions, but got %s.',
                     $this->presenter->presentValue($e)
                 ));
             }
 
-            if ($e instanceof $class && null === $message) {
-                throw new FailureException(sprintf(
-                    'Expected to not throw %s exception, but got it.',
-                    $this->presenter->presentString($class)
-                ));
-            }
+            if ($e instanceof $exception) {
+                $invalidProperties = array();
+                if (is_object($exception)) {
+                    $exceptionRefl = $this->factory->create($exception);
+                    foreach ($exceptionRefl->getProperties() as $property) {
+                        if (in_array($property->getName(), array('file', 'line'))) {
+                            continue;
+                        }
+                        $property->setAccessible(true);
 
-            if ($e instanceof $class && $e->getMessage() === $message) {
+                        if (null !== $property->getValue($exception) && $property->getValue($e) === $property->getValue($exception)) {
+                            $invalidProperties[] = sprintf(
+                                '  %s %s',
+                                $property->getName(),
+                                $this->presenter->presentValue($property->getValue($exception))
+                            );
+                        }
+                    }
+                }
+
+                $withProperties = '';
+                if (count($invalidProperties) > 0) {
+                    $withProperties = sprintf(" with\n%s,\n", implode(",\n", $invalidProperties));
+                }
+
                 throw new FailureException(sprintf(
-                    "Expected to not throw %s exception\n".
-                    "with %s message,\nbut got it.",
-                    $this->presenter->presentString($class),
-                    $this->presenter->presentValue($message)
+                    'Expected to not throw %s exception%s but got it.',
+                    $this->presenter->presentValue(
+                        is_object($exception) ? get_class($exception) : $exception
+                    ),
+                    $withProperties
                 ));
             }
         }
@@ -98,11 +129,11 @@ class ThrowMatcher implements MatcherInterface
 
     private function getLooper($check, $subject, array $arguments)
     {
-        list($class, $message) = $this->getExceptionInformation($arguments);
+        $exception = $this->getException($arguments);
         $unwrapper = $this->unwrapper;
 
         return new Looper(
-            function($method, $arguments) use($check, $subject, $class, $message, $unwrapper) {
+            function ($method, $arguments) use($check, $subject, $exception, $unwrapper) {
                 $arguments = $unwrapper->unwrapAll($arguments);
 
                 if (preg_match('/^during(.+)$/', $method, $matches)) {
@@ -119,23 +150,23 @@ class ThrowMatcher implements MatcherInterface
 
                 $callable = is_string($callable) ? array($subject, $callable) : $callable;
 
-                return call_user_func($check, $callable, $arguments, $class, $message);
+                return call_user_func($check, $callable, $arguments, $exception);
             }
         );
     }
 
-    private function getExceptionInformation(array $arguments)
+    private function getException(array $arguments)
     {
         if (0 == count($arguments)) {
-            return array(null, null);
+            return null;
         }
 
         if (is_string($arguments[0])) {
-            return array($arguments[0], isset($arguments[1]) ? $arguments[1] : null);
+            return $arguments[0];
         }
 
         if (is_object($arguments[0]) && $arguments[0] instanceof \Exception) {
-            return array(get_class($arguments[0]), $arguments[0]->getMessage());
+            return $arguments[0];
         }
 
         throw new MatcherException(sprintf(
