@@ -57,7 +57,7 @@ class ThrowMatcher implements MatcherInterface
             if (is_object($exception)) {
                 $exceptionRefl = $this->factory->create($exception);
                 foreach ($exceptionRefl->getProperties() as $property) {
-                    if (in_array($property->getName(), array('file', 'line'))) {
+                    if (in_array($property->getName(), array('file', 'line', 'string', 'trace', 'previous'))) {
                         continue;
                     }
                     $property->setAccessible(true);
@@ -96,7 +96,7 @@ class ThrowMatcher implements MatcherInterface
                 if (is_object($exception)) {
                     $exceptionRefl = $this->factory->create($exception);
                     foreach ($exceptionRefl->getProperties() as $property) {
-                        if (in_array($property->getName(), array('file', 'line'))) {
+                        if (in_array($property->getName(), array('file', 'line', 'string', 'trace', 'previous'))) {
                             continue;
                         }
                         $property->setAccessible(true);
