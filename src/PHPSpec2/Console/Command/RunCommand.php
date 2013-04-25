@@ -13,6 +13,8 @@ use PHPSpec2\Event;
 use PHPSpec2\Console;
 use PHPSpec2\Formatter;
 
+use InvalidArgumentException;
+
 class RunCommand extends Command
 {
     /**
@@ -25,6 +27,7 @@ class RunCommand extends Command
         $this->setDefinition(array(
             new InputArgument('spec', InputArgument::OPTIONAL, 'Specs to run', 'spec'),
             new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Formatter', 'progress'),
+            new InputOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'Run a bootstrap file before start', false)
         ));
     }
 
@@ -33,6 +36,20 @@ class RunCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if ($bootstrap = $input->getOption("bootstrap") ) {
+            if (null === $bootstrap) {
+                throw new InvalidArgumentException('The --bootstrap option needs a value');
+            }
+
+            if (!is_file($bootstrap)) {
+                throw new InvalidArgumentException("The bootstrap file ({$bootstrap}) doesn't exist");
+            } else if (pathinfo($bootstrap, PATHINFO_EXTENSION) !== "php") {
+                throw new InvalidArgumentException("The bootstrap file ({$bootstrap}) isn't a valid php file");
+            }
+
+            require $bootstrap;
+        }
+
         $output->setFormatter(new Console\Formatter($output->isDecorated()));
         $c = $this->getApplication()->getContainer();
 
