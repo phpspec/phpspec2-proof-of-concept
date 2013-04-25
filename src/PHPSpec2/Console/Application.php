@@ -4,8 +4,6 @@ namespace PHPSpec2\Console;
 
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -42,8 +40,6 @@ class Application extends BaseApplication
         $c->set('format', 'progress');
 
         $c->set('console.commands', array());
-        $c->set('console.definitions', array());
-        
         $c->set('io', $c->share(function($c) {
             return new Console\IO(
                 $c('console.input'),
@@ -192,10 +188,6 @@ class Application extends BaseApplication
         $c->extend('console.commands', function($c) {
             return new Command\DescribeCommand;
         });
-        
-        $c->extend('console.definitions', function($c) {
-            return new InputOption('bootstrap=/path/to/file.php', null, InputOption::VALUE_REQUIRED, 'Run a bootstrap file before start');
-        });
     }
 
     public function getContainer()
@@ -208,7 +200,6 @@ class Application extends BaseApplication
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
-        
         $configuration = new Configuration($this->container);
         if (is_file('phpspec.yml')) {
             $configuration->read('phpspec.yml');
@@ -230,48 +221,13 @@ class Application extends BaseApplication
         foreach ($this->container->get('console.commands') as $command) {
             $this->add($command);
         }
-        
-        $parent_definition = parent::getDefinition();
-        foreach ($this->container->get('console.definitions') as $definition) {
-            $parent_definition->addOption($definition);
-        }
-        
-        // bootstrap
-        
-        $has_param = $input->getParameterOption('--bootstrap'); 
-        
-        // incorrect parameter
-        if(is_null($has_param)) {
-            throw new InvalidArgumentException('The --bootstrap option needs a value');
-        }
-        
-        if(!$has_param && $this->container->has("bootstrap")){
-            $file = $this->container->get("bootstrap");
-        }
-        else{
-            $file = $has_param;
-        }
-        
-        if($file){
-            $realfile = realpath($file);
-            
-            if(!is_file($realfile)){
-                throw new InvalidArgumentException("The bootstrap file ({$file}) doesn't exist");
-            }  
-            elseif(pathinfo($realfile, PATHINFO_EXTENSION) !== "php"){
-                throw new InvalidArgumentException("The bootstrap file ({$file}) isn't a valid php file");
-            } 
-            else require $realfile;
-        }
-        // end bootstap
 
         if (!($name = $this->getCommandName($input))
          && !$input->hasParameterOption('-h')
          && !$input->hasParameterOption('--help')) {
-             $input = new ArrayInput(array('command' => 'run'));
+            $input = new ArrayInput(array('command' => 'run'));
         }
-        
+
         parent::doRun($input, $output);
     }
-    
 }
