@@ -6,6 +6,7 @@ use ReflectionClass;
 
 use PHPSpec2\Exception\Exception;
 use PHPSpec2\Exception\ClassNotFoundException;
+use PHPSpec2\Exception\FactoryMethodNotFoundException;
 use PHPSpec2\Formatter\Presenter\PresenterInterface;
 
 class LazyObject implements LazySubjectInterface
@@ -14,6 +15,7 @@ class LazyObject implements LazySubjectInterface
     private $arguments;
     private $presenter;
     private $instance;
+    private $factory = '__construct';
 
     public function __construct($classname = null, array $arguments = array(),
                                 PresenterInterface $presenter)
@@ -62,12 +64,25 @@ class LazyObject implements LazySubjectInterface
             ), $this->classname);
         }
 
-        $reflection = new ReflectionClass($this->classname);
-
-        if (!empty($this->arguments)) {
-            return $this->instance = $reflection->newInstanceArgs($this->arguments);
+        if ($this->factory == '__construct') {
+            $reflection = new ReflectionClass($this->classname);
+            $this->instance = $reflection->newInstanceArgs($this->arguments);
+        } elseif (is_string($this->factory)) {
+            if (!method_exists($this->classname, $this->factory)) {
+                throw new FactoryMethodNotFoundException(sprintf(
+                    'Method %s::%s does not exists.', $this->presenter->presentString($this->classname), $this->presenter->presentString($this->factory)
+                ), $this->classname, $this->factory);
+            }
+            $this->instance = call_user_func_array(array($this->classname, $this->factory), $this->arguments);
+        } elseif (is_callable($this->factory)) {
+            $this->instance = call_user_func_array($this->factory, $this->arguments);
         }
 
-        return $this->instance = $reflection->newInstance();
+        return $this->instance;
+    }
+
+    public function setFactory($factory)
+    {
+        $this->factory = $factory;
     }
 }
