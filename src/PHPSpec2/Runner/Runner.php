@@ -136,7 +136,7 @@ class Runner
 
     public function runExample(Node\Example $example, Matcher\MatchersCollection $matchers)
     {
-        $context       = $example->getFunction()->getDeclaringClass()->newInstance();
+        $context       =  $this->getExampleContext($example);
         $collaborators = new Prophet\CollaboratorsCollection($this->presenter);
 
         foreach ($this->getExampleInitializers() as $initializer) {
@@ -230,5 +230,21 @@ class Runner
 
         // error reporting turned off or more likely suppressed with @
         return false;
+    }
+
+    /**
+     * Returns an instance of the class in which context we run the example
+     * @param \PHPSpec2\Loader\Node\Example $example
+     * @return mixed
+     */
+    private function getExampleContext(Node\Example $example)
+    {
+        if (null !== $example->getSpecification()){
+            $declaringClass =  $example->getSpecification()->getClass();
+        }
+        else {
+            $declaringClass = $example->getFunction()->getDeclaringClass();
+        }
+        return $declaringClass->newInstance();
     }
 }
