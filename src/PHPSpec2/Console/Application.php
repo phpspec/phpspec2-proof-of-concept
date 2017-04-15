@@ -76,6 +76,12 @@ class Application extends BaseApplication
             }))
         );
 
+        $c->extend('differ.engines',
+            $c->set('differ.engines.array', $c->share(function($c) {
+                return new Presenter\Differ\ArrayEngine();
+            }))
+        );
+
         $c->set('value_presenter', $c->share(function($c) {
             return new Presenter\TaggedPresenter($c('differ'));
         }));
